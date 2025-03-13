@@ -1,25 +1,37 @@
-import React from 'react'
-import {Box, Container } from '@chakra-ui/react'
-import { useColorModeValue } from '../components/ui/color-mode'
-import { Outlet,} from 'react-router'
-import NavBar from '../components/NavBar'
+import { Box, Container, Text, Spinner, HStack } from '@chakra-ui/react';
+import { useColorModeValue } from '../components/ui/color-mode';
+import { Link, Outlet } from 'react-router';
+import { useSelector } from 'react-redux';
+import useProfile from '../services/ProfileHook';
 
 const Dashboard = () => {
-  const mainBg = useColorModeValue("gray.100", "gray.800")
+  const { user, userInfo } = useSelector((state) => state.auth); 
+  const mainBg = useColorModeValue('gray.50', 'black');
+  
+  const { accounts,} = useProfile(user);
+
+  console.log("accounts:", accounts);
+  console.log("userInfo.id:", userInfo?.id);
+
   return (
-    <Box>
-      <NavBar/>
-      <Container maxW="20%">
-
+    <HStack my={10}>
+      <Container width="20%" maxW="container.sm" py={4}>
       </Container>
-      <Container height="100vh" maxW="60%" rounded={8} bg={mainBg}>
-        <Outlet/>
-      </Container>
-      <Container maxW="20%">
 
+      <Container
+        height="85vh"
+        width={['100%', '60%']}
+        maxW="container.lg"
+        rounded={8}
+        bg={mainBg}
+        shadow="3px 3px 15px 5px rgb(75, 75, 79)"
+        my={4}
+      >
+        <Outlet />
       </Container>
-    </Box>
-  )
-}
+      <Container width={['100%', '20%']} maxW="container.sm" />
+    </HStack>
+  );
+};
 
-export default Dashboard
+export default Dashboard;
