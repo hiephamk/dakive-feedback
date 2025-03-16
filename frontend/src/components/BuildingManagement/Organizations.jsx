@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react'
 import { useSelector } from 'react-redux'
 import useAccessToken from '../../services/token'
-import {Box, Input, VStack, Button, Center, Heading } from '@chakra-ui/react'
+import {Box, Input, VStack, Button, Center, Heading, Container } from '@chakra-ui/react'
 import axios from 'axios'
 
 const Organizations = () => {
@@ -50,7 +50,22 @@ const Organizations = () => {
   
     const handleSubmit = async (e) => {
       e.preventDefault();
-  
+      const requiredFields = {
+        name: "Building Name",
+        street: "Street",
+        city: "City",
+        country: "Country",
+        postal_code: "Postal Code",
+        email:"Email",
+        website:"Website",
+        owner: "Owner Name",
+    };
+    for (const field in requiredFields){
+      if (!formData[field]){
+          alert(`Please fill in the required field: ${requiredFields[field]}`)
+          return
+      }
+    }
       try {
         const response = await axios.post(
           url,
@@ -81,70 +96,68 @@ const Organizations = () => {
         }
     },[accessToken, userInfo?.id])
   return (
-    <Box width="100%" shadow="3px 3px 15px 5px rgb(75, 75, 79)" m={4} p={4} rounded={8}>
-      <Center>
-        <VStack width="50%">
-          <Heading>Create New Organization</Heading>
-          <Input
-              type='text'
-              name='name'
-              value={formData.name}
-              onChange={handleChange}
-              placeholder='Name'
-          />
-          <Input
-              type='text'
-              name='street'
-              value={formData.street}
-              onChange={handleChange}
-              placeholder='Street'
-          />
-          <Input
-              type='text'
-              name='city'
-              value={formData.city}
-              onChange={handleChange}
-              placeholder='City'
-          />
-          <Input
-              type='text'
-              name='state'
-              value={formData.state}
-              onChange={handleChange}
-              placeholder='State'
-          />
-          <Input
-              type='text'
-              name='country'
-              value={formData.country}
-              onChange={handleChange}
-              placeholder='Country'
-          />
-          <Input
-              type='text'
-              name='postal_code'
-              value={formData.postal_code}
-              onChange={handleChange}
-              placeholder='Postal Code'
-          />
-          <Input
-              type='text'
-              name='email'
-              value={formData.email}
-              onChange={handleChange}
-              placeholder='Email'
-          />
-          <Input
-              type='text'
-              name='website'
-              value={formData.website}
-              onChange={handleChange}
-              placeholder='Website'
-          />
-          <Button onClick={handleSubmit}>Create</Button>
-        </VStack>
-      </Center>
-    </Box>
+    <Container justifyContent="center" maxW="500px">
+      <VStack  shadow="3px 3px 15px 5px rgb(75, 75, 79)" m={4} p={4} rounded={8} minW="100%">
+        <Heading>Create New Organization</Heading>
+        <Input
+            type='text'
+            name='name'
+            value={formData.name}
+            onChange={handleChange}
+            placeholder='Name'
+        />
+        <Input
+            type='text'
+            name='street'
+            value={formData.street}
+            onChange={handleChange}
+            placeholder='Street'
+        />
+        <Input
+            type='text'
+            name='city'
+            value={formData.city}
+            onChange={handleChange}
+            placeholder='City'
+        />
+        <Input
+            type='text'
+            name='state'
+            value={formData.state}
+            onChange={handleChange}
+            placeholder='State'
+        />
+        <Input
+            type='text'
+            name='country'
+            value={formData.country}
+            onChange={handleChange}
+            placeholder='Country'
+        />
+        <Input
+            type='text'
+            name='postal_code'
+            value={formData.postal_code}
+            onChange={handleChange}
+            placeholder='Postal Code'
+        />
+        <Input
+            type='text'
+            name='email'
+            value={formData.email}
+            onChange={handleChange}
+            placeholder='Email'
+        />
+        <Input
+            type='text'
+            name='website'
+            value={formData.website}
+            onChange={handleChange}
+            placeholder='Website'
+        />
+        <Button onClick={handleSubmit}>Create</Button>
+      </VStack>
+    </Container>
   )
 }
 

@@ -23,8 +23,6 @@ const Building = () => {
         state: "",
         country: "",
         postal_code: "",
-        email: "",
-        website: "",
         owner: userInfo?.id|| "",
         organization: organizationId || "",
     });
@@ -45,7 +43,20 @@ const Building = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        const requiredFields = {
+            name: "Building Name",
+            street: "Street",
+            city: "City",
+            country: "Country",
+            postal_code: "Postal Code",
+            // organization: "Organization Name",
+        };
+        for (const field in requiredFields){
+            if (!formData[field]){
+                alert(`Please fill in the required field: ${requiredFields[field]}`)
+                return
+            }
+        }
         // Create FormData object
         const formDataToSend = new FormData();
         
@@ -78,14 +89,12 @@ const Building = () => {
                 state: "",
                 country: "",
                 postal_code: "",
-                email: "",
-                website: "",
                 owner: userInfo?.id || "",
-                organization: organizationId,
+                organization: organizationId || "",
             });
             setBuildingImage(null);
         } catch (error) {
-            console.error("Error creating building:", error.response?.data || error.message);
+            console.error("Error creating building:", error || error.message);
         }
     };
 
@@ -100,22 +109,26 @@ const Building = () => {
                     <Input type="text" name="state" value={formData.state} onChange={handleChange} placeholder="State" />
                     <Input type="text" name="country" value={formData.country} onChange={handleChange} placeholder="Country" />
                     <Input type="text" name="postal_code" value={formData.postal_code} onChange={handleChange} placeholder="Postal Code" />
-                    <Box border="1px solid" p={1} rounded={5}>
-                        <select
-                            name="organization"
-                            id="organization"
-                            value={organizationId}
-                            onChange={(e) => setOrganizationId(e.target.value)}
-                
-                        >
-                            <option value="">Choose An Organization</option>
-                            {organizations.map((org) => (
-                                <option key={org.id} value={org.id}>
-                                    {org.name}
-                                </option>
-                            ))}
-                        </select>
-                    </Box>
+                    
+                    <HStack gap={4} justifyContent="space-between">
+                        <label id="organization">Organization: </label>
+                        <Box border="1px solid" p={1} rounded={5}>
+                            <select
+                                name="organization"
+                                id="organization"
+                                value={organizationId}
+                                onChange={(e) => setOrganizationId(e.target.value)}
+                            >
+                        
+                                {organizations.length>0 ? (organizations.map((org) => (
+                                    <option key={org.id} value={org.id}>
+                                        {org.name}
+                                    </option>
+                                ))):(<option value="">No Organization</option>)
+                                }
+                            </select>
+                        </Box>
+                    </HStack>
 
                     {/* File Upload */}
                     {/* <Box>

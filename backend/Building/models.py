@@ -14,6 +14,9 @@ class Organization(models.Model):
     website = models.URLField(blank=True, null=True)
     def __str__(self):
         return f"{self.name}"
+    @property
+    def get_name(self):
+        return self.name
 
 class Building(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -26,7 +29,7 @@ class Building(models.Model):
     postal_code = models.CharField(max_length=20)
     building_img = models.ImageField(upload_to='building', null=True, blank=True)
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.name} {self.organization}"
 
 class Room(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

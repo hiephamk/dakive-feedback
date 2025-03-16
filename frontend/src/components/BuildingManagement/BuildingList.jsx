@@ -46,7 +46,12 @@ const BuildingList = () => {
                             <Center>
                                 <Box pl={2}>
                                     <Box fontWeight="bold" fontSize="18px">Name: {building.name}</Box>
-                                    <Box>Orgainzation: {building.organization_name}</Box>
+                                    {buildings.organization_name ? (
+                                        <Box>Owner: {building.organization_name}</Box>                                 
+                                    ):(
+                                        <Box>Owner: {building.owner_name}</Box>
+
+                                    )}
                                     <Box>Street: {building.street}</Box>
                                     <Box>City: {building.city}</Box>
                                     <Box>Postal Code: {building.postal_code}</Box>

@@ -11,15 +11,18 @@ class RoomSerializer(serializers.ModelSerializer):
     def get_room_owner_name(self, obj):
         return obj.owner.get_full_name
     def get_building_name(self, obj):
-        return obj.building.name
+        return obj.building.name if obj.building else None
 
 class BuildingSerializer(serializers.ModelSerializer):
     organization_name = serializers.SerializerMethodField()
+    owner_name = serializers.SerializerMethodField()
     class Meta:
         model = Building
         fields = "__all__"
     def get_organization_name(self, obj):
-        return f"{obj.organization.name}"
+        return obj.organization.name if obj.organization else None
+    def get_owner_name(self, obj):
+        return obj.owner.get_full_name if obj.owner else None
 
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
