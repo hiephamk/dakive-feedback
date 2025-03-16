@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'account.apps.AccountConfig',
     "djoser",
     "users",
+    "Building",
+    "feedback",
 ]
 
 MIDDLEWARE = [
@@ -85,11 +87,11 @@ DJOSER = {
     'ACTIVATION_URL': 'activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
     'SERIALIZERS': {
-        'user_create': 'main.serializers.CreateUserSerializer',
-        'user': "main.serializers.CreateUserSerializer",
+        'user_create': 'users.serializers.CreateUserSerializer',
+        'user': "users.serializers.CreateUserSerializer",
         'user_delete': "djoser.serializers.UserDeleteSerializer",
     },
-    'USER_SERIALIZER': 'main.serializers.CustomUserSerializer',
+    'USER_SERIALIZER': 'users.serializers.CustomUserSerializer',
 }
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = env("EMAIL_HOST")

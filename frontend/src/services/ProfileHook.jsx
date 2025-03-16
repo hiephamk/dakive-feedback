@@ -8,12 +8,20 @@ const useProfile = (userId) => {
   const { user, userInfo } = useSelector((state) => state.auth);
   const accessToken = useAccessToken(user);
   const [accounts, setAccounts] = useState([]);
+  const [full_name, setFullName] = useState('');
+  const [first_name, setFirstName] = useState('');
+  const [last_name, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [profile_img, setProfileImg] = useState('')
+  const [phone_number, setPhoneNumber] = useState('')
+  const [birth_date, setBirthDate] = useState('')
+  const [bio, setBio] = useState('')
+  const [is_owner, setIsOwner] = useState(null)
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchAccount = async () => {
     const url = import.meta.env.VITE_ACCOUNT_URL;
-    console.log("url:", url);
   
     if (!accessToken) {
       setError("No access token available");
@@ -27,9 +35,7 @@ const useProfile = (userId) => {
       },
     };
   
-    console.log("config:", config);
-    console.log("userInfo:", userInfo?.id);
-  
+
     setIsLoading(true);
     setError(null);
   
@@ -39,10 +45,17 @@ const useProfile = (userId) => {
   
       if (Array.isArray(res.data) && res.data.length > 0) {
         const userProfile = res.data.find((profile) => profile.user === userId);
-        console.log("profile.user:", userProfile)
         if (userProfile) {
-          console.log("User Profile Found:", userProfile);
-          setAccounts([userProfile]); // Wrapping it in an array to match rendering logic
+          setAccounts([userProfile]);
+          setEmail(useProfile.email)
+          setFullName(userProfile.full_name)
+          setFirstName(userProfile.first_name)
+          setLastName(userProfile.last_name)
+          setPhoneNumber(userProfile.phone_number)
+          setBirthDate(userProfile.birth_date)
+          setBio(userProfile.bio)
+          setProfileImg(userProfile.profile_img)
+          setIsOwner(userProfile.is_owner)
         } else {
           console.error("User profile not found");
         }
@@ -60,7 +73,7 @@ const useProfile = (userId) => {
     }
   },[accessToken, userInfo?.id])
 
-  return {accounts, isLoading, error}
+  return {accounts,first_name, last_name, full_name, email, phone_number, profile_img, birth_date, bio,is_owner, isLoading, error}
 };
 
 export default useProfile;

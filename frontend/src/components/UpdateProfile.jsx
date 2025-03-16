@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import useAccessToken from '../services/token';
 import axios from 'axios';
-import { Box, Input, Textarea, VStack, Stack, FileUpload, Icon, Button, Heading, Center,HStack, AbsoluteCenter, Square } from '@chakra-ui/react';
+import { Box, Input, Textarea, VStack, Stack, FileUpload, Icon, Button, Heading, Center,HStack, AbsoluteCenter, Square, Container } from '@chakra-ui/react';
 import { LuUpload } from "react-icons/lu";
 import { useNavigate } from 'react-router';
 
@@ -79,12 +79,12 @@ const UpdateProfile = () => {
   };
 
   return (
-    <Box my={20} boxSizing="border-box" maxW="1140px" border="1px solid">
-      <HStack>
-        <Heading textAlign="center" my={10} fontWeight="bold" fontSize="28px" maxW="30%">
+    <Container my={20} boxSizing="border-box"> 
+      <VStack shadow="1px 1px 15px 5px rgb(75, 75, 79)" rounded={8}>
+        <Heading textAlign="center" my={4} px={2} fontWeight="bold" fontSize="24px" maxW="70%">
           Update your information
         </Heading>
-        <Center width="70%" border="1px solid">
+        <VStack width="70%">
           {accounts.length > 0 ? (
             accounts.map((account) => (
               <Box key={account.id} width="80%" p={8}>
@@ -107,11 +107,23 @@ const UpdateProfile = () => {
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
                       />
+                      {/* <Box>
+                        <input
+                            type="file"
+                            id="file"
+                            accept="image/*"
+                            onChange={(e) => setProfileImg(e.target.files[0])}
+                        />
+                    </Box> */}
+                    
                       <FileUpload.Root
                         maxW="xl"
                         alignItems="stretch"
                         maxFiles={1}
-                        onFiles={(files) => setProfileImg(files[0])}
+                        type="file"
+                        id="file"
+                        accept="image/*"
+                        onChange={(e) => setProfileImg(e.target.files[0])}
                       >
                         <FileUpload.HiddenInput />
                         <FileUpload.Dropzone>
@@ -126,6 +138,11 @@ const UpdateProfile = () => {
                         <FileUpload.List />
                       </FileUpload.Root>
                       <Button onClick={() => handleUpdateProfile(account.id)}>Update</Button>
+                      {profile_img && (
+                        <Box>
+                            <strong>Selected file:</strong> {profile_img.name}
+                        </Box>
+                    )}
                     </VStack>
                 ) : (
                   <Box>No account</Box>
@@ -135,9 +152,9 @@ const UpdateProfile = () => {
           ) : (
             <Box>No accounts found</Box>
           )}
-        </Center>
-      </HStack>
-    </Box>
+        </VStack>
+      </VStack>
+    </Container>
   );
 };
 
