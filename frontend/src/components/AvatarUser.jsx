@@ -52,7 +52,7 @@ const AvatarUser = () => {
         {profileImg ?
           (
             <Avatar.Root shape="full" size="lg">
-                <Avatar.Fallback name="Random User" />
+                <Avatar.Fallback name={"Random User"} />
                 <Avatar.Image src={profileImg} />
             </Avatar.Root>
           )

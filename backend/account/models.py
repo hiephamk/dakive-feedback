@@ -15,6 +15,9 @@ class Account(models.Model):
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     birth_date = models.DateField(null=True, blank=True)
     bio = models.TextField(null=True, blank=True)
+    is_owner = models.BooleanField(default=False)
+    is_manager = models.BooleanField(default=False)
+    is_employee = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

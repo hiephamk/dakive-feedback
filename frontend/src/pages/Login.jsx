@@ -8,6 +8,8 @@ import {PasswordInput} from "../components/ui/password-input"
 
 
 const Login = () => {
+  const { user, isLoading, isError, isSuccess , userInfo} = useSelector((state) => state.auth)
+
 
     const [formData, setFormData] = useState({
         "email": "",
@@ -18,8 +20,6 @@ const Login = () => {
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
-
-    const { user, isLoading, isError, isSuccess } = useSelector((state) => state.auth)
 
     const handleChange = (e) => {
         setFormData((prev) => ({
@@ -41,18 +41,19 @@ const Login = () => {
 
 
     useEffect(() => {
-        if (isError) {
-            //toast.error(message)
-        }
+      if (isError) {
+        alert("login failed");
+      }
+  
+      if (isSuccess || user) {
+          navigate( "/dashboard")
+      }
 
-        if (isSuccess || user) {
-            navigate("/dashboard")
-        }
+      dispatch(reset());
+      dispatch(getUserInfo());
+  
+    }, [isError, isSuccess, user, email, navigate, dispatch]);
 
-        dispatch(reset())
-        dispatch(getUserInfo())
-
-    }, [isError, isSuccess, user, navigate, dispatch])
   return (
     <Container maxW="1140px">
       <Center flexBasis="50%">
@@ -93,3 +94,4 @@ const Login = () => {
 }
 
 export default Login
+

@@ -1,37 +1,33 @@
-import { Box, Container, Text, Spinner, HStack } from '@chakra-ui/react';
+import { useEffect } from 'react';
+
 import { useColorModeValue } from '../components/ui/color-mode';
-import { Link, Outlet } from 'react-router';
 import { useSelector } from 'react-redux';
 import useProfile from '../services/ProfileHook';
+import NavDashboard from '../components/NavDashboard';
+
+import { useNavigate, Link, Outlet } from 'react-router';
+import { Box, Container, VStack, HStack} from '@chakra-ui/react';
+
 
 const Dashboard = () => {
-  const { user, userInfo } = useSelector((state) => state.auth); 
   const mainBg = useColorModeValue('gray.50', 'black');
-  
-  const { accounts,} = useProfile(user);
+  let navigate = useNavigate();
 
-  console.log("accounts:", accounts);
-  console.log("userInfo.id:", userInfo?.id);
+  const { userInfo } = useSelector(state => state.auth);
+  const{is_owner, full_name } = useProfile(userInfo?.id)
+
+  console.log("is_owner:", is_owner);
+  console.log("full name", full_name);
 
   return (
-    <HStack my={10}>
-      <Container width="20%" maxW="container.sm" py={4}>
-      </Container>
+    <Container fluid>
+      <NavDashboard/>
+      <Box maxW="1440px">
+        <Outlet/>
+      </Box>
+    </Container>
+  )
 
-      <Container
-        height="85vh"
-        width={['100%', '60%']}
-        maxW="container.lg"
-        rounded={8}
-        bg={mainBg}
-        shadow="3px 3px 15px 5px rgb(75, 75, 79)"
-        my={4}
-      >
-        <Outlet />
-      </Container>
-      <Container width={['100%', '20%']} maxW="container.sm" />
-    </HStack>
-  );
 };
 
 export default Dashboard;

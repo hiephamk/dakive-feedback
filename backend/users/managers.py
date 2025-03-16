@@ -12,7 +12,7 @@ class CustomUserManager(BaseUserManager):
         except ValidationError:
             raise ValueError(_("You must provide a valid email"))
 
-    def create_user(self, first_name, last_name, email, password, **extra_fields):
+    def create_user(self, first_name, last_name, email, password,**extra_fields):
 
         if not first_name:
             raise ValueError(_("Users must submit a first name"))
@@ -34,7 +34,7 @@ class CustomUserManager(BaseUserManager):
         )
 
         user.set_password(password)
-        # extra_fields.setdefault("is_staff", False)
+        extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_superuser", False)
 
         user.save()
