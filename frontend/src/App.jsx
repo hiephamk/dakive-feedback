@@ -25,6 +25,7 @@ import Feedback from "./components/RoomOwner/Feedback";
 import CreateRoom from "./components/RoomOwner/CreateRoom";
 import RoomList from "./components/RoomOwner/RoomList";
 import CreateRoomReport from "./components/RoomOwner/CreateRoomReport";
+import UpadateBuilding from "./components/BuildingManagement/UpadateBuilding";
 
 
 function App() {
@@ -62,6 +63,7 @@ function App() {
           <Route path="/management/report" element={<Report/>}/>
           <Route path="/management/add_organization" element={<Organizations/>}/>
           <Route path="/management/building-list" element={<BuildingList/>}/>    
+          <Route path="/management/building-update" element={<UpadateBuilding/>}/>    
         </Route>
           <Route path="*" element={<NotFound/>}/>
       </Routes>

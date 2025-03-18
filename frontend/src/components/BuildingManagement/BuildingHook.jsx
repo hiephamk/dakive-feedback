@@ -23,6 +23,7 @@ const useBuilding = () => {
             const response = await axios.get(url, config)
             console.log("Building list data: ", response.data)
             setBuildings(response.data)
+            
         }catch(error) {
           console.error("list building error:", error.response?.data || error.message);
           alert("Cannot list buildings");

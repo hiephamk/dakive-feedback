@@ -4,31 +4,43 @@ import { useSelector } from 'react-redux'
 import useAccessToken from '../../services/token'
 import { Box , HStack, Image, Flex, Center} from '@chakra-ui/react'
 import { Link } from 'react-router-dom'
-
+import useOrganization from './OrganizationHook'
+import useBuilding from './BuildingHook'
 
 const BuildingList = () => {
     const {user, userInfo} = useSelector(state => state.auth)
     const accessToken = useAccessToken(user)
+    // const {buildings} = useBuilding()
+    // const {organizations} = useOrganization()
 
     const [buildings, setBuildings] = useState([])
+    // const [buildingId, setBuildingId] = useState('')
+    // const [organinzationId, setOrganizationId] = useState('')
 
-    const url = import.meta.env.VITE_BUILDING_LIST_URL
-    const config = {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json"
-        },
-    }
+    // const url = import.meta.env.VITE_BUILDING_LIST_URL
+    // const config = {
+    //     headers: {
+    //         Authorization: `Bearer ${accessToken}`,
+    //         "Content-Type": "application/json"
+    //     },
+    // }
     const ListBuilding = async()=>{
         if(!accessToken || !userInfo?.id) return
+        const url = import.meta.env.VITE_BUILDING_LIST_URL
         try {
-            const res = await axios.get(url, config)
+            const res = await axios.get(url, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                },
+            })
             const buildings = res.data.filter(building => building.owner === userInfo.id)
             setBuildings(buildings)
         }catch(error){
             alert("Cannot list the building", error.response?.data || error.message)
         }
     }
+
     useEffect(()=>{
         if(accessToken && userInfo?.id){
             ListBuilding()
@@ -59,6 +71,9 @@ const BuildingList = () => {
                                 </Box>
                             </Center>
                         </Flex>
+                        <Box>
+
+                        </Box>
                     </Box>
                 ))
             ):(
@@ -68,6 +83,9 @@ const BuildingList = () => {
                 </Box>
             )
         }
+        <Box>
+            <Link to="/management/building-update">Update Building</Link>
+        </Box>
 
     </Flex>
   )
