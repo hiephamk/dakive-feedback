@@ -26,6 +26,7 @@ import CreateRoom from "./components/RoomOwner/CreateRoom";
 import RoomList from "./components/RoomOwner/RoomList";
 import CreateRoomReport from "./components/RoomOwner/CreateRoomReport";
 import UpadateBuilding from "./components/BuildingManagement/UpadateBuilding";
+import RoomReportOwner from "./components/RoomOwner/RoomReportOwner"
 
 
 function App() {
@@ -50,8 +51,6 @@ function App() {
         <Route path="/room" element={<PrivateRoute element={<RoomOwnerDashboard/>}/>}>
           <Route index element={<HomeRoomOwner/>}/>
           <Route path="/room/home" element={<HomeRoomOwner/>}/>
-          <Route path="/room/feedback" element={<Feedback/>}/>
-          <Route path="/room/create-room" element={<CreateRoom/>}/>
           <Route path="/room/room-list" element={<RoomList/>}/>
           <Route path="/room/room-report" element={<CreateRoomReport/>}/>
           {/* <Route path="*" element={<NotFound/>}/> */}
@@ -63,8 +62,11 @@ function App() {
           <Route path="/management/report" element={<Report/>}/>
           <Route path="/management/add_organization" element={<Organizations/>}/>
           <Route path="/management/building-list" element={<BuildingList/>}/>    
-          <Route path="/management/building-update" element={<UpadateBuilding/>}/>    
+          <Route path="/management/building-update" element={<UpadateBuilding/>}/>       
+          <Route path="/management/create-room" element={<CreateRoom/>}/>
+          <Route path="/management/feedback/create-form/:roomId" element={<RoomReportOwner/>}/>
         </Route>
+          <Route path="/room/feedback/:roomId" element={<CreateRoomReport/>}/>
           <Route path="*" element={<NotFound/>}/>
       </Routes>
     </Router>

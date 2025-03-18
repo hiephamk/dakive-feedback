@@ -56,16 +56,22 @@ const NavBar = () => {
             <Portal>
               <Menu.Positioner>
                 <Menu.Content>
-                  <Menu.Item value="new-txt-a">
-                    <Link to="/management/add_organization">Create Organization</Link>
-                                
-                  </Menu.Item>
-                  <Menu.Item value="new-file-a">
-                  <Link to="/management/add_building">Create Building</Link>
                   
-                  </Menu.Item>
+                  
                   <Menu.Item value="new-win-a">
                   <Link to="/management/building-list">List of building</Link>
+                  </Menu.Item>
+                  <Menu.Item value="new-txt-a">
+                    <Link to="/management/add_organization">Create Organization</Link>                                
+                  </Menu.Item>
+                  <Menu.Item value="new-file-a">
+                  <Link to="/management/add_building">Create Building</Link>                 
+                  </Menu.Item>
+                  <Menu.Item value="new-win-a">
+                  <Link to="/management/create-room">Create rooms</Link>
+                  </Menu.Item>
+                  <Menu.Item value="new-win-a">
+                  <Link to="/management/feedback/create-form/${roomId}">Create room feedback</Link>
                   </Menu.Item>
                 </Menu.Content>
               </Menu.Positioner>
