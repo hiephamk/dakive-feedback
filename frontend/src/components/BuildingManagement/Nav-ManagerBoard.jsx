@@ -55,23 +55,42 @@ const NavBar = () => {
             </Menu.Trigger>
             <Portal>
               <Menu.Positioner>
-                <Menu.Content>
+                <Menu.Content>            
                   <Menu.Item value="new-txt-a">
-                    <Link to="/management/add_organization">Create Organization</Link>
-                                
+                    <Link to="/management/add_organization">Create Organization</Link>                                
                   </Menu.Item>
                   <Menu.Item value="new-file-a">
-                  <Link to="/management/add_building">Create Building</Link>
-                  
+                  <Link to="/management/add_building">Create Building</Link>                 
                   </Menu.Item>
                   <Menu.Item value="new-win-a">
-                  <Link to="/management/building-list">List of building</Link>
+                  <Link to="/management/create-room">Create rooms</Link>
                   </Menu.Item>
                 </Menu.Content>
               </Menu.Positioner>
             </Portal>
           </Menu.Root>
-          <NavLink to="/management/report">Reports</NavLink>
+          <Menu.Root>
+            <Menu.Trigger asChild>
+              <NavLink variant="outline" fontSize={22} fontWeight="bold">
+                Reports
+              </NavLink>
+            </Menu.Trigger>
+            <Portal>
+              <Menu.Positioner>
+                <Menu.Content>            
+                <Menu.Item value="new-win-a">
+                    <Link to="/management/building-list">List of building</Link> 
+                  </Menu.Item>
+                  <Menu.Item value="new-win-a">
+                    <Link to="/management/report/table">Table</Link>
+                  </Menu.Item>
+                  <Menu.Item value="new-win-a">
+                    <Link to="/management/report/chart">Chart</Link>
+                  </Menu.Item>
+                </Menu.Content>
+              </Menu.Positioner>
+            </Portal>
+          </Menu.Root>
           <MenuRoot>
             <MenuTrigger asChild>
               <Button variant="outline" size="sm" borderColor={btnColor}>

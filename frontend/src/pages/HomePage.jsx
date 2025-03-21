@@ -22,9 +22,6 @@ const HomePage = () => {
                 <Box shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={4} fontSize={24} rounded={5}>
                   <Link to="/management/home">For the Building Owner</Link>
                 </Box>
-                <Box shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={4} fontSize={24} rounded={5}>
-                  <Link to="/room/home">For the Room Owner</Link>
-                </Box>
               </Flex>
             </Center>
           </VStack>

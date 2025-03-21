@@ -13,7 +13,7 @@ const ManagementBoard = () => {
 
   return (
     <Container mt={4}>
-        <Box border="1px solid" rounded={8} mx={4} shadow="3px 3px 15px 5px rgb(75, 75, 79)">
+        <Box rounded={8} mx={4} shadow="3px 3px 15px 5px rgb(75, 75, 79)">
           <NavBar />
         </Box>
         <Box>
