@@ -55,12 +55,7 @@ const NavBar = () => {
             </Menu.Trigger>
             <Portal>
               <Menu.Positioner>
-                <Menu.Content>
-                  
-                  
-                  <Menu.Item value="new-win-a">
-                  <Link to="/management/building-list">List of building</Link>
-                  </Menu.Item>
+                <Menu.Content>            
                   <Menu.Item value="new-txt-a">
                     <Link to="/management/add_organization">Create Organization</Link>                                
                   </Menu.Item>
@@ -70,14 +65,32 @@ const NavBar = () => {
                   <Menu.Item value="new-win-a">
                   <Link to="/management/create-room">Create rooms</Link>
                   </Menu.Item>
+                </Menu.Content>
+              </Menu.Positioner>
+            </Portal>
+          </Menu.Root>
+          <Menu.Root>
+            <Menu.Trigger asChild>
+              <NavLink variant="outline" fontSize={22} fontWeight="bold">
+                Reports
+              </NavLink>
+            </Menu.Trigger>
+            <Portal>
+              <Menu.Positioner>
+                <Menu.Content>            
+                <Menu.Item value="new-win-a">
+                    <Link to="/management/building-list">List of building</Link> 
+                  </Menu.Item>
                   <Menu.Item value="new-win-a">
-                  <Link to="/management/feedback/create-form/${roomId}">Create room feedback</Link>
+                    <Link to="/management/report/table">Table</Link>
+                  </Menu.Item>
+                  <Menu.Item value="new-win-a">
+                    <Link to="/management/report/chart">Chart</Link>
                   </Menu.Item>
                 </Menu.Content>
               </Menu.Positioner>
             </Portal>
           </Menu.Root>
-          <NavLink to="/management/report">Reports</NavLink>
           <MenuRoot>
             <MenuTrigger asChild>
               <Button variant="outline" size="sm" borderColor={btnColor}>

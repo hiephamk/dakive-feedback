@@ -21,16 +21,16 @@ import Report from "./components/BuildingManagement/Report";
 import HomePage from "./pages/HomePage";
 import Organizations from "./components/BuildingManagement/Organizations";
 import BuildingList from "./components/BuildingManagement/BuildingList";
-import Feedback from "./components/RoomOwner/Feedback";
 import CreateRoom from "./components/RoomOwner/CreateRoom";
 import RoomList from "./components/RoomOwner/RoomList";
 import CreateRoomReport from "./components/RoomOwner/CreateRoomReport";
 import UpadateBuilding from "./components/BuildingManagement/UpadateBuilding";
 import RoomReportOwner from "./components/RoomOwner/RoomReportOwner"
-
+import RoomReportAnalytics from "./components/BuildingManagement/RoomReportAnalytics"
+import ReportByRoom from "./components/BuildingManagement/ReportByRoom";
+import BuildingReports from "./components/BuildingManagement/BuildingReports"
 
 function App() {
-
   return (
     <Router>
       {/* <Nav/> */}
@@ -48,23 +48,25 @@ function App() {
           <Route path="/dashboard/profile" element={<Account/>}/>
           <Route path="/dashboard/update-profile" element={<UpdateProfile/>}/>
         </Route>
-        <Route path="/room" element={<PrivateRoute element={<RoomOwnerDashboard/>}/>}>
+        {/* <Route path="/room" element={<PrivateRoute element={<RoomOwnerDashboard/>}/>}>
           <Route index element={<HomeRoomOwner/>}/>
           <Route path="/room/home" element={<HomeRoomOwner/>}/>
-          <Route path="/room/room-list" element={<RoomList/>}/>
           <Route path="/room/room-report" element={<CreateRoomReport/>}/>
-          {/* <Route path="*" element={<NotFound/>}/> */}
-        </Route>
+        </Route> */}
         <Route path="/management" element={<PrivateRoute element={<ManagementBoard/>}/>}>
           <Route index element={<HomeBuidingManagement/>}/>
           <Route path="/management/home" element={<HomeBuidingManagement/>}/>
           <Route path="/management/add_building" element={<Building/>}/>
-          <Route path="/management/report" element={<Report/>}/>
+          <Route path="/management/report/room/:roomId" element={<ReportByRoom/>}/>
           <Route path="/management/add_organization" element={<Organizations/>}/>
           <Route path="/management/building-list" element={<BuildingList/>}/>    
           <Route path="/management/building-update" element={<UpadateBuilding/>}/>       
           <Route path="/management/create-room" element={<CreateRoom/>}/>
-          <Route path="/management/feedback/create-form/:roomId" element={<RoomReportOwner/>}/>
+          <Route path="/management/feedback/create-form/:buildingId/:roomId" element={<RoomReportOwner/>}/>
+          <Route path="/management/room-list/:buildingId" element={<RoomList/>}/>
+          <Route path="/management/report/chart" element={<RoomReportAnalytics/>}/>
+          <Route path="/management/report/table" element={<Report/>}/>
+          <Route path="/management/building-reports/:buildingId" element={<BuildingReports/>}/>
         </Route>
           <Route path="/room/feedback/:roomId" element={<CreateRoomReport/>}/>
           <Route path="*" element={<NotFound/>}/>

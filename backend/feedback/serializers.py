@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Room_Report
 
+
 class RoomReportSerializer(serializers.ModelSerializer):
     room_name = serializers.SerializerMethodField()
     building_name = serializers.SerializerMethodField()

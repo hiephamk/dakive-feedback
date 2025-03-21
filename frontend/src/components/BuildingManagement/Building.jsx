@@ -119,7 +119,7 @@ const Building = () => {
                                 value={organizationId}
                                 onChange={(e) => setOrganizationId(e.target.value)}
                             >
-                        
+                                <option>Choose an organization</option>
                                 {organizations.length>0 ? (organizations.map((org) => (
                                     <option key={org.id} value={org.id}>
                                         {org.name}
@@ -129,16 +129,6 @@ const Building = () => {
                             </select>
                         </Box>
                     </HStack>
-
-                    {/* File Upload */}
-                    {/* <Box>
-                        <input
-                            type="file"
-                            id="file"
-                            accept="image/*"
-                            onChange={(e) => setBuildingImage(e.target.files[0])}
-                        />
-                    </Box> */}
                     <Box>
                         <FileUpload.Root
                             maxW="xl"

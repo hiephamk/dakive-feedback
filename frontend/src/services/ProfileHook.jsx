@@ -41,7 +41,6 @@ const useProfile = (userId) => {
   
     try {
       const res = await axios.get(url, config);
-      console.log("API Response Data:", res.data);
   
       if (Array.isArray(res.data) && res.data.length > 0) {
         const userProfile = res.data.find((profile) => profile.user === userId);
