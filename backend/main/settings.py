@@ -18,10 +18,10 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # React app
-    "http://127.0.0.1:5173",  # React app
+    "http://localhost:3000",  # React app
+    "http://127.0.0.1:3000",  # React app
 ]
 
 # Application definition

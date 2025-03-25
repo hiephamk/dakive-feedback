@@ -10,7 +10,7 @@ const CreateRoom = () => {
     const accessToken = useAccessToken(user);
 
     // Fetch organizations
-    const {buildings} = useBuilding();
+    const {buildings} = useBuilding(userInfo?.id);
 
     console.log("building list", buildings)
 
@@ -19,7 +19,7 @@ const CreateRoom = () => {
         name: "",
         floor: "",
         owner: userInfo?.id || "",
-        building: buildingId, // Use lowercase key name
+        building: buildingId || "", // Use lowercase key name
     });
 
     // Update formData when organizationId changes
@@ -47,9 +47,8 @@ const CreateRoom = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(url, formData, config);
+            await axios.post(url, formData, config);
             alert("Created the room successfully");
-            console.log("Room created:", response.data);
             setFormData({
                 name: "",
                 floor: "",

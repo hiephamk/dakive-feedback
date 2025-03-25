@@ -6,7 +6,7 @@ const useAccessToken = (user) => {
   const [accessToken, setAccessToken] = useState(user?.access || null);
 
   const refreshAccessToken = async () => {
-    const refreshUrl = `http://127.0.0.1/api/token/refresh/`;
+    const refreshUrl = `${import.meta.env.VITE_BACKEND_URL}/api/token/refresh/`;
     try {
       const res = await axios.post(refreshUrl, { refresh: user.refresh });
       setAccessToken(res.data.access);

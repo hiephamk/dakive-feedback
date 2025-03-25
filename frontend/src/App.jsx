@@ -16,7 +16,6 @@ import Account from "./pages/Account";
 import UpdateProfile from "./components/UpdateProfile";
 import ManagementBoard from "./pages/ManagementBoard";
 import Building from "./components/BuildingManagement/Building"
-import RoomOwnerDashboard from "./pages/RoomOwnerDashboard";
 import Report from "./components/BuildingManagement/Report";
 import HomePage from "./pages/HomePage";
 import Organizations from "./components/BuildingManagement/Organizations";
@@ -24,11 +23,12 @@ import BuildingList from "./components/BuildingManagement/BuildingList";
 import CreateRoom from "./components/RoomOwner/CreateRoom";
 import RoomList from "./components/RoomOwner/RoomList";
 import CreateRoomReport from "./components/RoomOwner/CreateRoomReport";
-import UpadateBuilding from "./components/BuildingManagement/UpadateBuilding";
 import RoomReportOwner from "./components/RoomOwner/RoomReportOwner"
 import RoomReportAnalytics from "./components/BuildingManagement/RoomReportAnalytics"
 import ReportByRoom from "./components/BuildingManagement/ReportByRoom";
 import BuildingReports from "./components/BuildingManagement/BuildingReports"
+import UpdateBuilding from "./components/BuildingManagement/UpadateBuilding";
+import UpdateRoom from "./components/RoomOwner/UpdateRoom";
 
 function App() {
   return (
@@ -41,32 +41,25 @@ function App() {
         <Route path="/activate/:uid/:token" element={<Activate/>} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/password-reset/confirm/:uid/:token" element={<ResetPasswordConfirm/>} />
-        <Route path="/dashboard" element={<PrivateRoute element={<Dashboard/>}/>}>
+        <Route path="/home" element={<PrivateRoute element={<Dashboard/>}/>}>
           <Route index element={<HomePage/>}/>
-          <Route path="/dashboard/about" element={<About/>}/>
-          <Route path="/dashboard/community" element={<Community/>}/>
-          <Route path="/dashboard/profile" element={<Account/>}/>
-          <Route path="/dashboard/update-profile" element={<UpdateProfile/>}/>
-        </Route>
-        {/* <Route path="/room" element={<PrivateRoute element={<RoomOwnerDashboard/>}/>}>
-          <Route index element={<HomeRoomOwner/>}/>
-          <Route path="/room/home" element={<HomeRoomOwner/>}/>
-          <Route path="/room/room-report" element={<CreateRoomReport/>}/>
-        </Route> */}
-        <Route path="/management" element={<PrivateRoute element={<ManagementBoard/>}/>}>
-          <Route index element={<HomeBuidingManagement/>}/>
-          <Route path="/management/home" element={<HomeBuidingManagement/>}/>
-          <Route path="/management/add_building" element={<Building/>}/>
-          <Route path="/management/report/room/:roomId" element={<ReportByRoom/>}/>
-          <Route path="/management/add_organization" element={<Organizations/>}/>
-          <Route path="/management/building-list" element={<BuildingList/>}/>    
-          <Route path="/management/building-update" element={<UpadateBuilding/>}/>       
-          <Route path="/management/create-room" element={<CreateRoom/>}/>
-          <Route path="/management/feedback/create-form/:buildingId/:roomId" element={<RoomReportOwner/>}/>
-          <Route path="/management/room-list/:buildingId" element={<RoomList/>}/>
-          <Route path="/management/report/chart" element={<RoomReportAnalytics/>}/>
-          <Route path="/management/report/table" element={<Report/>}/>
-          <Route path="/management/building-reports/:buildingId" element={<BuildingReports/>}/>
+          {/* <Route path="/home" element={<HomeBuidingManagement/>}/> */}
+          <Route path="/home/about" element={<About/>}/>
+          <Route path="/home/community" element={<Community/>}/>
+          <Route path="/home/profile" element={<Account/>}/>
+          <Route path="/home/update-profile" element={<UpdateProfile/>}/>
+          <Route path="/home/management/add_building" element={<Building/>}/>
+          <Route path="/home/management/report/room/:roomId" element={<ReportByRoom/>}/>
+          <Route path="/home/management/add_organization" element={<Organizations/>}/>
+          <Route path="/home/management/building-list" element={<BuildingList/>}/>          
+          <Route path="/home/management/create-room" element={<CreateRoom/>}/>
+          <Route path="/home/management/feedback/create-form/:buildingId/:roomId" element={<RoomReportOwner/>}/>
+          <Route path="/home/management/room-list/:buildingId" element={<RoomList/>}/>
+          <Route path="/home/management/report/chart" element={<RoomReportAnalytics/>}/>
+          <Route path="/home/management/report/table" element={<Report/>}/>
+          <Route path="/home/management/building-reports/:buildingId" element={<BuildingReports/>}/>
+          <Route path="/home/management/building/update/:buildingId" element={<UpdateBuilding/>}/>
+          <Route path="/home/management/room/update/:roomId" element={<UpdateRoom/>}/>
         </Route>
           <Route path="/room/feedback/:roomId" element={<CreateRoomReport/>}/>
           <Route path="*" element={<NotFound/>}/>

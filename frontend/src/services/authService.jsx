@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const BACKEND_DOMAIN = "http://localhost:8000"
+const BACKEND_DOMAIN = import.meta.env.VITE_BACKEND_URL
 
 const REGISTER_URL = `${BACKEND_DOMAIN}/api/auth/users/`
 const LOGIN_URL = `${BACKEND_DOMAIN}/api/auth/jwt/create/`

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useColorModeValue } from '../components/ui/color-mode';
 import { useSelector } from 'react-redux';
 import useProfile from '../services/ProfileHook';
-import NavDashboard from '../components/NavDashboard';
+import NavDashboard from '../components/NavBars/Nav-Dashboard';
 
 import { useNavigate, Link, Outlet } from 'react-router';
 import { Box, Container, VStack, HStack} from '@chakra-ui/react';
