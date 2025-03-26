@@ -3,13 +3,14 @@ import { useSelector } from 'react-redux';
 import useAccessToken from '../../services/token';
 import {Container, Stack, Box, Input,HStack, VStack, Button, Center, Heading, FileUpload, Icon, Flex } from '@chakra-ui/react';
 import axios from 'axios';
-import BuildingList from './BuildingList';
 import useOrganization from './OrganizationHook';
 import { LuUpload } from 'react-icons/lu';
+import { useNavigate } from 'react-router';
 
 const Building = () => {
     const { user, userInfo } = useSelector((state) => state.auth);
     const accessToken = useAccessToken(user);
+    const navigate = useNavigate()
 
     // Fetch organizations
     const { organizations } = useOrganization(userInfo?.id);
@@ -93,6 +94,7 @@ const Building = () => {
                 organization: organizationId || "",
             });
             setBuildingImage(null);
+            navigate('/home/management/building-list');
         } catch (error) {
             console.error("Error creating building:", error || error.message);
         }

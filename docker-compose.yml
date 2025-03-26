@@ -1,0 +1,58 @@
+version: "3.9"
+services:
+  backend:
+    build: ./backend
+    environment:
+      - DEBUG=True
+      - DJANGO_SETTINGS_MODULE=main.settings
+      - ENGINE_DB=django.db.backends.postgresql
+      - NAME_DB=mydb
+      - USER_DB=kingzarckier
+      - PASSWORD_DB=kingzarckier
+      - HOST_DB=db
+      - PORT_DB=5432
+    command: gunicorn main.wsgi:application -b 0.0.0.0:8000
+    # Remove direct port exposure since Nginx will handle traffic
+    depends_on:
+      - db
+    volumes:
+      - static_volume:/app/staticfiles  # Share staticfiles
+      - media_volume:/app/media  # Share media files
+    networks:
+      - app_network
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    volumes:
+      - static_volume:/usr/share/nginx/html/static  # Mount staticfiles for Nginx
+      - media_volume:/usr/share/nginx/html/media  # Mount media files for Nginx
+    networks:
+      - app_network
+
+  db:
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=mydb
+      - POSTGRES_USER=kingzarckier
+      - POSTGRES_PASSWORD=kingzarckier
+    ports:
+      - "5432:5432"  # Optional
+    networks:
+      - app_network
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume: 
+
+networks:
+  app_network:
+    driver: bridge
+

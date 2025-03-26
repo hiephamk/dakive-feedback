@@ -28,6 +28,7 @@ class RoomReportListView(generics.ListAPIView):
 
 class RoomReportAnalyticsView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def get(self, request):
         reports = Room_Report.objects.filter(building__owner=request.user)

@@ -85,7 +85,7 @@ const FetchProfile = () => {
         ))
       )}
     <Box mt={5}>
-      <Link to="/dashboard/update-profile">Update your information</Link>
+      <Link to="/home/update-profile">Update your information</Link>
     </Box>
 </Box>
   );

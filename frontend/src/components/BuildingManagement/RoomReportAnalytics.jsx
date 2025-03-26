@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import useAccessToken from '../../services/token';
 import axios from 'axios';
-import { Container, Box, Heading, Text, Flex, HStack, Wrap, WrapItem, VStack } from '@chakra-ui/react';
+import { Container, Box, Heading, Text, VStack, Wrap, WrapItem } from '@chakra-ui/react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -17,7 +17,7 @@ import {
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const Report = () => {
+const RoomReportAnalytics = () => {
   const { user, userInfo } = useSelector((state) => state.auth);
   const accessToken = useAccessToken(user);
   const [roomAnalytics, setRoomAnalytics] = useState([]);
@@ -37,23 +37,31 @@ const Report = () => {
           'Content-Type': 'application/json',
         },
       });
-      setRoomAnalytics(res.data);
+      const reportChart = res.data
+      if (reportChart.length > 0) {
+        setRoomAnalytics(reportChart);
+      } else {
+        console.warn("Unexpected response format:", res.data);
+        setRoomAnalytics([]);
+      }
     } catch (error) {
-      console.error('Fetch analytics error:', error.message);
-      setError('Failed to load analytics data. Please try again.');
+      console.error('Failed to fetch analytics:', error.message);
+      // setError('Failed to load analytics data. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (accessToken && userInfo?.id) {
+    if (accessToken) {
       fetchAnalytics();
     }
   }, [accessToken, userInfo?.id]);
 
-  // Chart options (shared across all charts)
+  // Chart options
   const chartOptions = {
+    responsive: true, // Ensure chart resizes with container
+    maintainAspectRatio: false, // Allow custom height
     scales: {
       y: {
         beginAtZero: true,
@@ -80,7 +88,7 @@ const Report = () => {
     },
   };
 
-  // Chart labels (shared across all charts)
+  // Chart labels
   const chartLabels = [
     'Temperature',
     'Air Quality',
@@ -130,30 +138,44 @@ const Report = () => {
   });
 
   return (
-    <Container m={4} mx="auto" my={4}>
-        <HStack gap={4} maxW="400px">
-              {loading ? (
-                <Text>Loading...</Text>
-              ) : error ? (
-                <Text color="red.500">{error}</Text>
-              ) : roomAnalytics.length > 0 ? (
-                roomAnalytics.map((room) => (
-                <Box key={room.id} minW="100%" border="1px solid" p={4}>
-                  <Heading size="md" mb={4}>
-                    Feedback for {room.room_name} in {room.building_name}
+    <Container maxW="container.xl" my={4}>
+      <VStack spacing={6} align="stretch">
+        <Heading size="lg" textAlign="center">Room Report Analytics</Heading>
+        {loading ? (
+          <Text textAlign="center">Loading...</Text>
+        ) : error ? (
+          <Text color="red.500" textAlign="center">{error}</Text>
+        ) : roomAnalytics.length > 0 ? (
+          <Wrap spacing={6} justify="center">
+            {roomAnalytics.map((room) => (
+              <WrapItem key={room.id}>
+                <Box 
+                  w={{ base: "100%", md: "400px" }} // Responsive width
+                  h="400px" // Fixed height for chart
+                  border="1px solid" 
+                  p={4} 
+                  borderRadius="md"
+                  boxShadow="md"
+                >
+                  <Heading size="md" mb={2}>
+                    {room.room_name} - {room.building_name}
                   </Heading>
-                  <Text mb={4}>
-                    Latest Report Date: {new Date(room.created_at).toLocaleDateString()}
+                  <Text mb={4} fontSize="sm">
+                    Latest Report: {new Date(room.created_at).toLocaleDateString()}
                   </Text>
-                  <Bar data={getChartData(room)} options={chartOptions} />
+                  <Box h="300px"> {/* Container for chart */}
+                    <Bar data={getChartData(room)} options={chartOptions} />
+                  </Box>
                 </Box>
-                ))
-              ) : (
-                <Text>No data available for any rooms</Text>
-              )}
-        </HStack>
+              </WrapItem>
+            ))}
+          </Wrap>
+        ) : (
+          <Text textAlign="center">No data available for any rooms</Text>
+        )}
+      </VStack>
     </Container>
   );
 };
 
-export default Report;
+export default RoomReportAnalytics;

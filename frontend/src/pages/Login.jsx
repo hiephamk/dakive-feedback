@@ -8,8 +8,7 @@ import {PasswordInput} from "../components/ui/password-input"
 
 
 const Login = () => {
-  const { user, isLoading, isError, isSuccess , userInfo} = useSelector((state) => state.auth)
-
+  const { user,isError, isSuccess} = useSelector((state) => state.auth)
 
     const [formData, setFormData] = useState({
         "email": "",
@@ -46,7 +45,7 @@ const Login = () => {
       }
   
       if (isSuccess || user) {
-          navigate( "/dashboard")
+          navigate( "/home")
       }
 
       dispatch(reset());

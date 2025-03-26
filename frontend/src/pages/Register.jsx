@@ -48,8 +48,7 @@ const Register = () => {
         if (isError) {
             alert("Registter has an error")
         }
-        if (isSuccess || user) {
-            navigate("/login")
+        if (isSuccess) {
             alert("An activation email has been sent to your email. Please check your email")
         }
         dispatch(reset())

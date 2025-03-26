@@ -11,7 +11,7 @@ const useUsers = (userId) => {
   const userDetail = async () => {
     if (!accessToken || !userInfo?.id) return;
     try {
-      const url = `http://127.0.0.1:8000/api/userdetails/${userId}/`;
+      const url = `${import.meta.env.VITE_BACKEND_URL}/api/userdetails/${userId}/`;
       const config = {
         headers: {
           Authorization: `Bearer ${accessToken}`,
