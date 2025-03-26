@@ -10,7 +10,6 @@ import {PasswordInput} from "../components/ui/password-input"
 const Login = () => {
   const { user,isError, isSuccess} = useSelector((state) => state.auth)
 
-
     const [formData, setFormData] = useState({
         "email": "",
         "password": "",
@@ -48,10 +47,7 @@ const Login = () => {
       if (isSuccess || user) {
           navigate( "/home")
       }
-      setFormData({
-        "email": "",
-        "password": "",
-    })
+
       dispatch(reset());
       dispatch(getUserInfo());
   
@@ -60,7 +56,7 @@ const Login = () => {
   return (
     <Container maxW="1140px">
       <Center flexBasis="50%">
-          <VStack maxW="500px" mt={100} rounded={8} p={8} border="1px solid" shadow="3px 3px 15px 5px rgb(75, 75, 79)">
+        <VStack maxW="500px" mt={100} rounded={8} p={8} border="1px solid" shadow="3px 3px 15px 5px rgb(75, 75, 79)">
           <Heading fontSize={24} >Login</Heading>
           <VStack p={4} rounded={8}>
             <Input

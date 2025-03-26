@@ -45,8 +45,8 @@ const NavBar = () => {
             <Image width="100px" bg="black" src="https://www.hamk.fi/wp-content/uploads/2024/01/HAMK_Logo_text_small_ENG_NEGA-1.svg"/>
           </Button>
           {/* <Image sizes='sm' src="https://www.hamk.fi/wp-content/uploads/2024/01/HAMK_Logo_text_small_ENG_NEGA-1.svg"/> */}
-          {/* <NavLink to="/home">Dashboard</NavLink> */}
-          <NavLink to="/home/management/home">Home</NavLink>
+          <NavLink to="/dashboard">Dashboard</NavLink>
+          <NavLink to="/management/home">Home</NavLink>
           <Menu.Root>
             <Menu.Trigger asChild>
               <NavLink variant="outline" fontSize={22} fontWeight="bold">
@@ -57,13 +57,13 @@ const NavBar = () => {
               <Menu.Positioner>
                 <Menu.Content>            
                   <Menu.Item value="new-txt-a">
-                    <Link to="/home/management/add_organization">Create Organization</Link>                                
+                    <Link to="/management/add_organization">Create Organization</Link>                                
                   </Menu.Item>
                   <Menu.Item value="new-file-a">
-                  <Link to="/home/management/add_building">Create Building</Link>                 
+                  <Link to="/management/add_building">Create Building</Link>                 
                   </Menu.Item>
                   <Menu.Item value="new-win-a">
-                  <Link to="/home/management/create-room">Create rooms</Link>
+                  <Link to="/management/create-room">Create rooms</Link>
                   </Menu.Item>
                 </Menu.Content>
               </Menu.Positioner>
@@ -79,13 +79,13 @@ const NavBar = () => {
               <Menu.Positioner>
                 <Menu.Content>            
                 <Menu.Item value="new-win-a">
-                    <Link to="/home/management/building-list">List of building</Link> 
+                    <Link to="/management/building-list">List of building</Link> 
                   </Menu.Item>
                   <Menu.Item value="new-win-a">
-                    <Link to="/home/management/report/table">Table</Link>
+                    <Link to="/management/report/table">Table</Link>
                   </Menu.Item>
                   <Menu.Item value="new-win-a">
-                    <Link to="/home/management/report/chart">Chart</Link>
+                    <Link to="/management/report/chart">Chart</Link>
                   </Menu.Item>
                 </Menu.Content>
               </Menu.Positioner>
@@ -119,7 +119,7 @@ const NavBar = () => {
                   <NavLink onClick={handleLogout}>Logout</NavLink>
                 </MenuItem>
                 <MenuItem>
-                  <NavLink to="/home/profile">Profile</NavLink>
+                  <NavLink to="/dashboard/profile">Profile</NavLink>
                 </MenuItem>
               </VStack>
             </MenuContent>
@@ -141,22 +141,22 @@ const NavBar = () => {
           </MenuTrigger>
           <MenuContent>
             <MenuItem value="new-txt-a">
-              <NavLink to="/home/management/home">Home</NavLink>
+              <NavLink to="/management/home">Home</NavLink>
             </MenuItem>
             <MenuItem value="new-win-a">
-              <NavLink to="/home/home/management/add_organization">Add Organizations</NavLink>
+              <NavLink to="/management/add_organization">Add Organizations</NavLink>
             </MenuItem>
             <MenuItem value="new-win-a">
-              <NavLink to="/home/management/add_building">Add Buildings</NavLink>
+              <NavLink to="/management/add_building">Add Buildings</NavLink>
             </MenuItem>
             <MenuItem value="new-win-a">
-              <NavLink to="/home/management/building-list">List of buildings</NavLink>
+              <NavLink to="/management/building-list">List of buildings</NavLink>
             </MenuItem>
             <MenuItem value="new-win-a">
-              <NavLink to="/home/management/report">Reports</NavLink>
+              <NavLink to="/management/report">Reports</NavLink>
             </MenuItem>
             <MenuItem value="new-win-a">
-              <NavLink to="/home/profile">Profile</NavLink>
+              <NavLink to="/dashboard/profile">Profile</NavLink>
             </MenuItem>
           </MenuContent>
         </MenuRoot>

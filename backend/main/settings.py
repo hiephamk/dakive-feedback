@@ -19,10 +19,11 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = ["*"]
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React app
-    "http://127.0.0.1:3000",  # React app
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:5173",  
+#     "http://127.0.0.1:5173",
+# ]
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
 AUTH_USER_MODEL = 'users.User'
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'account.apps.AccountConfig',
+    "corsheaders",
     "djoser",
     "users",
     "Building",
@@ -172,12 +174,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "static/"
-DATE_FORMAT = 'b d, Y, H'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']  # Source directory for custom static files
+STATIC_ROOT = BASE_DIR / 'staticfiles'    # Destination for collected files
+
 MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-
+#
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

@@ -51,14 +51,13 @@ const Organizations = () => {
     const handleSubmit = async (e) => {
       e.preventDefault();
       const requiredFields = {
-        name: "Building Name",
+        name: "Organization Name",
         street: "Street",
         city: "City",
         country: "Country",
         postal_code: "Postal Code",
         email:"Email",
         website:"Website",
-        owner: "Owner Name",
     };
     for (const field in requiredFields){
       if (!formData[field]){
