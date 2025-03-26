@@ -110,7 +110,7 @@ const UpdateBuilding = () => {
             });
 
             alert("Building updated successfully");
-            navigate('/management/building-list');
+            navigate('/home/management/building-list');
         } catch (error) {
             console.error("Error updating building:", error);
             alert("Failed to update building: " + (error.response?.data?.message || error.message));

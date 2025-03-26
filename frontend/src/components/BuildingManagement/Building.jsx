@@ -94,7 +94,7 @@ const Building = () => {
                 organization: organizationId || "",
             });
             setBuildingImage(null);
-            navigate('/management/building-list');
+            navigate('/home/management/building-list');
         } catch (error) {
             console.error("Error creating building:", error || error.message);
         }

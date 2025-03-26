@@ -17,6 +17,7 @@ services:
       - db
     volumes:
       - static_volume:/app/staticfiles  # Share staticfiles
+      - media_volume:/app/media  # Share media files
     networks:
       - app_network
 
@@ -29,6 +30,7 @@ services:
       - backend
     volumes:
       - static_volume:/usr/share/nginx/html/static  # Mount staticfiles for Nginx
+      - media_volume:/usr/share/nginx/html/media  # Mount media files for Nginx
     networks:
       - app_network
 
@@ -47,7 +49,8 @@ services:
 
 volumes:
   postgres_data:
-  static_volume:  # Named volume for static files
+  static_volume:
+  media_volume: 
 
 networks:
   app_network:

@@ -40,14 +40,14 @@ const BuildingList = () => {
     },[accessToken, userInfo?.id])
 
     const handleClickViewRoom = (buildingId) => {
-        navigate(`/management/room-list/${buildingId}`)
+        navigate(`/home/management/room-list/${buildingId}`)
     }
     const handleClickViewReport = (buildingId) => {
-        navigate(`/management/building-reports/${buildingId}`)
+        navigate(`/home/management/building-reports/${buildingId}`)
     }
     
     const handleUpdateBuilding = (building) => {
-        navigate(`/management/building/update/${building}`)
+        navigate(`/home/management/building/update/${building}`)
     }
     const handleDeleteBuilding = (building) => {
         if(!accessToken || !userInfo?.id) return

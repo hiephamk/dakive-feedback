@@ -71,7 +71,7 @@ const UpdateProfile = () => {
       setBio('');
       setBirthDate('');
       setProfileImg(null);
-      navigate("/dashboard/profile")
+      navigate("/home/profile")
     } catch (error) {
       console.error("Update was not successful", error);
       alert("Update was not successful");
