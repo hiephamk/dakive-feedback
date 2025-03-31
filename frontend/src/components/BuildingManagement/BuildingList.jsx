@@ -81,7 +81,7 @@ const BuildingList = () => {
                             <Center>
                                 <Box pl={2}>
                                     <Box fontWeight="bold" fontSize="18px">Name: {building.name}</Box>
-                                    {buildings.organization_name ? (
+                                    {building.organization_name ? (
                                         <Box>Owner: {building.organization_name}</Box>                                 
                                     ):(
                                         <Box>Owner: {building.owner_name}</Box>

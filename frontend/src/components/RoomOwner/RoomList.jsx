@@ -148,7 +148,7 @@ const RoomList = () => {
       ) : (
         <Box>
           <Heading>No rooms found</Heading>
-          <Link to="/management/create-room">Create rooms</Link>
+          <Link to="/home/management/create-room">Create rooms</Link>
         </Box>
       )}
     </HStack>

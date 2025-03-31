@@ -59,10 +59,10 @@ const CreateRoomReport = () => {
             <Box>
               <Center ref={qrCodeRef} my={4}>
                 <VStack>
-                  <QRCodeCanvas value={`http://localhost:5173/room/feedback/${roomId}`} size={128} />
+                  <QRCodeCanvas value={`http://localhost/room/feedback/${roomId}`} size={128} />
                 </VStack>
               </Center>
-              <Box w="100%">{`http://localhost:5173/room/feedback/${roomId}`}</Box>
+              <Box w="100%">{`http://localhost/room/feedback/${roomId}`}</Box>
               <HStack my={4}>
                 <Button onClick={downloadQRCode}>Download QRcode</Button>
                 <Button onClick={printQRCode}>Print QRCode</Button>

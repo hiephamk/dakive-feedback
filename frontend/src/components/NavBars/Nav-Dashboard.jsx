@@ -58,6 +58,9 @@ const NavDashboard = () => {
               <Menu.Positioner>
                 <Menu.Content>            
                   <Menu.Item value="new-txt-a">
+                  <Link to="/home/management/building-list">List of building</Link>                                
+                  </Menu.Item>
+                  <Menu.Item value="new-txt-a">
                     <Link to="/home/management/add_organization">Create Organization</Link>                                
                   </Menu.Item>
                   <Menu.Item value="new-file-a">
@@ -128,7 +131,7 @@ const NavDashboard = () => {
           
           <IconButton onClick={toggleColorMode}>
             {
-              colorMode === 'light' ? <LuSun/> : <LuMoon/>
+              colorMode === 'light' ? <LuMoon/> : <LuSun/>
             }
           </IconButton>
   

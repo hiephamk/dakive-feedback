@@ -43,7 +43,7 @@ services:
       - POSTGRES_USER=kingzarckier
       - POSTGRES_PASSWORD=kingzarckier
     ports:
-      - "5432:5432"  # Optional
+      - "5433:5432"  # Optional
     networks:
       - app_network
 
