@@ -53,7 +53,7 @@ const CreateRoom = () => {
                 name: "",
                 floor: "",
                 owner: userInfo?.id || "",
-                building: "", 
+                building: buildingId, 
             });
         } catch (error) {
             console.error("Error creating room:", error.response?.data || error.message);

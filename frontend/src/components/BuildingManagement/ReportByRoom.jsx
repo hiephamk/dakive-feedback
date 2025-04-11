@@ -76,47 +76,7 @@ const ReportByRoom = () => {
   // }
   return (
 
-    <Container maxW="container.xl" p={5}>
-      {/* <Box>
-        <HStack>
-          <label id="room">Room </label>
-          <select
-            name="room"
-            id="room"
-            value={roomId}
-            onChange={(e) => setRoomId(e.target.value)}
-            style={{height:'100%', padding:'5px', border:"1px solid", borderRadius:"5px", width:"100%"}}
-          >
-            <option value="">Choose a building</option>
-            {
-              rooms.map((room) => (
-                <option key={room.id} value={room.id}>
-                  {room.name}
-                </option>
-              ))
-            }
-          </select>
-        </HStack>
-        <HStack>
-          <label id="building">Building: </label>
-            <select
-              name="building"
-              id="building"
-              value={buildingId}
-              onChange={(e) => setBuildingId(e.target.value)}
-              style={{height:'100%', padding:'5px', border:"1px solid", borderRadius:"5px", width:"100%"}}
-          >
-            <option value="">Choose a building</option>
-            {
-              buildings.map((building) => (
-                <option key={building.id} value={building.id}>
-                  {building.name}
-                </option>
-              ))
-            }
-          </select>
-        </HStack>
-      </Box> */}
+    <Container maxW="100%" p={2} mx="auto" justifyContent="center">
       {
         roomId && (
           <Table.Root size="md" shadow="3px 3px 15px 5px rgb(75, 75, 79)" rounded="8">
@@ -166,57 +126,57 @@ const ReportByRoom = () => {
         <Table.Body>
           {reports.length > 0 ? (reports.map((report) => (
             <Table.Row>
-            <Table.Cell width="10%" textAlign="center" border="1px solid">
+            <Table.Cell width="auto" textAlign="center" border="1px solid">
               {report.building_name || '-'}              
             </Table.Cell>
-            <Table.Cell width="10%" textAlign="center" border="1px solid">
+            <Table.Cell width="auto" textAlign="center" border="1px solid">
               {report.room_name || '-'}
             </Table.Cell>
-            <Table.Cell width="10%" textAlign="center" border="1px solid">
+            <Table.Cell width="auto" textAlign="center" border="1px solid">
               {renderRating(report.temperature_rating)}
               <Box>Rating: {report.temperature_rating}</Box>
               <Box>Note: {report.temperature_notes}</Box>
             </Table.Cell>
-            <Table.Cell width="10%" textAlign="center" border="1px solid">
+            <Table.Cell width="auto" textAlign="center" border="1px solid">
               {renderRating(report.air_quality_rating)}
               <Box>Rating: {report.air_quality_rating}</Box>
               <Box>Note: {report.air_quality_notes}</Box>
             </Table.Cell>
-            <Table.Cell width="10%" textAlign="center" border="1px solid">
+            <Table.Cell width="auto" textAlign="center" border="1px solid">
               {renderRating(report.draft_rating)}
               <Box>Rating: {report.draft_rating}</Box>
               <Box>Note: {report.draft_notes}</Box>
             </Table.Cell>
-            <Table.Cell width="10%" textAlign="center" border="1px solid">
+            <Table.Cell width="auto" textAlign="center" border="1px solid">
               {renderRating(report.odor_rating)}
               <Box>Rating: {report.odor_rating}</Box>
               <Box>Note: {report.odor_notes}</Box>
             </Table.Cell>
-            <Table.Cell width="10%" textAlign="center" border="1px solid">
+            <Table.Cell width="auto" textAlign="center" border="1px solid">
               {renderRating(report.lighting_rating)}
               <Box>Rating{report.lighting_rating}</Box>
               <Box>Note{report.lighting_notes}</Box>
             </Table.Cell>
-            <Table.Cell width="10%" textAlign="center" border="1px solid">
+            <Table.Cell width="auto" textAlign="center" border="1px solid">
               {renderRating(report.structural_change_rating)}
               <Box>Rating: {report.structural_change_rating}</Box>
               <Box>Note:{report.structural_change_notes}</Box>
             </Table.Cell>
-            <Table.Cell width="10%" textAlign="center" border="1px solid">
+            <Table.Cell width="auto" textAlign="center" border="1px solid">
               {renderRating(report.cleanliness_rating)}
               <Box>Rating: {report.cleanliness_rating}</Box>
               <Box>Note: {report.cleanliness_notes}</Box>
             </Table.Cell>
-            <Table.Cell width="10%" textAlign="center" border="1px solid">
+            <Table.Cell width="auto" textAlign="center" border="1px solid">
               {report.maintenance_notes}
             </Table.Cell>
-            <Table.Cell width="10%" textAlign="center" border="1px solid">
+            <Table.Cell width="auto" textAlign="center" border="1px solid">
               {report.general_notes}
             </Table.Cell>
-            <Table.Cell width="10%" textAlign="center" border="1px solid">
+            <Table.Cell width="auto" textAlign="center" border="1px solid">
               {new Date(report.created_at).toLocaleDateString()}
             </Table.Cell>
-            <Table.Cell width="10%" textAlign="center" border="1px solid">
+            <Table.Cell width="auto" textAlign="center" border="1px solid">
               {report.feedback_status}
             </Table.Cell>
           </Table.Row>

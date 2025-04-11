@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux'
 import useAccessToken from '../../services/token'
 import { BsThreeDotsVertical } from "react-icons/bs"
 import { CloseButton } from '@chakra-ui/react'
+import useRoom from './RoomHook'
 
 
 const RoomList = () => {
@@ -16,36 +17,46 @@ const RoomList = () => {
   const { buildingId } = useParams()
   // const {roomName, rooms} = useRoom(buildingId, roomId)
   const navigate = useNavigate()
-
-  const [rooms, setRooms] = useState([])
+  const {rooms} = useRoom(buildingId)
+  const [fetchRooms, setRooms] = useState([])
+  const [roomId, setRoomId] = useState('');
+  const [floor, setFloor] = useState('');
+  // const {rooms} = useRoom(buildingId)
 
   const ListOwnerRooms = async () => {       
-    const url = import.meta.env.VITE_ROOM_LIST_URL
+    const url = import.meta.env.VITE_ROOM_LIST_URL;
     try {
-        const response = await axios.get(url, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        })
-        const filterItem = response.data.filter((room) => room.building === Number(buildingId))
-        if(filterItem.length > 0){
-
-          setRooms(filterItem)
-        }else {
-          setRooms("")
-        }
-    }catch(error) {
-        console.error("Cannot list user's room", error.response?.data || error.message);
-        alert("Cannot list user's room");
+      const res = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+      let fetchedRooms = res.data;
+  
+      if (buildingId) {
+        fetchedRooms = fetchedRooms.filter(item => item.building === Number(buildingId));
+      }
+      if(floor){
+        fetchedRooms = fetchedRooms.filter(item => item.floor === Number(floor));
+      }
+      if (roomId) {
+        fetchedRooms = fetchedRooms.filter((item) => item.id === Number(roomId))
+      }
+      setRooms(fetchedRooms); // initially show all rooms
+  
+    } catch (error) {
+      console.error("Cannot list user's room", error.response?.data || error.message);
+      alert("Cannot list user's room");
     }
-  }
+  };
+  
 
   useEffect(()=>{
     if(accessToken && buildingId){
         ListOwnerRooms()
     }
-  },[accessToken, buildingId])
+  },[accessToken, buildingId, roomId, floor])
 
   const handlClickReport = (roomId) => {
     navigate(`/home/management/report/room/${roomId}`)
@@ -71,17 +82,64 @@ const RoomList = () => {
         .then(() =>{
             setRooms(rooms.filter(post => post.id !== room))
         })
-        setRooms(rooms)
+        // setRooms(rooms)
     }catch(error){
         alert("Cannot delete building", error.response?.data || error.message)
     }
   }
-
+  const handleRoomChange = (e) => {
+    setRoomId(e.target.value);
+    
+  };
+  const handleFloorChange = (e) => {
+    setFloor(e.target.value)
+    setRoomId("")
+  };
+  
   return (
     <Container  justifyContent="space-between">
-    <HStack maxW="300px">
-      {rooms.length > 0 ? (
-        rooms.map((room) => (
+      <HStack gap={"20px"}>
+        <Box my={10} p={4} fontSize="18px" fontWeight="bold">
+          <label id="floor">Sort by floor: </label>
+          <select
+            value={floor}
+            onChange={handleFloorChange}
+            disabled={!buildingId}
+            id='floor'
+          >
+            <option value="" fontSize="14px">All Floors</option>
+            {
+              // Deduplicate floors
+              [...new Set(rooms.map(room => room.floor))].map((uniqueFloor, idx) => (
+                <option key={idx} value={uniqueFloor}>
+                  {uniqueFloor}
+                </option>
+              ))
+            }
+          </select>
+        </Box>
+        <Box my={10} p={4} fontSize="18px" fontWeight="bold">
+          <label id="room">Sort by room: </label>
+          <select
+              value={roomId}
+              onChange={handleRoomChange}
+              disabled={!buildingId}
+              id='room'
+            >
+              <option value="" fontSize="14px">All Rooms</option>
+              {rooms.length > 0 && rooms
+              .filter(room => !floor || room.floor === Number(floor))
+              .map(room => (
+                  <option key={room.id} value={room.id}>
+                  {room.name}
+                </option>
+              ))}
+          </select>
+        </Box>
+      </HStack>
+    <HStack maxW="100%" wrap={"wrap"}>
+      {fetchRooms.length > 0 ? (
+        fetchRooms.map((room) => (
           <VStack key={room.id} p={4}>
             <Box shadow="1px 1px 15px 5px rgb(75, 75, 79)" p={4} my={4} minW="100%" mx="auto" rounded={6}>
               <Flex justifyContent="space-between">

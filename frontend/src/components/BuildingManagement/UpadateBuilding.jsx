@@ -23,6 +23,7 @@ const UpdateBuilding = () => {
         state: "",
         country: "",
         postal_code: "",
+        buildingImg: "",
         owner: userInfo?.id || "",
         organization: organizationId || "",
     });
@@ -128,7 +129,6 @@ const UpdateBuilding = () => {
                     <Input type="text" name="state" value={formData.state} onChange={handleChange} placeholder="State" />
                     <Input type="text" name="country" value={formData.country} onChange={handleChange} placeholder="Country" />
                     <Input type="text" name="postal_code" value={formData.postal_code} onChange={handleChange} placeholder="Postal Code" />
-                    
                     <HStack gap={4} justifyContent="space-between">
                         <label id="organization">Organization: </label>
                         <Box border="1px solid" p={1} rounded={5}>

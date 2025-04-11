@@ -157,7 +157,7 @@ const NavDashboard = () => {
               <NavLink to="/home/management/building-list">List of buildings</NavLink>
             </MenuItem>
             <MenuItem value="new-win-a">
-              <NavLink to="/home/management/report">Reports</NavLink>
+              <NavLink to="/home/management/report/chart">Report</NavLink>
             </MenuItem>
             <MenuItem value="new-win-a">
               <NavLink to="/home/profile">Profile</NavLink>
