@@ -14,11 +14,11 @@ from .models import Room_Report
 class RoomReportCreateView(generics.CreateAPIView):
     serializer_class = RoomReportSerializer
     permission_classes = [AllowAny]
-    authentication_classes = [JWTAuthentication]
+    # authentication_classes = [JWTAuthentication]
     queryset = Room_Report.objects.all()
 
 class RoomReportListView(generics.ListAPIView):
-    queryset = Room_Report.objects.all()
+    # queryset = Room_Report.objects.all()
     serializer_class = RoomReportSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]

@@ -61,7 +61,7 @@ function App() {
           <Route path="/home/management/building/update/:buildingId" element={<UpdateBuilding/>}/>
           <Route path="/home/management/room/update/:roomId" element={<UpdateRoom/>}/>
         </Route>
-          <Route path="/room/feedback/:roomId" element={<CreateRoomReport/>}/>
+          <Route path="/room/feedback/:roomId/" element={<CreateRoomReport/>}/>
           <Route path="*" element={<NotFound/>}/>
       </Routes>
     </Router>

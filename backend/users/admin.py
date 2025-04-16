@@ -1,8 +1,18 @@
 from django.contrib import admin
+from django.contrib.admin import AdminSite
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, GroupAdmin
+from django.contrib.auth.models import Group
+from rest_framework.authtoken.models import Token
 from .models import User
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
-# Register your models here.
+
+
+class CustomAdminSite(admin.AdminSite):
+    site_header = 'DakiVe-Feedback Admin Page'
+    site_title = 'DakiVe-Feedback Administration'
+    index_title = 'Welcome to My Admin Portal'
+admin.site = CustomAdminSite()
+
 class UserAdmin(BaseUserAdmin):
     ordering = ["email"]
     model = User
@@ -42,3 +52,5 @@ class UserAdmin(BaseUserAdmin):
         },),
     )
 admin.site.register(User, UserAdmin)
+admin.site.register(Group, GroupAdmin)
+admin.site.register(Token)

@@ -3,13 +3,13 @@ from .models import Room, Building, Organization
 
 
 class RoomSerializer(serializers.ModelSerializer):
-    room_owner_name = serializers.SerializerMethodField()
+    # room_owner_name = serializers.SerializerMethodField()
     building_name = serializers.SerializerMethodField()
     class Meta:
         model = Room
         fields = '__all__'
-    def get_room_owner_name(self, obj):
-        return obj.owner.get_full_name
+    # def get_room_owner_name(self, obj):
+    #     return obj.owner.get_full_name
     def get_building_name(self, obj):
         return obj.building.name if obj.building else None
 

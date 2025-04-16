@@ -31,24 +31,115 @@ const CreateRoomReport = () => {
         link.click()
       }
     }
+    // const printQRCode = () => {
+    //   const canvas = qrCodeRef.current.querySelector('canvas')
+    //   if(canvas) {
+    //     const image = canvas.toDataURL('image/png')
+    //     const printWindow = window.open('','_blank')
+    //     const img = new Image()
+    //     img.src = image
+    //     img.style.maxWidth = '100%'
+
+    //     printWindow.document.body.appendChild(img)
+
+    //     img.onload = () => {
+    //       printWindow.print()
+    //       printWindow.onafterprint = () => printWindow.close()
+    //     }
+    //   }
+    // }
+
+    // const printQRCode = () => {
+    //   const canvas = qrCodeRef.current.querySelector('canvas')
+    //   if (canvas) {
+    //     const image = canvas.toDataURL('image/png')
+    //     const printWindow = window.open('', '_blank')
+    //     const img = new Image()
+    //     img.src = image
+    //     img.style.maxWidth = '100%'
+    
+    //     // Create a container div for better styling
+    //     const container = printWindow.document.createElement('div')
+    //     container.style.textAlign = 'center'
+    //     container.style.margin = '20px'
+    
+    //     // Add the text above the QR code
+    //     const feedbackText = printWindow.document.createElement('div')
+    //     feedbackText.innerHTML = 'Anna meille palautetta sisäilmasta<br>Give us feedback about the airquality'
+    //     feedbackText.style.fontSize = '36px'
+    //     feedbackText.style.margin = '40px'
+    //     feedbackText.style.whiteSpace = 'pre-line'
+    
+    //     container.appendChild(feedbackText)
+    //     container.appendChild(img)
+    //     printWindow.document.body.appendChild(container)
+    
+    //     img.onload = () => {
+    //       printWindow.print()
+    //       printWindow.onafterprint = () => printWindow.close()
+    //     }
+    //   }
+    // }
+    
     const printQRCode = () => {
-      const canvas = qrCodeRef.current.querySelector('canvas')
-      if(canvas) {
-        const image = canvas.toDataURL('image/png')
-        const printWindow = window.open('','_blank')
-        const img = new Image()
-        img.src = image
-        img.style.maxWidth = '100%'
-
-        printWindow.document.body.appendChild(img)
-
-        img.onload = () => {
-          printWindow.print()
-          printWindow.onafterprint = () => printWindow.close()
-        }
+      const canvas = qrCodeRef.current?.querySelector('canvas');
+      if (!canvas) {
+        console.error('Canvas element not found');
+        return;
       }
-    }
-
+    
+      const image = canvas.toDataURL('image/png');
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        console.error('Failed to open print window');
+        return;
+      }
+    
+      const doc = printWindow.document;
+      doc.open();
+      doc.write('<html><head><title>DakiVe-Feedback</title></head><body></body></html>');
+      doc.close();
+    
+      const style = doc.createElement('style');
+      style.textContent = `
+        body {
+          text-align: center;
+          font-family: Arial, sans-serif;
+          margin: 40px;
+        }
+        .feedback-text {
+          font-size: 24px;
+          margin-top: 200px;
+          margin-bottom: 100px;
+        }
+        .qr-img {
+          width: 300px;
+          height: 300px;
+        }
+      `;
+      doc.head.appendChild(style);
+    
+      doc.body.innerHTML = `
+        <div class="feedback-text">
+          <h2>Anna meille palautetta sisäilmasta!</h2>
+          <h2>Give us feedback about the air quality!</h2>
+        </div>
+        <img class="qr-img" src="${image}" alt="QR code for air quality feedback">
+      `;
+    
+      const img = doc.querySelector('.qr-img');
+      img.onload = () => {
+        printWindow.print();
+        printWindow.onafterprint = () => printWindow.close();
+        setTimeout(() => printWindow.close(), 1000);
+      };
+    
+      img.onerror = () => {
+        console.error('Failed to load QR code image');
+        printWindow.close();
+      };
+    };
+    
     return (
       <Container mt={5} p={4} rounded={8}>
           <HStack gap={4} justifyContent="center">       
@@ -59,10 +150,10 @@ const CreateRoomReport = () => {
             <Box>
               <Center ref={qrCodeRef} my={4}>
                 <VStack>
-                  <QRCodeCanvas value={`http://localhost/room/feedback/${roomId}`} size={128} />
+                  <QRCodeCanvas value={`http://localhost/room/feedback/${roomId}/`} size={128} />
                 </VStack>
               </Center>
-              <Box w="100%">{`http://localhost/room/feedback/${roomId}`}</Box>
+              <Box w="100%">{`http://localhost/room/feedback/${roomId}/`}</Box>
               <HStack my={4}>
                 <Button onClick={downloadQRCode}>Download QRcode</Button>
                 <Button onClick={printQRCode}>Print QRCode</Button>

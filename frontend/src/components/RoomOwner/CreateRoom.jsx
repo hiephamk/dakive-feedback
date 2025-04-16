@@ -11,14 +11,12 @@ const CreateRoom = () => {
 
     // Fetch organizations
     const {buildings} = useBuilding(userInfo?.id);
-
-    console.log("building list", buildings)
-
     const [buildingId, setBuildingId] = useState('');
     const [formData, setFormData] = useState({
         name: "",
+        // room_size:"",
         floor: "",
-        owner: userInfo?.id || "",
+        description: "",
         building: buildingId || "", // Use lowercase key name
     });
 
@@ -51,8 +49,9 @@ const CreateRoom = () => {
             alert("Created the room successfully");
             setFormData({
                 name: "",
+                room_size:"",
                 floor: "",
-                owner: userInfo?.id || "",
+                description:"",
                 building: buildingId, 
             });
         } catch (error) {
@@ -65,7 +64,26 @@ const CreateRoom = () => {
             <VStack shadow="3px 3px 15px 5px rgb(75, 75, 79)" m={4} p={4} rounded={8} minW="100%">
                 <Heading>Create New Room</Heading>
                 <Input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Name" />
+                <Box>
+                    <label htmlFor="size">Room Size</label>
+                    <select name="room_size" id="size"
+                        value={formData.room_size}
+                        onChange={handleChange} 
+                        placeholder="Room Size"
+                        style={{border:'1px solid', borderRadius:'5px', padding:"7px", marginLeft:'10px'}}
+                    >
+                        <option value="">Choose room size</option>
+                        <option value="30">0-29 m2</option>
+                        <option value="50">30-49 m2</option>
+                        <option value="100">50-99 m2</option>
+                        <option value="150">100-149 m2</option>
+                        <option value="200">150-199 m2</option>
+                        <option value="250">200-249 m2</option>
+                        <option value="300">250-299 m2</option>
+                    </select>
+                </Box>
                 <Input type="text" name="floor" value={formData.floor} onChange={handleChange} placeholder="Floor" />
+                <Input type="text" name="description" value={formData.description} onChange={handleChange} placeholder="Descriptions" />
                 <Box border="1px solid" p={1} rounded={5}>
                 <select
                 name="Room"

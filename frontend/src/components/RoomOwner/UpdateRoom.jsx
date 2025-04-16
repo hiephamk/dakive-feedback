@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router';
 import useAccessToken from '../../services/token';
-import { Container, Stack, Box, Input, HStack, VStack, Button, Heading } from '@chakra-ui/react';
+import { Container, Stack, Box, Input, HStack, VStack, Button, Heading, Textarea } from '@chakra-ui/react';
 import axios from 'axios';
 import useBuilding from '../BuildingManagement/BuildingHook';
 
@@ -18,9 +18,10 @@ const UpdateRoom = () => {
 
     const [formData, setFormData] = useState({
         name: "",
+        room_size:"",
         floor: "",
         building: buildingId || "",
-        owner:userInfo?.id || ""
+        description: ""
     });
 
     // Fetch room data when component mounts
@@ -38,9 +39,10 @@ const UpdateRoom = () => {
                 const roomData = response.data;
                 setFormData({
                     name: roomData.name || "",
+                    room_size: roomData.room_size || "",
                     floor: roomData.floor || "",
                     building: roomData.building || "",
-                    owner: roomData.owner || userInfo?.id || "",
+                    description: roomData.description || "",
                 });
                 setBuildingId(roomData.building || '');
             } catch (error) {
@@ -70,6 +72,7 @@ const UpdateRoom = () => {
         e.preventDefault();
         const requiredFields = {
             name: "Room Name",
+            // room_size:"Room Size",
             floor: "Floor",
             building: "Building",
         };
@@ -88,7 +91,7 @@ const UpdateRoom = () => {
 
         try {
             const url = `${import.meta.env.VITE_ROOM_UPDATE_URL}${roomId}/`;
-            const res = await axios.put(url, formDataToSend, {
+            await axios.put(url, formDataToSend, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "multipart/form-data",
@@ -96,7 +99,6 @@ const UpdateRoom = () => {
             });
 
             alert("Room updated successfully");
-            console.log("room update:", res.data)
             navigate(`/home/management/room-list/${formData.building}`);
         } catch (error) {
             console.error("Error updating room:", error);
@@ -120,6 +122,24 @@ const UpdateRoom = () => {
                             placeholder="Room Name" 
                         />
                     </HStack>
+                    <Box gap="10px">
+                        <label htmlFor="size">Room Size</label>
+                        <select name="room_size" id="size"
+                            value={formData.room_size}
+                            onChange={handleChange} 
+                            placeholder="Room Size"
+                            style={{border:'1px solid', borderRadius:'5px', padding:"7px",marginLeft:"10px"}}
+                        >
+                            <option value="">Choose room size</option>
+                            <option value="30">0-29 m2</option>
+                            <option value="50">30-49 m2</option>
+                            <option value="100">50-99 m2</option>
+                            <option value="150">100-149 m2</option>
+                            <option value="200">150-199 m2</option>
+                            <option value="250">200-249 m2</option>
+                            <option value="300">250-299 m2</option>
+                        </select>
+                    </Box>
                     <HStack>
                         <label htmlFor="floor">Floor:</label>
                         <Input 
@@ -129,6 +149,17 @@ const UpdateRoom = () => {
                             value={formData.floor} 
                             onChange={handleChange} 
                             placeholder="Floor" 
+                        />
+                    </HStack>
+                    <HStack>
+                        <label htmlFor="description">Description:</label>
+                        <Textarea 
+                            id="description" 
+                            type="text" 
+                            name="description"
+                            value={formData.description} 
+                            onChange={handleChange} 
+                            placeholder="Description" 
                         />
                     </HStack>
                     <HStack gap={4} justifyContent="space-between">

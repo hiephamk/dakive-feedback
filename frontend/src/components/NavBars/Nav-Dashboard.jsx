@@ -145,7 +145,7 @@ const NavDashboard = () => {
           </MenuTrigger>
           <MenuContent>
             <MenuItem value="new-txt-a">
-              <NavLink to="/home/management/home">Home</NavLink>
+              <NavLink to="/home">Home</NavLink>
             </MenuItem>
             <MenuItem value="new-win-a">
               <NavLink to="/home/management/add_organization">Add Organizations</NavLink>
