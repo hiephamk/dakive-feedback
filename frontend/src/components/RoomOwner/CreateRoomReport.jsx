@@ -1,50 +1,37 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useParams, Link as RouterLink } from 'react-router'; // Fixed import for Link
+import { useParams } from 'react-router';
+import { Link as RouterLink } from 'react-router';
 import { Box, Input, VStack, Button, Center, Container, Heading, HStack, Flex, Textarea } from '@chakra-ui/react';
 import axios from 'axios';
 import { FaFrown, FaMeh, FaSmile, FaGrin, FaGrinStars } from 'react-icons/fa';
-import useAccessToken from '../../services/token';
-import useBuilding from '../BuildingManagement/BuildingHook';
-import NavUserReport from '../NavUserReport';
+import NavUserReport from '../NavBars/NavUserReport';
 
 const CreateRoomReport = () => {
-  const { user, userInfo } = useSelector((state) => state.auth);
-  const accessToken = useAccessToken(user);
-  const { buildings } = useBuilding(userInfo?.id);
   const { roomId} = useParams();
-  
-
   const [buildingId, setBuildingId] = useState('');
   
   const [rooms, setRooms] = useState([])
 
   const fetchRoom = async ()=> {
-    const url = import.meta.env.VITE_ROOM_LIST_URL
+    const url = import.meta.env.VITE_ROOM_LIST_FEEDBACK_URL
     try {
-      const response = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      })
+      const response = await axios.get(url)
       const filterItem = response.data.filter((room) => room.id === Number(roomId))
       if(filterItem.length > 0){
 
         setRooms(filterItem)
       }else {
-        setRooms("")
+        setRooms([])
       }
   }catch(error) {
       console.error("Cannot list user's room", error.response?.data || error.message);
-      alert("Cannot list user's room");
   }
   }
   useEffect(()=> {
-    if(roomId && accessToken){
+    if(roomId){
       fetchRoom()
     }
-  },[roomId, accessToken])
+  },[roomId])
 
   const [formData, setFormData] = useState({
     room: roomId || '',
@@ -65,7 +52,7 @@ const CreateRoomReport = () => {
     cleanliness_notes: '',
     maintenance_notes: '',
     general_notes: '',
-    feedback_status: '', // Fixed typo: removed comma
+    feedback_status: '',
   });
 
   // Sync roomId and buildingId from URL params
@@ -73,7 +60,7 @@ const CreateRoomReport = () => {
     if (roomId) {
       const selectedRoom = rooms.find((room) => room.id === Number(roomId));
       if (selectedRoom) {
-        setBuildingId(selectedRoom.building);
+        setBuildingId(selectedRoom?.building);
       }
     }
   }, [roomId, rooms]);
@@ -124,12 +111,7 @@ const CreateRoomReport = () => {
     }
     const url = `${import.meta.env.VITE_ROOM_REPORT_CREATE_URL}${roomId}/`;
     try {
-      const response = await axios.post(url, formData, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await axios.post(url, formData);
       alert('The room report was sent.');
       console.log('Send room report', response.data);
 
@@ -194,7 +176,7 @@ const CreateRoomReport = () => {
     <Container>
         <NavUserReport/>
       <Container mt={5} p={4} rounded={8} justifyContent="center" maxW="500px" shadow="3px 3px 15px 5px rgb(75, 75, 79)">
-        {rooms.length > 0 ? (
+        {
           <Box rounded={8} p={4} gap={4} minW="100%">
             <Heading>Create Room Report</Heading>
             <Box p={4} rounded={5}>
@@ -210,7 +192,7 @@ const CreateRoomReport = () => {
                 <HStack>
                   <label>Building:</label>
                   <Input
-                    value={buildings.find((building) => building.id === Number(buildingId))?.name || ''}
+                    value={rooms.find((room) => room.id === Number(roomId))?.building_name || ''}
                     readOnly
                   />
                 </HStack>
@@ -322,16 +304,7 @@ const CreateRoomReport = () => {
                 </Button>
               </VStack>
           </Box>
-      
-        ) : (
-          <Center>
-            <HStack>
-              <Heading>You have no rooms. Please </Heading>
-              <RouterLink to="/room/create-room">Click here</RouterLink>
-              <Heading>to create a room first</Heading>
-            </HStack>
-          </Center>
-        )}
+        }
       </Container>
     </Container>
   );

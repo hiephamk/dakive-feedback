@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import useAccessToken from "../services/token";
 import axios from "axios";
-import { Avatar, Box, Flex, Heading, HStack, Text } from "@chakra-ui/react";
+import { Avatar, Box, Container, Flex, Heading, HStack, Text, Center, Button } from "@chakra-ui/react";
 import UpdateProfile from "./UpdateProfile";
 import { Link } from "react-router";
 
@@ -63,31 +63,33 @@ const FetchProfile = () => {
   },[accessToken, userInfo?.id])
 
   return (
-    <Box boxSizing="border-box" p={10}>
-      {accounts && accounts.length > 0 && (
-        accounts.map((item) => (
-          <Box key={item.id} >
-            <HStack shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={10} rounded={8}>
-              <Avatar.Root shape="full" size="lg">
-                <Avatar.Fallback name="Random User" />
-                <Avatar.Image src={item.profile_img} />
-              </Avatar.Root>
-              <Box pl="10px">
-                <Box>
-                  Full Name: {item.full_name}
+    <Container boxSizing="border-box">
+      <Center p={"10px"}>
+        {accounts && accounts.length > 0 && (
+          accounts.map((item) => (
+            <Box key={item.id} >
+              <HStack shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={10} rounded={8}>
+                <Avatar.Root shape="full" size="lg">
+                  <Avatar.Fallback name="Random User" />
+                  <Avatar.Image src={item.profile_img} />
+                </Avatar.Root>
+                <Box pl="10px">
+                  <Box>
+                    Full Name: {item.full_name}
+                  </Box>
+                  <Box>Email: {item.email}</Box>
+                  <Box>Phone: {item.phone_number}</Box>
+                  <Box>Bio: {item.bio}</Box>
                 </Box>
-                <Box>Email: {item.email}</Box>
-                <Box>Phone: {item.phone_number}</Box>
-                <Box>Bio: {item.bio}</Box>
-              </Box>
-            </HStack>
-          </Box>
-        ))
-      )}
-    <Box mt={5}>
-      <Link to="/home/update-profile">Update your information</Link>
-    </Box>
-</Box>
+              </HStack>
+              <Button mt={5}>
+                <Link to="/home/update-profile">Update profile</Link>
+              </Button>
+            </Box>
+          ))
+        )}
+      </Center>
+</Container>
   );
 };
 

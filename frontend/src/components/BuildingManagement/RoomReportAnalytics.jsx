@@ -38,6 +38,7 @@ const RoomReportAnalytics = () => {
         },
       });
       const reportChart = res.data
+      // console.log("roomdata:", res.data)
       if (reportChart.length > 0) {
         setRoomAnalytics(reportChart);
       } else {
@@ -68,7 +69,7 @@ const RoomReportAnalytics = () => {
         max: 5,
         title: {
           display: true,
-          text: 'Rating (1-5)',
+          text: 'Average Rating (1-5)',
         },
       },
       x: {
@@ -106,13 +107,13 @@ const RoomReportAnalytics = () => {
       {
         label: 'Rating',
         data: [
-          room.temperature || 0,
-          room.air_quality || 0,
-          room.draft || 0,
-          room.odor || 0,
-          room.lighting || 0,
-          room.structural || 0,
-          room.cleanliness || 0,
+          room.avg_temperature || 0,
+          room.avg_air_quality || 0,
+          room.avg_draft || 0,
+          room.avg_odor || 0,
+          room.avg_lighting || 0,
+          room.avg_structural || 0,
+          room.avg_cleanliness || 0,
         ],
         backgroundColor: [
           'rgba(255, 99, 132, 0.6)',
@@ -140,29 +141,30 @@ const RoomReportAnalytics = () => {
   return (
     <Container maxW="container.xl" my={4}>
       <VStack spacing={6} align="stretch">
-        <Heading size="lg" textAlign="center">Room Report Analytics</Heading>
+        <Heading size="lg" textAlign="center">Average Rating of Room's Conditions</Heading>
         {loading ? (
           <Text textAlign="center">Loading...</Text>
         ) : error ? (
           <Text color="red.500" textAlign="center">{error}</Text>
         ) : roomAnalytics.length > 0 ? (
-          <Wrap spacing={6} justify="center">
+          <Wrap spacing={6} justify="center" p={2}>
             {roomAnalytics.map((room) => (
               <WrapItem key={room.id}>
                 <Box 
                   w={{ base: "100%", md: "400px" }} // Responsive width
-                  h="400px" // Fixed height for chart
+                  h="420px" // Fixed height for chart
                   border="1px solid" 
-                  p={4} 
+                  p={"10px"} 
                   borderRadius="md"
                   boxShadow="md"
                 >
                   <Heading size="md" mb={2}>
                     {room.room_name} - {room.building_name}
                   </Heading>
-                  <Text mb={4} fontSize="sm">
-                    Latest Report: {new Date(room.created_at).toLocaleDateString()}
+                  <Text mb={2} fontSize="sm">
+                    Update: {new Date(room.created_at).toLocaleDateString()}
                   </Text>
+
                   <Box h="300px"> {/* Container for chart */}
                     <Bar data={getChartData(room)} options={chartOptions} />
                   </Box>

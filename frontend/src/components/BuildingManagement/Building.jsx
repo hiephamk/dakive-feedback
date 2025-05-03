@@ -19,11 +19,13 @@ const Building = () => {
     const [buildingImg, setBuildingImage] = useState(null);
     const [formData, setFormData] = useState({
         name: "",
+        building_size: "",
         street: "",
         city: "",
         state: "",
         country: "",
         postal_code: "",
+        description: "",
         owner: userInfo?.id|| "",
         organization: organizationId || "",
     });
@@ -46,6 +48,7 @@ const Building = () => {
         e.preventDefault();
         const requiredFields = {
             name: "Building Name",
+            // building_size: "Building Size",
             street: "Street",
             city: "City",
             country: "Country",
@@ -80,16 +83,17 @@ const Building = () => {
             });
 
             alert("Created building successfully");
-            console.log("Building created:", response.data);
 
             // Reset form and image state
             setFormData({
                 name: "",
+                building_size: "",
                 street: "",
                 city: "",
                 state: "",
                 country: "",
                 postal_code: "",
+                description:"",
                 owner: userInfo?.id || "",
                 organization: organizationId || "",
             });
@@ -106,11 +110,13 @@ const Building = () => {
                 <VStack  shadow="3px 3px 15px 5px rgb(75, 75, 79)"  p={4} rounded={7} minW="100%">
                     <Heading my={4}>Create New Building</Heading>
                     <Input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Name" />
+                    <Input type="text" name="building_size" value={formData.building_size} onChange={handleChange} placeholder="Building Size" />
                     <Input type="text" name="street" value={formData.street} onChange={handleChange} placeholder="Street" />
                     <Input type="text" name="city" value={formData.city} onChange={handleChange} placeholder="City" />
                     <Input type="text" name="state" value={formData.state} onChange={handleChange} placeholder="State" />
                     <Input type="text" name="country" value={formData.country} onChange={handleChange} placeholder="Country" />
                     <Input type="text" name="postal_code" value={formData.postal_code} onChange={handleChange} placeholder="Postal Code" />
+                    <Input type="text" name="description" value={formData.description} onChange={handleChange} placeholder="Descriptions" />
                     
                     <HStack gap={4} justifyContent="space-between">
                         <label id="organization">Organization: </label>

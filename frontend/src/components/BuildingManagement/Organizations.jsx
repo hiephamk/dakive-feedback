@@ -8,7 +8,7 @@ const Organizations = () => {
     const {user, userInfo } = useSelector(state=>state.auth)
     const accessToken = useAccessToken(user)
     const [Organizations,setOrganizations] = useState([])
-
+    const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({
         name: "",
         street: "",
@@ -39,13 +39,38 @@ const Organizations = () => {
             alert("Cannot list Organizations", error)
         }
     }
-        
+    const isValidEmail = (email) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    };
+    const isValidURL = (url) => {
+      try {
+          new URL(url);  // throws if invalid
+          return true;
+      } catch (_) {
+          return false;
+      }
+  }; 
     const handleChange = (e) => {
       const { name, value } = e.target;
       setFormData({
         ...formData,
         [name]: value,
       });
+      if (name === 'website') {
+        if (value && !isValidURL(value)) {
+            setErrors((prev) => ({ ...prev, website: 'Invalid URL format (must start with http:// or https://)' }));
+        } else {
+            setErrors((prev) => ({ ...prev, website: null }));
+        }
+      }
+      if (name === 'email') {
+        if (value && !isValidEmail(value)) {
+            setErrors((prev) => ({ ...prev, email: 'Invalid email format(exp:abc@email.com)' }));
+        } else {
+            setErrors((prev) => ({ ...prev, email: null }));
+        }
+      }
     };
   
     const handleSubmit = async (e) => {
@@ -147,13 +172,15 @@ const Organizations = () => {
             onChange={handleChange}
             placeholder='Email'
         />
+        {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
         <Input
             type='text'
             name='website'
             value={formData.website}
             onChange={handleChange}
-            placeholder='Website'
+            placeholder='http://example.com'
         />
+        {errors.website && <p style={{ color: 'red' }}>{errors.website}</p>}
         <Button onClick={handleSubmit}>Create</Button>
       </VStack>
     </Container>

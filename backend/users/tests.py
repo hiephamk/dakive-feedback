@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
-from users.managers import CustomUserManager
+from backend.users.management import CustomUserManager
 
 
 class CustomUserManagerTests(TestCase):

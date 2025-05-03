@@ -1,14 +1,11 @@
 import axios from "axios"
 
-// const BACKEND_DOMAIN = import.meta.env.VITE_BACKEND_URL
-
-const REGISTER_URL = `/api/auth/users/`
-// const LOGIN_URL = `/api/auth/jwt/create/`
-const LOGIN_URL = `/api/auth/jwt/create/`
-const ACTIVATE_URL = `/api/auth/users/activation/`
-const RESET_PASSWORD_URL = `/api/auth/users/reset_password/`
-const RESET_PASSWORD_CONFIRM_URL = `/api/auth/users/reset_password_confirm/`
-const GET_USER_INFO = `/api/auth/users/me/`
+const REGISTER_URL = import.meta.env.VITE_REGISTER_URL
+const LOGIN_URL = import.meta.env.VITE_LOGIN_URL
+const ACTIVATE_URL = import.meta.env.VITE_ACTIVATE_URL
+const RESET_PASSWORD_URL = import.meta.env.VITE_RESET_PASSWORD_URL
+const RESET_PASSWORD_CONFIRM_URL = import.meta.env.VITE_RESET_PASSWORD_CONFIRM_URL 
+const GET_USER_INFO = import.meta.env.VITE_GET_USER_INFO
 
 
 const register = async (userData) => {

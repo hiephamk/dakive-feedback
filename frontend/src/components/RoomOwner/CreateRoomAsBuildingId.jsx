@@ -1,28 +1,31 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import useAccessToken from '../../services/token';
-import { Box, Stack, Input, VStack, Button, Center, Heading, Container } from '@chakra-ui/react';
+import { Box, Text, HStack, Input, VStack, Button, Center, Heading, Container } from '@chakra-ui/react';
 import axios from 'axios';
 import useBuilding from '../BuildingManagement/BuildingHook';
+import { useParams, useNavigate } from 'react-router-dom'
 
-const CreateRoom = () => {
+const CreateRoomAsBuildingId = () => {
     const { user, userInfo } = useSelector((state) => state.auth);
     const accessToken = useAccessToken(user);
+    const navigate = useNavigate()
 
     // Fetch organizations
     const {buildings} = useBuilding(userInfo?.id);
-    const [buildingId, setBuildingId] = useState('');
+    // const [buildingId, setBuildingId] = useState('');
+    const { buildingId } = useParams();
     const [formData, setFormData] = useState({
         name: "",
         // room_size:"",
         floor: "",
         description: "",
-        building: buildingId || "", // Use lowercase key name
+        building: "", // Use lowercase key name
     });
 
     // Update formData when organizationId changes
     useEffect(() => {
-        setFormData((prev) => ({ ...prev, building: buildingId }));
+        setFormData((prev) => ({ ...prev, building: Number(buildingId) }));
     }, [buildingId]);
 
     const config = {
@@ -54,6 +57,7 @@ const CreateRoom = () => {
                 description:"",
                 building: buildingId, 
             });
+            navigate(`/home/management/room-list/${buildingId}`)
         } catch (error) {
             console.error("Error creating room:", error.response?.data || error.message);
         }
@@ -62,33 +66,24 @@ const CreateRoom = () => {
     return (
         <Container justifyContent="center" maxW="500px" mt={10}>
             <VStack shadow="3px 3px 15px 5px rgb(75, 75, 79)" m={4} p={4} rounded={8} minW="100%">
-                <Heading>Create New Room</Heading>
+                <Box p={1}>
+                    {buildings
+                    .filter(item => item.id === Number(buildingId))
+                    .map(building => (
+                        <Box key={building.id}>
+                            <Heading>Create New Rooms - {building.name}</Heading>
+                        </Box>
+                    ))
+                    }
+                </Box>
+                
                 <Input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Name" />
                 <Input type="text" name="room_size" value={formData.room_size} onChange={handleChange} placeholder="Room size" />
                 <Input type="text" name="floor" value={formData.floor} onChange={handleChange} placeholder="Floor" />
                 <Input type="text" name="description" value={formData.description} onChange={handleChange} placeholder="Descriptions" />
-                <Box border="1px solid" p={1} rounded={5}>
-                <select
-                name="Room"
-                id="room"
-                value={buildingId}
-                onChange={(e) => setBuildingId(e.target.value)}
-                style={{height:'100%', padding:'5px'}}
-                >
-                <option value="">Choose Building</option>
-                {
-                    buildings.map((building) => (
-                    <option key={building.id} value={building.id}>
-                        {building.name}
-                    </option>
-                    ))
-                }
-                </select>
-                </Box>
                 <Button onClick={handleSubmit}>Create</Button>
             </VStack>
         </Container>
     );
 };
-
-export default CreateRoom;
+export default CreateRoomAsBuildingId

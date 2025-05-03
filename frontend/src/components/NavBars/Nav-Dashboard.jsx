@@ -58,6 +58,9 @@ const NavDashboard = () => {
               <Menu.Positioner>
                 <Menu.Content>            
                   <Menu.Item value="new-txt-a">
+                  <Link to="/home/management/building-list">List of building</Link>                                
+                  </Menu.Item>
+                  <Menu.Item value="new-txt-a">
                     <Link to="/home/management/add_organization">Create Organization</Link>                                
                   </Menu.Item>
                   <Menu.Item value="new-file-a">
@@ -128,7 +131,7 @@ const NavDashboard = () => {
           
           <IconButton onClick={toggleColorMode}>
             {
-              colorMode === 'light' ? <LuSun/> : <LuMoon/>
+              colorMode === 'light' ? <LuMoon/> : <LuSun/>
             }
           </IconButton>
   
@@ -142,7 +145,7 @@ const NavDashboard = () => {
           </MenuTrigger>
           <MenuContent>
             <MenuItem value="new-txt-a">
-              <NavLink to="/home/management/home">Home</NavLink>
+              <NavLink to="/home">Home</NavLink>
             </MenuItem>
             <MenuItem value="new-win-a">
               <NavLink to="/home/management/add_organization">Add Organizations</NavLink>
@@ -154,7 +157,7 @@ const NavDashboard = () => {
               <NavLink to="/home/management/building-list">List of buildings</NavLink>
             </MenuItem>
             <MenuItem value="new-win-a">
-              <NavLink to="/home/management/report">Reports</NavLink>
+              <NavLink to="/home/management/report/chart">Report</NavLink>
             </MenuItem>
             <MenuItem value="new-win-a">
               <NavLink to="/home/profile">Profile</NavLink>
