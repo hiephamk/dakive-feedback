@@ -3,9 +3,9 @@ import os
 import environ # type: ignore
 from datetime import timedelta
 
-env = environ.Env(DEBUG=(bool, False))
 BASE_DIR = Path(__file__).resolve().parent.parent
 environ.Env.read_env(BASE_DIR / ".env")
+env = environ.Env()
 
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")

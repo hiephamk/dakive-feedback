@@ -1,21 +1,3 @@
-# Node modules
-node_modules/
-
-# Build outputs
-dist/
-build/
-
-# .env files (VERY IMPORTANT)
 .env
-.env.*
-!.env.example  # allow safe example env file
-
-# Git folder (shouldn't be ignored locally but just showing)
-.git/
-
-# Log files
-*.log
-
-# OS specific
-.DS_Store
-Thumbs.db
+.env*
+.*.env

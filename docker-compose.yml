@@ -1,7 +1,11 @@
 version: "3.9"
 services:
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - .env
     environment:
       - DEBUG=${DEBUG}
       - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
@@ -24,6 +28,9 @@ services:
   frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile
+    env_file:
+      - .env
     ports:
       - "80:80"
     depends_on:
