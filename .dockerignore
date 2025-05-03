@@ -2,8 +2,8 @@
 node_modules
 
 # Ignore local .env files (VERY IMPORTANT)
-.env
-.env.*
+# .env
+# .env.*
 
 # Ignore git folder
 .git
