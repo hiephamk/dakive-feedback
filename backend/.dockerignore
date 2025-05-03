@@ -1,0 +1,22 @@
+# Ignore node_modules (because we install fresh inside the container)
+node_modules
+
+# Ignore local .env files (VERY IMPORTANT)
+
+
+# Ignore git folder
+.git
+.gitignore
+
+# Ignore logs
+*.log
+
+# Ignore build cache
+dist
+build
+
+# Ignore Docker ignore itself
+.dockerignore
+
+# OS-specific files
+.DS_Store
