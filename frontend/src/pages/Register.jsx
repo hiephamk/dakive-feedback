@@ -57,7 +57,7 @@ const Register = () => {
   return (
     <Container>
       <Center>
-        <VStack mt={100} p={4} bg="cyan.800" border="1px solid" maxW={600} rounded={8} shadow="3px 3px 15px 5px rgb(75, 75, 79)">
+        <VStack mt={100} p={4} border="1px solid" maxW={600} rounded={8} shadow="3px 3px 15px 5px rgb(75, 75, 79)">
           <Heading fontSize={24} color="white">Register</Heading>
           <VStack maxW="500px" bg="white" p={2} rounded={8}>
             <Input  border="1px solid"

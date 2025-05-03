@@ -190,7 +190,7 @@ const Report = () => {
         </HStack>
         <HStack gap={10} my={10}>
           <Box border="1px solid" p={4} fontSize="18px" rounded={7}>
-            <label id="building">Sort by building:</label>
+            <label id="building">Fiter by building: </label>
             <select
               value={buildingId}
               onChange={handleBuildingChange}
@@ -205,7 +205,7 @@ const Report = () => {
             </select>
           </Box>
           <Box border="1px solid" p={4} rounded={7} fontSize="18px">
-            <label id="room">Sort by room:</label>
+            <label id="room">Filter by room:</label>
             <select
               value={roomId}
               onChange={handleRoomChange}

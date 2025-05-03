@@ -9,11 +9,20 @@ from .models import Room, Building, Organization
 
 # Create your views here.
 
-class RoomListView(generics.ListCreateAPIView):
+class RoomListViewFeedback(generics.ListCreateAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly]
+    
+class RoomListView(generics.ListCreateAPIView):
+    # queryset = Room.objects.all()
+    serializer_class = RoomSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    def get_queryset(self):
+        user = self.request.user
+        return Room.objects.filter(building__owner=user)
     
 class RoomDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Room.objects.all()
@@ -22,10 +31,13 @@ class RoomDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
 
 class BuildingListView(generics.ListCreateAPIView):
-    queryset = Building.objects.all()
+    # queryset = Building.objects.all()
     serializer_class = BuildingSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly]
+    def get_queryset(self):
+        user = self.request.user
+        return Building.objects.filter(owner=user)
     
 class BuildingDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Building.objects.all()
@@ -68,8 +80,8 @@ class RoomSearchView(generics.ListAPIView):
         return Room.objects.select_related('building').filter(query).order_by('-name')
 
 class RoomSearchView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]  # Typo: should be "permission_classes"
-    serializer_class = RoomSerializer       # Typo: should be "serializer_class"
+    permission_classes = [IsAuthenticated] 
+    serializer_class = RoomSerializer 
     authentication_classes = [JWTAuthentication]
 
     def get_queryset(self):

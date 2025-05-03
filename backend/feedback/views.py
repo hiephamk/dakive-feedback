@@ -14,7 +14,6 @@ from .models import Room_Report
 class RoomReportCreateView(generics.CreateAPIView):
     serializer_class = RoomReportSerializer
     permission_classes = [AllowAny]
-    # authentication_classes = [JWTAuthentication]
     queryset = Room_Report.objects.all()
 
 class RoomReportListView(generics.ListAPIView):
@@ -115,7 +114,6 @@ class RoomReportAnalyticsView(generics.RetrieveAPIView):
                     'room_id': room_id,
                     'room_name': latest_report.room.name,
                     'building_name': latest_report.building.name,
-                    'created_at': latest_report.created_at.isoformat(),  # Latest report timestamp
                     'temperature': latest_report.temperature_rating if latest_report.temperature_rating is not None else 0,
                     'air_quality': latest_report.air_quality_rating if latest_report.air_quality_rating is not None else 0,
                     'draft': latest_report.draft_rating if latest_report.draft_rating is not None else 0,
@@ -123,6 +121,7 @@ class RoomReportAnalyticsView(generics.RetrieveAPIView):
                     'lighting': latest_report.lighting_rating if latest_report.lighting_rating is not None else 0,
                     'structural': latest_report.structural_change_rating if latest_report.structural_change_rating is not None else 0,
                     'cleanliness': latest_report.cleanliness_rating if latest_report.cleanliness_rating is not None else 0,
+                    'created_at': latest_report.created_at.isoformat(),  # Latest report timestamp
                     # Add average ratings
                     'avg_temperature': avg_ratings['avg_temperature'] if avg_ratings['avg_temperature'] is not None else 0,
                     'avg_air_quality': avg_ratings['avg_air_quality'] if avg_ratings['avg_air_quality'] is not None else 0,

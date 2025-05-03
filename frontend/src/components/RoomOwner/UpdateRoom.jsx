@@ -122,24 +122,17 @@ const UpdateRoom = () => {
                             placeholder="Room Name" 
                         />
                     </HStack>
-                    <Box gap="10px">
-                        <label htmlFor="size">Room Size</label>
-                        <select name="room_size" id="size"
-                            value={formData.room_size}
+                    <HStack>
+                        <label htmlFor="size">Size: </label>
+                        <Input 
+                            id="size" 
+                            type="text" 
+                            name="room_size" 
+                            value={formData.room_size} 
                             onChange={handleChange} 
-                            placeholder="Room Size"
-                            style={{border:'1px solid', borderRadius:'5px', padding:"7px",marginLeft:"10px"}}
-                        >
-                            <option value="">Choose room size</option>
-                            <option value="30">0-29 m2</option>
-                            <option value="50">30-49 m2</option>
-                            <option value="100">50-99 m2</option>
-                            <option value="150">100-149 m2</option>
-                            <option value="200">150-199 m2</option>
-                            <option value="250">200-249 m2</option>
-                            <option value="300">250-299 m2</option>
-                        </select>
-                    </Box>
+                            placeholder="Room Size" 
+                        />
+                    </HStack>
                     <HStack>
                         <label htmlFor="floor">Floor:</label>
                         <Input 

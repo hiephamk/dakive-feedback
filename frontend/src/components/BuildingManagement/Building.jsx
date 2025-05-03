@@ -83,7 +83,6 @@ const Building = () => {
             });
 
             alert("Created building successfully");
-            console.log("Building created:", response.data);
 
             // Reset form and image state
             setFormData({
@@ -111,23 +110,7 @@ const Building = () => {
                 <VStack  shadow="3px 3px 15px 5px rgb(75, 75, 79)"  p={4} rounded={7} minW="100%">
                     <Heading my={4}>Create New Building</Heading>
                     <Input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Name" />
-                    <HStack>
-                  
-                        <label htmlFor="size">Building Size: </label>
-                        <select name="building_size" id="size"
-                            value={formData.building_size}
-                            onChange={handleChange}
-                            placeholder="Building Size"
-                            style={{border:"1px solid", borderRadius:"5px", padding:"5px"}}
-                        >
-                            <option value="">Choose Building Size</option>
-                            <option value="50">0-49 rooms</option>
-                            <option value="100">50-99 rooms</option>
-                            <option value="300">100-299 rooms</option>
-                            <option value="500">300-499 rooms</option>
-                            <option value="1000">500-999 rooms</option>
-                        </select>
-                    </HStack>
+                    <Input type="text" name="building_size" value={formData.building_size} onChange={handleChange} placeholder="Building Size" />
                     <Input type="text" name="street" value={formData.street} onChange={handleChange} placeholder="Street" />
                     <Input type="text" name="city" value={formData.city} onChange={handleChange} placeholder="City" />
                     <Input type="text" name="state" value={formData.state} onChange={handleChange} placeholder="State" />

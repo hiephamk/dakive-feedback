@@ -21,6 +21,7 @@ import HomePage from "./pages/HomePage";
 import Organizations from "./components/BuildingManagement/Organizations";
 import BuildingList from "./components/BuildingManagement/BuildingList";
 import CreateRoom from "./components/RoomOwner/CreateRoom";
+import CreateRoomAsBuildingId from "./components/RoomOwner/CreateRoomAsBuildingId";
 import RoomList from "./components/RoomOwner/RoomList";
 import CreateRoomReport from "./components/RoomOwner/CreateRoomReport";
 import RoomReportOwner from "./components/RoomOwner/RoomReportOwner"
@@ -53,6 +54,7 @@ function App() {
           <Route path="/home/management/add_organization" element={<Organizations/>}/>
           <Route path="/home/management/building-list" element={<BuildingList/>}/>          
           <Route path="/home/management/create-room" element={<CreateRoom/>}/>
+          <Route path="/home/management/create-room/:buildingId" element={<CreateRoomAsBuildingId/>}/>
           <Route path="/home/management/feedback/create-form/:buildingId/:roomId" element={<RoomReportOwner/>}/>
           <Route path="/home/management/room-list/:buildingId" element={<RoomList/>}/>
           <Route path="/home/management/report/chart" element={<RoomReportAnalytics/>}/>
