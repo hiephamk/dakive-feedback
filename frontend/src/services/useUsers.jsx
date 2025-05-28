@@ -3,15 +3,15 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import useAccessToken from "../services/token";
 
-const useUsers = (userId) => {
+const useUsers = () => {
   const { user, userInfo } = useSelector((state) => state.auth);
   const accessToken = useAccessToken(user);
-  const [Owner, setOwner] = useState(null); // Start as null (unknown)
+  const [users, setUsers] = useState([]); // Start as null (unknown)
 
   const userDetail = async () => {
     if (!accessToken || !userInfo?.id) return;
     try {
-      const url = `${import.meta.env.VITE_BACKEND_URL}/api/userdetails/${userId}/`;
+      const url = import.meta.env.VITE_ACCOUNT_LIST_URL;
       const config = {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -19,7 +19,7 @@ const useUsers = (userId) => {
         },
       };
       const res = await axios.get(url, config);
-      setOwner(res.data.is_owner);
+      setUsers(res.data);
 
     } catch (error) {
       console.error("Error fetching user:", error.response || error);
@@ -27,12 +27,13 @@ const useUsers = (userId) => {
   };
 
   useEffect(() => {
-    if (accessToken && userId) {
+    if (accessToken) {
       userDetail();
     }
-  }, [accessToken, userId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accessToken]);
 
-  return { Owner };
+  return { users };
 };
 
 export default useUsers;

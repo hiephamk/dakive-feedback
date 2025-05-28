@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.admin import AdminSite
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, GroupAdmin
 from django.contrib.auth.models import Group
+# from .forms import CustomUserChangeForm, CustomUserCreationForm
 from rest_framework.authtoken.models import Token
 from .models import User
 from django.utils.translation import gettext_lazy as _
@@ -15,10 +16,12 @@ admin.site = CustomAdminSite()
 
 class UserAdmin(BaseUserAdmin):
     ordering = ["email"]
+    # add_form = CustomUserCreationForm
+    # form = CustomUserChangeForm
     model = User
-    list_display = ["email", "first_name", "last_name", "is_staff", "is_active"]
+    list_display = ["email", "first_name", "last_name", "is_staff", "is_active", "organizationid"]
     list_display_links = ["email"]
-    list_filter = ["email", "first_name", "last_name", "is_staff", "is_active"]
+    list_filter = ["email", "first_name", "last_name", "is_staff", "is_active", "organizationid"]
     search_fields = ["email", "first_name", "last_name"]
     fieldsets = (
         (
@@ -29,7 +32,7 @@ class UserAdmin(BaseUserAdmin):
         (
             _("Personal Information"),
             {
-                "fields": ('first_name', 'last_name',)
+                "fields": ('first_name', 'last_name', "organizationid")
             },
         ),
         (
@@ -48,7 +51,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             "classes": ("wide",),
-            "fields": ("email", "first_name", "last_name", "password1", "password2", "is_staff", "is_active",),
+            "fields": ("email", "first_name", "last_name", "password1", "password2","organizationid", "is_staff", "is_active",),
         },),
     )
 admin.site.register(User, UserAdmin)

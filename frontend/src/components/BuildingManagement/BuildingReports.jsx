@@ -41,8 +41,11 @@ const BuldingReports = () => {
       setReport(filteredReports)
 
     } catch(error){
-      console.error("fetch report error:", error.message)
-      alert("Errors! Cannot show reports")
+      if(error.response && error.response.status === 401) {
+                alert("Please login again.");
+            }else {
+                console.error(error);
+            }
     }
   }
   useEffect(()=>{

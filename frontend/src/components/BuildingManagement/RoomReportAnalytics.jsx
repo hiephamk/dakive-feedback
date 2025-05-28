@@ -46,8 +46,11 @@ const RoomReportAnalytics = () => {
         setRoomAnalytics([]);
       }
     } catch (error) {
-      console.error('Failed to fetch analytics:', error.message);
-      // setError('Failed to load analytics data. Please try again.');
+      if(error.response && error.response.status === 401) {
+          alert("Please login again.");
+      }else {
+          console.error(error);
+      }
     } finally {
       setLoading(false);
     }

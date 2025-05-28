@@ -9,8 +9,10 @@ urlpatterns = [
     path('buildings/search_building/', views.BuildingSearchView.as_view(), name='building-list'),
     path('buildings/update/<int:pk>/', views.BuildingDetailView.as_view(), name='building-update'),
     
-    path('organizations/create/', views.OrganizationListView.as_view(), name='organization-list'),
+    path('organizations/create/', views.OrganizationCreateView.as_view(), name='organization-create'),
+    path('organizations/list/', views.OrganizationListView.as_view(), name='organization-list'),
     path('organizations/update/<int:pk>/', views.OrganizationDetailView.as_view(), name='organization-update'),
+    path('organizations/delete/<int:pk>/', views.OrganizationDetailView.as_view(), name='organization-delete'),
 
     path('rooms/lists-feedback/', views.RoomListViewFeedback.as_view(), name='room-list-feedback'),
     path('rooms/lists/', views.RoomListView.as_view(), name='room-list'),

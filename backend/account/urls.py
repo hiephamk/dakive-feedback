@@ -6,5 +6,6 @@ from . import views
 
 urlpatterns = [
     path('accounts/', views.AccountListView.as_view(), name='account-list'),
+    path('accounts/search/', views.AccountSearchView.as_view(), name='account-search'),
     path('accounts/update/<int:pk>/', views.AccountDetailView.as_view(), name='account-update'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

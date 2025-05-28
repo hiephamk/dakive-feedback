@@ -4,14 +4,14 @@ import { Box, Image, Center, HStack, Container, Flex, Heading, VStack, Stack } f
 
 const HomePage = () => {
   return (
-    <Container direction="column"
+    <Box width="100%" p="10px" boxSizing={"border-box"}
       bgImage="url('https://www.hamk.fi/wp-content/uploads/2024/01/dakive_hankekuva_uusilleverkkosivuille-scaled.jpg')"
-      maxW="100wh"
+      w="100vw"
       h="100vh"
       bgRepeat="no-repeat"
       rounded={10}
     >
-      <Container>
+      <Box >
         <Center>
           <VStack>
             <Box textAlign="center" mt={100}>
@@ -26,8 +26,8 @@ const HomePage = () => {
             </Center> */}
           </VStack>
         </Center>
-      </Container>
-    </Container>
+      </Box>
+    </Box>
   )
 }
 

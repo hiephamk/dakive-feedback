@@ -1,20 +1,29 @@
 from pathlib import Path
 import os
+import django
 import environ # type: ignore
 from datetime import timedelta
 
+env = environ.Env(DEBUG=(bool, False))
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 environ.Env.read_env(BASE_DIR / ".env")
-env = environ.Env()
 
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
+
+# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = ["*"]
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:5173",  
-#     "http://127.0.0.1:5173",
-# ]
+# ALLOWED_HOSTS = ["*"]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  
+    "http://127.0.0.1:5173",
+]
 CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
@@ -27,14 +36,15 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    "rest_framework.authtoken",
-    "rest_framework_simplejwt",
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt',
+    'account.apps.AccountConfig',
     "corsheaders",
     "djoser",
-    "account.apps.AccountConfig",
     "users",
     "Building",
     "feedback",
+    "organization"
 ]
 
 MIDDLEWARE = [
@@ -44,6 +54,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -121,16 +132,28 @@ WSGI_APPLICATION = "main.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': env("ENGINE_DB"),
+#         'NAME': env("NAME_DB"),
+#         'USER': env("USER_DB"),
+#         'PASSWORD': env("PASSWORD_DB"),
+#         'HOST': env("HOST_DB"),
+#         'PORT': env("PORT_DB"),
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': env("ENGINE_DB"),
-        'NAME': env("NAME_DB"),
-        'USER': env("USER_DB"),
-        'PASSWORD': env("PASSWORD_DB"),
-        'HOST': env("HOST_DB"),
-        'PORT': env("PORT_DB"),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'mydb',
+        'USER': 'kingzarckier',
+        'PASSWORD': 'kingzarckier',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -166,12 +189,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
+BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']  # Source directory for custom static files
 STATIC_ROOT = BASE_DIR / 'staticfiles'    # Destination for collected files
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 #
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+print(f"Database Host: {env('HOST_DB')}")

@@ -5,14 +5,16 @@ import useAccessToken from '../../services/token';
 import { Container, Stack, Box, Input, HStack, VStack, Button, Heading, Textarea } from '@chakra-ui/react';
 import axios from 'axios';
 import useBuilding from '../BuildingManagement/BuildingHook';
+import useOrganization_Membership from '../Organization/Organization_Membership_Hook';
 
 const UpdateRoom = () => {
     const { user, userInfo } = useSelector((state) => state.auth);
     const accessToken = useAccessToken(user);
     const { roomId } = useParams();
     const navigate = useNavigate();
-    console.log("user:", user)
-    const { buildings } = useBuilding(userInfo?.id);
+
+    const { members } = useOrganization_Membership()
+    const { buildings } = useBuilding();
 
     const [buildingId, setBuildingId] = useState('');
 
@@ -165,15 +167,22 @@ const UpdateRoom = () => {
                                 onChange={(e) => setBuildingId(e.target.value)}
                             >
                                 <option value="">Choose a Building</option>
-                                {buildings && buildings.length > 0 ? (
-                                    buildings.map((building) => (
-                                        <option key={building.id} value={building.id}>
-                                            {building.name}
-                                        </option>
+                                {members
+                                    .filter(member => member.user === userInfo?.id && member.role === "editor")
+                                    .map(org => (
+                                        <Box key={org.id}>
+                                            {buildings
+                                                .filter(building => building.organization === org.organization)
+                                                .map(building => (
+                                                    <option key={building.id} value={building.id}>
+                                                        {building.name}
+                                                    </option>
+                                                ))
+                                                
+                                            }
+                                        </Box>
                                     ))
-                                ) : (
-                                    <option value="">No Buildings</option>
-                                )}
+                                }
                             </select>
                         </Box>
                     </HStack>

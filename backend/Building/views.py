@@ -16,13 +16,13 @@ class RoomListViewFeedback(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     
 class RoomListView(generics.ListCreateAPIView):
-    # queryset = Room.objects.all()
+    queryset = Room.objects.all()
     serializer_class = RoomSerializer
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    def get_queryset(self):
-        user = self.request.user
-        return Room.objects.filter(building__owner=user)
+    permission_classes = [IsAuthenticated]
+    # def get_queryset(self):
+    #     user = self.request.user
+    #     return Room.objects.filter(building__owner=user)
     
 class RoomDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Room.objects.all()
@@ -31,13 +31,13 @@ class RoomDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
 
 class BuildingListView(generics.ListCreateAPIView):
-    # queryset = Building.objects.all()
+    queryset = Building.objects.all()
     serializer_class = BuildingSerializer
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    def get_queryset(self):
-        user = self.request.user
-        return Building.objects.filter(owner=user)
+    permission_classes = [IsAuthenticated]
+    # def get_queryset(self):
+    #     user = self.request.user
+    #     return Building.objects.filter(owner=user)
     
 class BuildingDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Building.objects.all()
@@ -45,16 +45,35 @@ class BuildingDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-class OrganizationListView(generics.ListCreateAPIView):
-    queryset = Organization.objects.all()
-    serializer_class = OrganizationSerializer
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticatedOrReadOnly]
-class OrganizationDetailView(generics.RetrieveUpdateDestroyAPIView):
+class OrganizationCreateView(generics.ListCreateAPIView):
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+    
+    # def get_queryset(self):
+    #     user = self.request.user
+    #     return Organization.objects.filter(owner=user)
+    
+class OrganizationListView(generics.ListCreateAPIView):
+    queryset = Organization.objects.all()
+    serializer_class = OrganizationSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    # def get_queryset(self):
+    #     user = self.request.user
+    #     return Organization.objects.filter(owner=user)
+    
+class OrganizationDetailView(generics.RetrieveUpdateDestroyAPIView):
+    # queryset = Organization.objects.all()
+    serializer_class = OrganizationSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        user = self.request.user
+        return Organization.objects.filter(owner=user)
 
 class RoomSearchView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]  # Typo: should be "permission_classes"
@@ -128,3 +147,29 @@ class BuildingSearchView(generics.ListAPIView):
             )
 
         return Building.objects.filter(query).order_by('-name')
+    
+class OrganizationSearchView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = OrganizationSerializer 
+    authentication_classes = [JWTAuthentication]
+
+    def get_queryset(self):
+        keyword = self.request.GET.get('keyword', '').strip()
+        if not keyword:
+            return Organization.objects.none()
+
+        keywords = keyword.split()
+        query = Q()
+        for word in keywords:
+            query &= (
+                Q(name__icontains=word) |
+                Q(street__icontains=word) |
+                Q(city__icontains=word) |
+                Q(state__icontains=word) |
+                Q(country__icontains=word) |
+                Q(postal_code__icontains=word) |
+                Q(email__icontains=word)|
+                Q(website__icontains=word)
+            )
+
+        return Organization.objects.filter(query).order_by('-name')

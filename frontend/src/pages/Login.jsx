@@ -14,7 +14,7 @@ const Login = () => {
         "email": "",
         "password": "",
     })
-
+    const [ error, setError] = useState('')
     const { email, password } = formData
 
     const dispatch = useDispatch()
@@ -41,15 +41,16 @@ const Login = () => {
 
     useEffect(() => {
       if (isError) {
-        alert("login failed");
+        // alert("Email or password is incorrect");
+        setError('The Email or password is incorrect, please try again')
       }
   
-      if (isSuccess || user) {
-          navigate( "/home")
+      if (isSuccess) {
+        dispatch(getUserInfo());
+        navigate( "/home")
       }
 
       dispatch(reset());
-      dispatch(getUserInfo());
   
     }, [isError, isSuccess, user, email, navigate, dispatch]);
 
@@ -58,7 +59,22 @@ const Login = () => {
       <Center flexBasis="50%">
         <VStack maxW="500px" mt={100} rounded={8} p={8} border="1px solid" shadow="3px 3px 15px 5px rgb(75, 75, 79)">
           <Heading fontSize={24} >Login</Heading>
+          {error && (
+            <Box
+              border="1px solid"
+              borderColor="red.500"
+              bg="red.100"
+              color="red.800"
+              p={3}
+              rounded={8}
+              mb={4}
+            >
+              {error}
+            </Box>
+          )}
+      
           <VStack p={4} rounded={8}>
+          
             <Input
               border="1px solid"
               type="text"

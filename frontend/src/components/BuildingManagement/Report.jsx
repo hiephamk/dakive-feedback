@@ -7,6 +7,8 @@ import { FaFrown, FaMeh, FaSmile, FaGrin, FaGrinStars } from 'react-icons/fa';
 import useRoom from '../RoomOwner/RoomHook';
 import useBuilding from './BuildingHook';
 import * as XLSX from "xlsx";
+import useOrganization_Membership from '../Organization/Organization_Membership_Hook';
+import formatDate from '../formatDate'
 
 const Report = () => {
   const { user, userInfo } = useSelector((state) => state.auth);
@@ -15,8 +17,11 @@ const Report = () => {
   const [roomId, setRoomId] = useState('');
   const [buildingId, setBuildingId] = useState('');
 
-  const { buildings } = useBuilding(userInfo?.id);
+  const { buildings } = useBuilding();
   const { rooms } = useRoom(buildingId);
+  const { members } = useOrganization_Membership()
+// console.log("members:",members)
+// console.log("buildigs:", buildings)
 
   const fetchRoomReport = async () => {
     if (!accessToken) return;
@@ -28,7 +33,7 @@ const Report = () => {
           'Content-Type': 'application/json',
         },
       });
-      
+      console.log("reports:", res.data)
       let filteredReports = res.data;
       
       if (buildingId) {
@@ -41,8 +46,11 @@ const Report = () => {
       
       setReports(filteredReports);
     } catch (error) {
-      console.error('Fetch report error:', error.response?.data || error.message);
-      alert('Error fetching reports');
+      if(error.response && error.response.status === 401) {
+        alert("Please login again.");
+      }else {
+          console.error(error);
+      }
     }
   };
 
@@ -50,11 +58,12 @@ const Report = () => {
     if (accessToken && userInfo?.id) {
       fetchRoomReport();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken, userInfo?.id, buildingId, roomId]);
 
-  useEffect(() => {
-    console.log('Updated reports:', reports);
-  }, [reports]);
+  // useEffect(() => {
+  //   console.log('Updated reports:', reports);
+  // }, [reports]);
 
   const feedbackIcons = {
     1: { icon: <FaFrown color="red" />, desc: "Very poor/Significant issues" },
@@ -181,8 +190,12 @@ const Report = () => {
     setRoomId(e.target.value);
   };
 
+  const handleClearItem = () => {
+    setBuildingId("")
+    setRoomId("")
+  }
   return (
-    <Container mx="auto">
+    <Box w={"100%"} maxW={"100vw"}>
       <Box>
         <HStack gap={10} my={10}>
           <Button onClick={() => exportToCSV(reports)}>Export Data to CSV</Button>
@@ -190,22 +203,26 @@ const Report = () => {
         </HStack>
         <HStack gap={10} my={10}>
           <Box border="1px solid" p={4} fontSize="18px" rounded={7}>
-            <label id="building">Fiter by building: </label>
+            <label id="building"></label>
             <select
               value={buildingId}
               onChange={handleBuildingChange}
               id="building"
             >
               <option value="">All Buildings</option>
-              {buildings.length > 0 && buildings.map(building => (
-                <option key={building.id} value={building.id}>
-                  {building.name}
-                </option>
-              ))}
+              {members
+                .filter(mem => mem.user === userInfo.id)
+                .map(mem => buildings
+                  .filter(building => building.organization === mem.organization)
+                  .map(building => (
+                    <option key={building.id} value={building.id}>{building.name}</option>
+                  ))
+                )
+              }
             </select>
           </Box>
           <Box border="1px solid" p={4} rounded={7} fontSize="18px">
-            <label id="room">Filter by room:</label>
+            <label id="room"></label>
             <select
               value={roomId}
               onChange={handleRoomChange}
@@ -219,6 +236,9 @@ const Report = () => {
                 </option>
               ))}
             </select>
+          </Box>
+          <Box>
+            <Button onClick={handleClearItem}>Clear</Button>
           </Box>
         </HStack>
       </Box>
@@ -268,73 +288,77 @@ const Report = () => {
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {reports.length > 0 ? (reports.map((report) => (
-              <Table.Row key={report.id}>
-                <Table.Cell width="10%" textAlign="center" border="1px solid">
-                  {report.building_name || '-'}
-                </Table.Cell>
-                <Table.Cell width="10%" textAlign="center" border="1px solid">
-                  {report.room_name || '-'}
-                </Table.Cell>
-                <Table.Cell width="10%" textAlign="center" border="1px solid">
-                  {renderRating(report.temperature_rating)}
-                  <Box>Rating: {report.temperature_rating}</Box>
-                  <Box>Note: {report.temperature_notes}</Box>
-                </Table.Cell>
-                <Table.Cell width="10%" textAlign="center" border="1px solid">
-                  {renderRating(report.air_quality_rating)}
-                  <Box>Rating: {report.air_quality_rating}</Box>
-                  <Box>Note: {report.air_quality_notes}</Box>
-                </Table.Cell>
-                <Table.Cell width="10%" textAlign="center" border="1px solid">
-                  {renderRating(report.draft_rating)}
-                  <Box>Rating: {report.draft_rating}</Box>
-                  <Box>Note: {report.draft_notes}</Box>
-                </Table.Cell>
-                <Table.Cell width="10%" textAlign="center" border="1px solid">
-                  {renderRating(report.odor_rating)}
-                  <Box>Rating: {report.odor_rating}</Box>
-                  <Box>Note: {report.odor_notes}</Box>
-                </Table.Cell>
-                <Table.Cell width="10%" textAlign="center" border="1px solid">
-                  {renderRating(report.lighting_rating)}
-                  <Box>Rating: {report.lighting_rating}</Box>
-                  <Box>Note: {report.lighting_notes}</Box>
-                </Table.Cell>
-                <Table.Cell width="10%" textAlign="center" border="1px solid">
-                  {renderRating(report.structural_change_rating)}
-                  <Box>Rating: {report.structural_change_rating}</Box>
-                  <Box>Note: {report.structural_change_notes}</Box>
-                </Table.Cell>
-                <Table.Cell width="10%" textAlign="center" border="1px solid">
-                  {renderRating(report.cleanliness_rating)}
-                  <Box>Rating: {report.cleanliness_rating}</Box>
-                  <Box>Note: {report.cleanliness_notes}</Box>
-                </Table.Cell>
-                <Table.Cell width="10%" textAlign="center" border="1px solid">
-                  {report.maintenance_notes}
-                </Table.Cell>
-                <Table.Cell width="10%" textAlign="center" border="1px solid">
-                  {report.general_notes}
-                </Table.Cell>
-                <Table.Cell width="10%" textAlign="center" border="1px solid">
-                  {new Date(report.created_at).toLocaleDateString()}
-                </Table.Cell>
-                <Table.Cell width="10%" textAlign="center" border="1px solid">
-                  {report.feedback_status}
-                </Table.Cell>
-              </Table.Row>
-            ))) : (
-              <Table.Row>
-                <Table.Cell colSpan={13} textAlign="center" border="1px solid">
-                  No reports available
-                </Table.Cell>
-              </Table.Row>
-            )}
+            {members
+              .filter(mem => mem.user === userInfo.id)
+              .map(mem => buildings
+                .filter(building => building.organization === mem.organization)
+                .map(building => reports
+                  .filter(report => report.building === building.id)
+                  .map(report => (
+                    <Table.Row key={report.id}>
+                      <Table.Cell textAlign="center" border="1px solid">
+                        {report.building_name || '-'}
+                      </Table.Cell>
+                      <Table.Cell textAlign="center" border="1px solid">
+                        {report.room_name || '-'}
+                      </Table.Cell>
+                      <Table.Cell textAlign="center" border="1px solid">
+                        {renderRating(report.temperature_rating)}
+                        <Box>Rating: {report.temperature_rating}</Box>
+                        <Box>Note: {report.temperature_notes}</Box>
+                      </Table.Cell>
+                      <Table.Cell textAlign="center" border="1px solid">
+                        {renderRating(report.air_quality_rating)}
+                        <Box>Rating: {report.air_quality_rating}</Box>
+                        <Box>Note: {report.air_quality_notes}</Box>
+                      </Table.Cell>
+                      <Table.Cell textAlign="center" border="1px solid">
+                        {renderRating(report.draft_rating)}
+                        <Box>Rating: {report.draft_rating}</Box>
+                        <Box>Note: {report.draft_notes}</Box>
+                      </Table.Cell>
+                      <Table.Cell textAlign="center" border="1px solid">
+                        {renderRating(report.odor_rating)}
+                        <Box>Rating: {report.odor_rating}</Box>
+                        <Box>Note: {report.odor_notes}</Box>
+                      </Table.Cell>
+                      <Table.Cell textAlign="center" border="1px solid">
+                        {renderRating(report.lighting_rating)}
+                        <Box>Rating: {report.lighting_rating}</Box>
+                        <Box>Note: {report.lighting_notes}</Box>
+                      </Table.Cell>
+                      <Table.Cell textAlign="center" border="1px solid">
+                        {renderRating(report.structural_change_rating)}
+                        <Box>Rating: {report.structural_change_rating}</Box>
+                        <Box>Note: {report.structural_change_notes}</Box>
+                      </Table.Cell>
+                      <Table.Cell textAlign="center" border="1px solid">
+                        {renderRating(report.cleanliness_rating)}
+                        <Box>Rating: {report.cleanliness_rating}</Box>
+                        <Box>Note: {report.cleanliness_notes}</Box>
+                      </Table.Cell>
+                      <Table.Cell textAlign="center" border="1px solid">
+                        {report.maintenance_notes}
+                      </Table.Cell>
+                      <Table.Cell textAlign="center" border="1px solid">
+                        {report.general_notes}
+                      </Table.Cell>
+                      <Table.Cell textAlign="center" border="1px solid">
+                        {formatDate(report.created_at)}
+                        {/* {new Date(report.created_at).toLocaleDateString()} */}
+                      </Table.Cell>
+                      <Table.Cell textAlign="center" border="1px solid">
+                        {report.feedback_status}
+                      </Table.Cell>
+                    </Table.Row>
+                  ))
+                )
+              )
+            }
           </Table.Body>
         </Table.Root>
       </Box>
-    </Container>
+    </Box>
   );
 };
 

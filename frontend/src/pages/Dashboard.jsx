@@ -5,12 +5,12 @@ import { Box, Container, VStack, HStack} from '@chakra-ui/react';
 
 const Dashboard = () => {
   return (
-    <Container fluid>
+    <Box width={"100%"} maxW="100vw" p="10px" boxSizing="border-box">
       <NavDashboard/>
-      <Box maxW="1440px">
+      <Box>
         <Outlet/>
       </Box>
-    </Container>
+    </Box>
   )
 
 };

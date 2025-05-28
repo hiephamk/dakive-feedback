@@ -31,55 +31,6 @@ const CreateRoomReport = () => {
         link.click()
       }
     }
-    // const printQRCode = () => {
-    //   const canvas = qrCodeRef.current.querySelector('canvas')
-    //   if(canvas) {
-    //     const image = canvas.toDataURL('image/png')
-    //     const printWindow = window.open('','_blank')
-    //     const img = new Image()
-    //     img.src = image
-    //     img.style.maxWidth = '100%'
-
-    //     printWindow.document.body.appendChild(img)
-
-    //     img.onload = () => {
-    //       printWindow.print()
-    //       printWindow.onafterprint = () => printWindow.close()
-    //     }
-    //   }
-    // }
-
-    // const printQRCode = () => {
-    //   const canvas = qrCodeRef.current.querySelector('canvas')
-    //   if (canvas) {
-    //     const image = canvas.toDataURL('image/png')
-    //     const printWindow = window.open('', '_blank')
-    //     const img = new Image()
-    //     img.src = image
-    //     img.style.maxWidth = '100%'
-    
-    //     // Create a container div for better styling
-    //     const container = printWindow.document.createElement('div')
-    //     container.style.textAlign = 'center'
-    //     container.style.margin = '20px'
-    
-    //     // Add the text above the QR code
-    //     const feedbackText = printWindow.document.createElement('div')
-    //     feedbackText.innerHTML = 'Anna meille palautetta sisäilmasta<br>Give us feedback about the airquality'
-    //     feedbackText.style.fontSize = '36px'
-    //     feedbackText.style.margin = '40px'
-    //     feedbackText.style.whiteSpace = 'pre-line'
-    
-    //     container.appendChild(feedbackText)
-    //     container.appendChild(img)
-    //     printWindow.document.body.appendChild(container)
-    
-    //     img.onload = () => {
-    //       printWindow.print()
-    //       printWindow.onafterprint = () => printWindow.close()
-    //     }
-    //   }
-    // }
     
     const printQRCode = () => {
       const canvas = qrCodeRef.current?.querySelector('canvas');
@@ -150,10 +101,10 @@ const CreateRoomReport = () => {
             <Box>
               <Center ref={qrCodeRef} my={4}>
                 <VStack>
-                  <QRCodeCanvas value={`http://localhost/room/feedback/${roomId}/`} size={128} />
+                  <QRCodeCanvas value={`http://51.12.218.158/room/feedback/${roomId}/`} size={128} />
                 </VStack>
               </Center>
-              <Box w="100%">{`http://localhost/room/feedback/${roomId}/`}</Box>
+              <Box w="100%">{`http://51.12.218.158/room/feedback/${roomId}/`}</Box>
               <HStack my={4}>
                 <Button onClick={downloadQRCode}>Download QRcode</Button>
                 <Button onClick={printQRCode}>Print QRCode</Button>

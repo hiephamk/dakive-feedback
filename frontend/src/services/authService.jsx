@@ -7,7 +7,6 @@ const RESET_PASSWORD_URL = import.meta.env.VITE_RESET_PASSWORD_URL
 const RESET_PASSWORD_CONFIRM_URL = import.meta.env.VITE_RESET_PASSWORD_CONFIRM_URL 
 const GET_USER_INFO = import.meta.env.VITE_GET_USER_INFO
 
-
 const register = async (userData) => {
     const config = {
         headers: {

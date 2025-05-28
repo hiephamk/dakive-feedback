@@ -1,24 +1,29 @@
 
 import {useEffect, useState, useRef}from 'react'
-import axios from 'axios'
+import api from '../../services/api'
 import { useSelector } from 'react-redux'
 import useAccessToken from '../../services/token'
-import {Container, Box , HStack, Image, Flex, Center, Button, Menu, Portal, Dialog, Text, CloseButton, VStack, Stack} from '@chakra-ui/react'
+import {Container, Table,  Input, InputGroup, Box , HStack, Image, Flex, Center, Button, Menu, Portal, Dialog, Text, CloseButton, VStack, Stack} from '@chakra-ui/react'
 import { Link, useNavigate } from 'react-router-dom'
 import { BsThreeDotsVertical } from "react-icons/bs"
 import { BsBuildingsFill } from "react-icons/bs";
 import { LuSearch } from "react-icons/lu"
+import useOrganization_Membership from '../Organization/Organization_Membership_Hook'
 
 
 
 const BuildingList = () => {
     const {user, userInfo} = useSelector(state => state.auth)
     const accessToken = useAccessToken(user)
+    const { members} = useOrganization_Membership()
+
     const inputRef = useRef<HTMLInputElement | null>(null)
+    
+    console.log("member_org:", members)
+
 
     const navigate = useNavigate()
     const [buildings, setBuildings] = useState([])
-    const [organization, setOrganization] = useState('')
     const [keyword, setKeyword] = useState("")
     const [loading, setLoading] = useState(false)
     const [building_size, setBuildingSize] = useState('')
@@ -27,17 +32,20 @@ const BuildingList = () => {
     const [postal_code, setPostalCode] = useState('')
     const [building_name, setBuildingName] = useState('')
 
+
     const ListBuilding = async()=>{
         if(!accessToken || !userInfo?.id) return
         const url = import.meta.env.VITE_BUILDING_LIST_URL
         try {
-            const res = await axios.get(url, {
+            const res = await api.get(url, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json"
                 },
             })
             let fetchedBuilding = Array.isArray(res.data) ? res.data : [];
+            console.log("Fetched buildings:", fetchedBuilding);
+            // fetchedBuilding = fetchedBuilding.find(item => item.organization === organization)
             if(building_city) {
                 fetchedBuilding = fetchedBuilding.filter(item => item.city === building_city)
             }
@@ -55,7 +63,11 @@ const BuildingList = () => {
             }
             setBuildings(fetchedBuilding)
         }catch(error){
-            alert("Cannot list the building", error.response?.data || error.message)
+            if(error.response && error.response.status === 401) {
+                alert("Please login again.");
+            }else {
+                console.error(error);
+            }
         }
     }
 
@@ -63,6 +75,7 @@ const BuildingList = () => {
         if(accessToken && userInfo?.id){
             ListBuilding()
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[accessToken, userInfo?.id, building_size, building_city, postal_code, building_street, building_name])
 
     const handleClickViewRoom = (buildingId) => {
@@ -81,7 +94,7 @@ const BuildingList = () => {
         if(!accessToken || !userInfo?.id) return
         const url = `${import.meta.env.VITE_BUILDING_UPDATE_URL}${building}/`
         try {
-            axios.delete(url, {
+            api.delete(url, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json"
@@ -112,7 +125,7 @@ const BuildingList = () => {
         }
 
         try {
-            const res = await axios.post(url, duplicatedData, {
+            const res = await api.post(url, duplicatedData, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json"
@@ -122,7 +135,10 @@ const BuildingList = () => {
             alert("Building duplicated successfully!")
         } catch (error) {
             console.error("Error duplicating building:", error);
-            alert("Failed to duplicate building. Please try again.");
+            if(error.response.data === 401) {
+
+                alert("Please login again.");
+            }
         }
     }
 
@@ -142,6 +158,13 @@ const BuildingList = () => {
         setBuildingName(e.target.value);
     }
 
+    const handleClearFilter = () => {
+        setBuildingName("");
+        setBuildingStreet("");
+        setPostalCode("");
+        setBuildingCity("");
+        setBuildingSize("");
+    }
     const handleBuildingSearch = async (e) => {
         e.preventDefault();
         const searchKeyword = keyword.trim()
@@ -157,7 +180,7 @@ const BuildingList = () => {
             },
         }
         try {
-            const res = await axios.get(url, config);
+            const res = await api.get(url, config);
             let searchfilter = Array.isArray(res.data) ? res.data : [];
             if(building_size) {
                 searchfilter = searchfilter.filter(item => item.building_size === Number(building_size))
@@ -177,13 +200,39 @@ const BuildingList = () => {
             handleBuildingSearch();
         }
     };
+    const handleKeywordChange = (e) => {
+      const value = e.target.value;
+      setKeyword(value);
+
+      // When keyword is cleared (e.g. backspace to empty), fetch all
+      if (value.trim() === "") {
+          handleBuildingSearch(); // Call without event
+      }
+    };
+
+    useEffect(() => {
+      if (keyword.trim() === "") {
+          ListBuilding();
+      }
+    }, [keyword]);
+
+    const endElement = keyword ? (
+      <CloseButton
+        size="xs"
+        onClick={() => {
+          setKeyword("")
+          inputRef.current?.focus()
+        }}
+        me="-2"
+      />
+    ) : undefined
 
     return (
-        <Container>
-            <Box marginBottom={"20px"}>
+        <Box w="100%" maxW={"100vw"}>
+            <Box>
                 <HStack gap={"10px"} justifyContent={"space-evenly"}>
-                    <Box my={10} p={4} fontSize="18px" fontWeight="bold" border={"1px solid"} rounded={"7px"}>
-                        <label htmlFor="city">City: </label>
+                    <Box my={10} p={4} fontSize="16px" border={"1px solid"} rounded={"7px"}>
+                        <label htmlFor="city"></label>
                         <select
                             value={building_city}
                             onChange={handleBuildingCityChange}
@@ -197,8 +246,8 @@ const BuildingList = () => {
                             ))}
                         </select>
                     </Box>
-                    <Box my={10} p={4} fontSize="18px" fontWeight="bold" border={"1px solid"} rounded={"7px"}>
-                        <label htmlFor="postal_code">Postcode: </label>
+                    <Box my={10} p={4} fontSize="16px" border={"1px solid"} rounded={"7px"}>
+                        <label htmlFor="postal_code"></label>
                         <select
                             value={postal_code}
                             onChange={handleBuildingPostalCodeChange}
@@ -212,8 +261,8 @@ const BuildingList = () => {
                             ))}
                         </select>
                     </Box>
-                    <Box my={10} p={4} fontSize="18px" fontWeight="bold" border={"1px solid"} rounded={"7px"}>
-                        <label htmlFor="building_street">Street: </label>
+                    <Box my={10} p={4} fontSize="16px" border={"1px solid"} rounded={"7px"}>
+                        <label htmlFor="building_street"></label>
                         <select
                             value={building_street}
                             onChange={handleBuildingStreeChange}
@@ -227,8 +276,8 @@ const BuildingList = () => {
                             ))}
                         </select>
                     </Box>
-                    <Box my={10} p={4} fontSize="18px" fontWeight="bold" border={"1px solid"} rounded={"7px"}>
-                        <label htmlFor="size">Size: </label>
+                    <Box my={10} p={4} fontSize="16px" border={"1px solid"} rounded={"7px"}>
+                        <label htmlFor="size"></label>
                         <select
                             value={building_size}
                             onChange={handleBuildingSizeChange}
@@ -242,8 +291,8 @@ const BuildingList = () => {
                             ))}
                         </select>
                     </Box>
-                    <Box my={10} p={4} fontSize="18px" fontWeight="bold" border={"1px solid"} rounded={"7px"}>
-                        <label htmlFor="name">Name: </label>
+                    <Box my={10} p={4} fontSize="16px" border={"1px solid"} rounded={"7px"}>
+                        <label htmlFor="name"></label>
                         <select
                             value={building_name}
                             onChange={handleBuildingNameChange}
@@ -257,114 +306,159 @@ const BuildingList = () => {
                             ))}
                         </select>
                     </Box>
+                    <Box>
+                        <Button onClick={handleClearFilter}>Clear</Button>
+                    </Box>
                 </HStack>
-                <form onSubmit={handleBuildingSearch}>
-                    <Center>
-                        <HStack gap={"10px"} alignItems={"center"}>
-                            <label htmlFor="search">Search Building: </label>
-                                <input
-                                    id='search'
-                                    type="search"
-                                    value={keyword}
-                                    onChange={(e) => setKeyword(e.target.value)}
-                                    onkeydown={handleKeyDown}
-                                    placeholder="Enter keyword to search"
-                                    style={{border:"1px solid", borderRadius:"7px", padding:"5px", minWidth:"200px", maxWidth:"400px"}}
-                                />
-                        </HStack>
-                    </Center>
-                </form>
+                <Center>
+                    <form onSubmit={handleBuildingSearch} >
+                        <InputGroup p={"10px"} shadow="3px 3px 15px 5px rgb(75, 75, 79)" flex="1" startElement={<LuSearch />} endElement={endElement} rounded={"7px"}>
+                            <Input 
+                            // ref={inputRef}
+                            id='search'
+                            type="search"
+                            value={keyword}
+                            onChange={handleKeywordChange}
+                            // onChange={(e) => setKeyword(e.target.value)}
+                            onkeydown={handleKeyDown}
+                            placeholder="Enter keyword to search"
+                            w={"300px"}
+                            />
+                        </InputGroup>
+                    </form>
+                </Center>
             </Box>
-
             <Flex p={4} wrap={"wrap"} justifyContent={"space-evenly"} alignItems={"center"}>
                 {
-                    buildings && buildings.length > 0 ? (
-                        buildings.map((building) => (
-                            <Box shadow="1px 1px 15px 5px rgb(75, 75, 79)" rounded={8} key={building.id} w={"300px"} h={"470px"} my={"10px"}>
-                                <Flex rounded={8} maxW="400px" p={2} m={2} justifyContent="space-between">
-                                    <VStack>
-                                            <Image p={"2px"} bg={"white"} mx={"auto"} w="auto" border={"1px solid"} rounded={"5px"} height="150px" src={building.building_img || '/building.png'}/>
-                                        <Box>
-                                            <Box pl={2}>
-                                                <Box fontWeight="bold" fontSize="18px">Name: {building.name}</Box>
-                                                {building.organization_name ? (
-                                                    <Box>Owner: {building.organization_name}</Box>
-                                                ):(
-                                                    <Box>Owner: {building.owner_name}</Box>
-                                                )}
-                                                <Box>Size: {building.building_size ? `${building.building_size}` : "N/A"}</Box>
-                                                <Box>Street: {building.street}</Box>
-                                                <Box>City: {building.city}</Box>
-                                                <Box>Postal Code: {building.postal_code}</Box>
-                                                <Box>Country: {building.country}</Box>
-                                                <Box>Descriptions: {building.description}</Box>
+                    buildings.length > 0 ? (
+                        buildings.map((building) => (     
+                        <Box key={building.id}>
+                            <Box>
+                                {members
+                                ?.filter(item => item.organization === building.organization && item.user === userInfo?.id)
+                                .map((item) => (
+                                    
+                                <Box key={item.id} >
+                                    <Box shadow="1px 1px 15px 5px rgb(75, 75, 79)" rounded={8} key={building.id} 
+                                        w={"300px"} h={"470px"} my={"10px"}>
+                                        <VStack>
+                                            <Flex justifyContent={"space-between"} p={"10px"} w={"100%"}>
+                                                 <Image p={"2px"} bg={"white"} w="85%" rounded={"5px"} height="150px" src={building.building_img || '/building.png'}/>
+                                                <Box>
+                                                    <Dialog.Root size="xs">
+                                                        
+                                                        {item.role === "editor" ? (<Menu.Root>
+                                                            <Menu.Trigger asChild>
+                                                                <Button variant="ghost" size="xs">
+                                                                    <BsThreeDotsVertical />
+                                                                </Button>
+                                                            </Menu.Trigger>
+                                                            <Portal>
+                                                                <Menu.Positioner>
+                                                                    <Menu.Item>
+                                                                        <Button variant="outline" size="xs" onClick={() => handleUpdateBuilding(building.id)}>Update</Button>
+                                                                    </Menu.Item>
+                                                                    <Menu.Item>
+                                                                        <Dialog.Trigger asChild>
+                                                                            <Button variant="outline" size="xs">Delete</Button>
+                                                                        </Dialog.Trigger>
+                                                                    </Menu.Item>
+                                                                    <Menu.Item>
+                                                                        <Button variant="outline" size="xs" onClick={() => handleDuplicateBuilding(building)}>Duplicate</Button>
+                                                                    </Menu.Item>
+                                                                </Menu.Positioner>
+                                                            </Portal>
+                                                        </Menu.Root>):("")}
+                                                        <Portal>
+                                                            <Dialog.Backdrop />
+                                                            <Dialog.Positioner>
+                                                                <Dialog.Content>
+                                                                    <Dialog.Header>
+                                                                        <Dialog.Title>Delete Building</Dialog.Title>
+                                                                    </Dialog.Header>
+                                                                    <Dialog.Body>
+                                                                        <Text>Do you really want to delete the building?</Text>
+                                                                    </Dialog.Body>
+                                                                    <Dialog.Footer>
+                                                                        <Dialog.ActionTrigger asChild>
+                                                                            <Button variant="outline">Cancel</Button>
+                                                                        </Dialog.ActionTrigger>
+                                                                        <Button onClick={()=>{handleDeleteBuilding(building.id)}}>Delete</Button>
+                                                                    </Dialog.Footer>
+                                                                    <Dialog.CloseTrigger asChild>
+                                                                        <CloseButton size="sm" />
+                                                                    </Dialog.CloseTrigger>
+                                                                </Dialog.Content>
+                                                            </Dialog.Positioner>
+                                                        </Portal>
+                                                    </Dialog.Root>
+                                                </Box>
+                                            </Flex>
+                                            <Box pl={2} h="220px" overflow={"auto"} mt={"10px"} maxW={"300px"}>
+                                                <Table.Root showColumnBorder>
+                                                    <Table.Body>
+                                                        <Table.Row>
+                                                            <Table.Cell fontWeight="bold" fontSize="18px" >Name</Table.Cell>
+                                                            <Table.Cell fontWeight="bold" fontSize="18px" whiteSpace={"normal"} maxW={"160px"}>{building.name}</Table.Cell>
+                                                        </Table.Row>
+                                                        <Table.Row>
+                                                            <Table.Cell>Organization</Table.Cell>
+                                                            <Table.Cell whiteSpace={"normal"} maxW={"160px"}>{building.organization}</Table.Cell>
+                                                        </Table.Row>
+                                                        <Table.Row>
+                                                            <Table.Cell>Size</Table.Cell>
+                                                            <Table.Cell whiteSpace={"normal"} maxW={"160px"}>{building.size}</Table.Cell>
+                                                        </Table.Row>
+                                                        <Table.Row>
+                                                            <Table.Cell>Street</Table.Cell>
+                                                            <Table.Cell whiteSpace={"normal"} maxW={"160px"}>{building.street}</Table.Cell>
+                                                        </Table.Row>
+                                                        <Table.Row>
+                                                            <Table.Cell>City</Table.Cell>
+                                                            <Table.Cell whiteSpace={"normal"} maxW={"160px"}>{building.city}</Table.Cell>
+                                                        </Table.Row>
+                                                        <Table.Row>
+                                                            <Table.Cell>Post-Code</Table.Cell>
+                                                            <Table.Cell whiteSpace={"normal"} maxW={"160px"}>{building.postal_code}</Table.Cell>
+                                                        </Table.Row>
+                                                        <Table.Row>
+                                                            <Table.Cell>Country</Table.Cell>
+                                                            <Table.Cell whiteSpace={"normal"} maxW={"160px"}>{building.country}</Table.Cell>
+                                                        </Table.Row>
+                                                        <Table.Row>
+                                                            <Table.Cell>Description</Table.Cell>
+                                                            <Table.Cell whiteSpace={"normal"} maxW={"160px"}>{building.description}</Table.Cell>
+                                                        </Table.Row>
+                                                    </Table.Body>
+                                                </Table.Root>
                                             </Box>
-                                        </Box>
-                                    </VStack>
-                                    <Box mx="18px">
-                                        <Dialog.Root size="xs">
-                                            <Menu.Root>
-                                                <Menu.Trigger asChild>
-                                                    <Button variant="ghost" size="xs">
-                                                        <BsThreeDotsVertical />
-                                                    </Button>
-                                                </Menu.Trigger>
-                                                <Portal>
-                                                    <Menu.Positioner>
-                                                        <Menu.Item>
-                                                            <Button variant="outline" size="xs" onClick={() => handleUpdateBuilding(building.id)}>Update</Button>
-                                                        </Menu.Item>
-                                                        <Menu.Item>
-                                                            <Dialog.Trigger asChild>
-                                                                <Button variant="outline" size="xs">Delete</Button>
-                                                            </Dialog.Trigger>
-                                                        </Menu.Item>
-                                                        <Menu.Item>
-                                                            <Button variant="outline" size="xs" onClick={() => handleDuplicateBuilding(building)}>Duplicate</Button>
-                                                        </Menu.Item>
-                                                    </Menu.Positioner>
-                                                </Portal>
-                                            </Menu.Root>
-                                            <Portal>
-                                                <Dialog.Backdrop />
-                                                <Dialog.Positioner>
-                                                    <Dialog.Content>
-                                                        <Dialog.Header>
-                                                            <Dialog.Title>Delete Building</Dialog.Title>
-                                                        </Dialog.Header>
-                                                        <Dialog.Body>
-                                                            <Text>Do you really want to delete the building?</Text>
-                                                        </Dialog.Body>
-                                                        <Dialog.Footer>
-                                                            <Dialog.ActionTrigger asChild>
-                                                                <Button variant="outline">Cancel</Button>
-                                                            </Dialog.ActionTrigger>
-                                                            <Button onClick={()=>{handleDeleteBuilding(building.id)}}>Delete</Button>
-                                                        </Dialog.Footer>
-                                                        <Dialog.CloseTrigger asChild>
-                                                            <CloseButton size="sm" />
-                                                        </Dialog.CloseTrigger>
-                                                    </Dialog.Content>
-                                                </Dialog.Positioner>
-                                            </Portal>
-                                        </Dialog.Root>
+                                        </VStack>
+                                        <HStack justifyContent="space-between" p={2}>
+                                            <Button variant="outline" size="xs" onClick={()=> handleClickViewRoom(building.id)}>View rooms</Button>
+                                            <Button variant="outline" size="xs" onClick={()=> handleClickViewReport(building.id)} >View Report</Button>
+                                        </HStack>
                                     </Box>
-                                </Flex>
-                                <HStack justifyContent="space-between" p={2}>
-                                    <Button variant="outline" size="xs" onClick={()=> handleClickViewRoom(building.id)}>View rooms</Button>
-                                    <Button variant="outline" size="xs" onClick={()=> handleClickViewReport(building.id)} >View Report</Button>
-                                </HStack>
+
+                                </Box>
+                                ))}
                             </Box>
+                            
+                        </Box>
+
                         ))
                     ) : (
                         <Box>
                             <Box>You have no building. </Box>
-                            <Link to="/home/management/add_building">Create your own Building</Link>
+                            {members
+                            .find(member => member.user === userInfo?.id && member.is_admin) ?  (<Link to="/home/management/add_building">Create your own Building</Link>):("")
+
+                        }
+                            
                         </Box>
                     )
                 }
             </Flex>
-        </Container>
+        </Box>
     )
 }
 

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { register, reset } from '../services/authSlice'
-import { useNavigate } from 'react-router'
-import { Field, Center, VStack, Container, Input, Button, Heading } from '@chakra-ui/react'
+import { useNavigate, Link } from 'react-router-dom'
+import { HStack, Text, Center, VStack, Container, Input, Button, Heading } from '@chakra-ui/react'
 import { PasswordInput } from '../components/ui/password-input'
 
 const Register = () => {
@@ -55,11 +55,11 @@ const Register = () => {
     }, [isError, isSuccess, user, navigate, dispatch])
 
   return (
-    <Container>
-      <Center>
-        <VStack mt={100} p={4} border="1px solid" maxW={600} rounded={8} shadow="3px 3px 15px 5px rgb(75, 75, 79)">
-          <Heading fontSize={24} color="white">Register</Heading>
-          <VStack maxW="500px" bg="white" p={2} rounded={8}>
+    <Container maxW="1140px">
+      <Center flexBasis="50%">
+        <VStack maxW="500px" mt={100} p={4} rounded={8} shadow="3px 3px 15px 5px rgb(75, 75, 79)">
+          <Heading fontSize={24}>Register</Heading>
+          <VStack p={2} rounded={8}>
             <Input  border="1px solid"
               type="text"
               placeholder="First Name *"
@@ -102,6 +102,10 @@ const Register = () => {
             />
           </VStack>
             <Button type="submit" onClick={handleSubmit}>Register</Button>
+          <HStack>
+            <Text fontSize="14px" fontStyle="italic" >Do you have an account?</Text>
+            <Link to="/login">login</Link>
+          </HStack>
         </VStack>
       </Center>
     </Container>

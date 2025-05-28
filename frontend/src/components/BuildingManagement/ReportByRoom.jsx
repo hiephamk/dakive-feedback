@@ -33,8 +33,11 @@ const ReportByRoom = () => {
       }
 
     } catch (error) {
-      console.error('Fetch report error:', error.response?.data || error.message);
-      alert('Error fetching reports');
+        if(error.response && error.response.status === 401) {
+            alert("Please login again.");
+        }else {
+            console.error(error);
+        }
     }
   };
 

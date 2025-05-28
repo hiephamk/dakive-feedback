@@ -18,7 +18,6 @@ import ManagementBoard from "./pages/ManagementBoard";
 import Building from "./components/BuildingManagement/Building"
 import Report from "./components/BuildingManagement/Report";
 import HomePage from "./pages/HomePage";
-import Organizations from "./components/BuildingManagement/Organizations";
 import BuildingList from "./components/BuildingManagement/BuildingList";
 import CreateRoom from "./components/RoomOwner/CreateRoom";
 import CreateRoomAsBuildingId from "./components/RoomOwner/CreateRoomAsBuildingId";
@@ -30,6 +29,14 @@ import ReportByRoom from "./components/BuildingManagement/ReportByRoom";
 import BuildingReports from "./components/BuildingManagement/BuildingReports"
 import UpdateBuilding from "./components/BuildingManagement/UpadateBuilding";
 import UpdateRoom from "./components/RoomOwner/UpdateRoom";
+import Home_login from "./pages/Home_login";
+import Organization_Details from "./components/Organization/Organization_Details";
+import Add_Member from "./components/Organization/Add_Member";
+import Update_Role_Members from "./components/Organization/Update_Role_Members";
+import AdminPage from "./pages/AdminPage";
+import UpdateBuildingOrg from "./components/BuildingManagement/UpadateBuildingOrg";
+import Organizations from "./components/Organization/Organizations";
+import UpdateOrg from "./components/Organization/UpadateOrg";
 
 function App() {
   return (
@@ -43,7 +50,15 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/password-reset/confirm/:uid/:token" element={<ResetPasswordConfirm/>} />
         <Route path="/home" element={<PrivateRoute element={<Dashboard/>}/>}>
-          <Route index element={<HomePage/>}/>
+          <Route index element={<AdminPage/>}/>
+          <Route path="/home/admin" element = {<AdminPage/>}>
+            <Route path="/home/admin/organization/details/:orgId" element={<Organization_Details/>}/>
+            <Route path="/home/admin/organization/add-members/" element={<Add_Member/>}/>
+            <Route path="/home/admin/organization/update_members/:id" element={<Update_Role_Members/>}/>
+            <Route path="/home/admin/add_organization" element={<Organizations/>}/>
+            <Route path="/home/admin/building/update/:buildingId" element={<UpdateBuildingOrg/>}/>
+            <Route path="/home/admin/organization/update/:orgId" element={<UpdateOrg/>}/>
+          </Route>
           {/* <Route path="/home" element={<HomeBuidingManagement/>}/> */}
           <Route path="/home/about" element={<About/>}/>
           <Route path="/home/community" element={<Community/>}/>
@@ -51,7 +66,6 @@ function App() {
           <Route path="/home/update-profile" element={<UpdateProfile/>}/>
           <Route path="/home/management/add_building" element={<Building/>}/>
           <Route path="/home/management/report/room/:roomId" element={<ReportByRoom/>}/>
-          <Route path="/home/management/add_organization" element={<Organizations/>}/>
           <Route path="/home/management/building-list" element={<BuildingList/>}/>          
           <Route path="/home/management/create-room" element={<CreateRoom/>}/>
           <Route path="/home/management/create-room/:buildingId" element={<CreateRoomAsBuildingId/>}/>
@@ -62,6 +76,7 @@ function App() {
           <Route path="/home/management/building-reports/:buildingId" element={<BuildingReports/>}/>
           <Route path="/home/management/building/update/:buildingId" element={<UpdateBuilding/>}/>
           <Route path="/home/management/room/update/:roomId" element={<UpdateRoom/>}/>
+          <Route path="/home/login" element={<Home_login/>}/>
         </Route>
           <Route path="/room/feedback/:roomId/" element={<CreateRoomReport/>}/>
           <Route path="*" element={<NotFound/>}/>

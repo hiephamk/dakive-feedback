@@ -15,7 +15,6 @@ const FetchProfile = () => {
 
   const fetchAccount = async () => {
     const url = import.meta.env.VITE_ACCOUNT_URL;
-    console.log("url:", url);
   
     if (!accessToken) {
       setError("No access token available");
@@ -28,9 +27,6 @@ const FetchProfile = () => {
         "Content-Type": "application/json",
       },
     };
-  
-    console.log("config:", config);
-    console.log("userInfo:", userInfo?.id);
   
     setIsLoading(true);
     setError(null);

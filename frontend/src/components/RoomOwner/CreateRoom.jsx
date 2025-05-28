@@ -4,11 +4,12 @@ import useAccessToken from '../../services/token';
 import { Box, Stack, Input, VStack, Button, Center, Heading, Container } from '@chakra-ui/react';
 import axios from 'axios';
 import useBuilding from '../BuildingManagement/BuildingHook';
+import useOrganization_Membership from '../Organization/Organization_Membership_Hook';
 
 const CreateRoom = () => {
     const { user, userInfo } = useSelector((state) => state.auth);
     const accessToken = useAccessToken(user);
-
+    const {members} = useOrganization_Membership()
     // Fetch organizations
     const {buildings} = useBuilding(userInfo?.id);
     const [buildingId, setBuildingId] = useState('');
@@ -76,11 +77,20 @@ const CreateRoom = () => {
                 style={{height:'100%', padding:'5px'}}
                 >
                 <option value="">Choose Building</option>
-                {
-                    buildings.map((building) => (
-                    <option key={building.id} value={building.id}>
-                        {building.name}
-                    </option>
+                {members
+                    .filter(member => member.user === userInfo?.id && member.role === "editor")
+                    .map(org => (
+                        <Box key={org.id}>
+                            {buildings
+                                .filter(building => building.organization === org.organization)
+                                .map(building => (
+                                    <option key={building.id} value={building.id}>
+                                        {building.name}
+                                    </option>
+                                ))
+                                
+                            }
+                        </Box>
                     ))
                 }
                 </select>

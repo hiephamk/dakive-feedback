@@ -9,14 +9,17 @@ import { LuMoon, LuSun } from 'react-icons/lu'
 import { GiHamburgerMenu } from "react-icons/gi";
 import useProfile from '../../services/ProfileHook';
 import {MenuContent, MenuItem, MenuRoot, MenuTrigger} from "../ui/menu"
+// import useOrganization_Member_Details from '../Organization/Organization_Member_Details'
 
 
 const NavDashboard = () => {
+  const { user, userInfo } = useSelector((state) => state.auth)
   const {colorMode, toggleColorMode} = useColorMode()
   const [isDesktop, setIsDesktop] = useState(false);
   const dispatch = useDispatch()
+  // const { role, members, orgainzationId } = useOrganization_Member_Details(userInfo?.id)
 
-  const { user, userInfo } = useSelector((state) => state.auth)
+
   const {last_name, profile_img} = useProfile(userInfo.id)
 
   const navigate = useNavigate()
@@ -36,7 +39,7 @@ const NavDashboard = () => {
   }, []);
 
   return (
-    <Box p={2}>
+    <Box shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={"10px"} rounded={"7px"} >
       {user ? (
         <Box >
         {isDesktop ? (
@@ -47,7 +50,6 @@ const NavDashboard = () => {
           {/* <Image sizes='sm' src="https://www.hamk.fi/wp-content/uploads/2024/01/HAMK_Logo_text_small_ENG_NEGA-1.svg"/> */}
           {/* <NavLink to="/dashboard">Dashboard</NavLink> */}
           <NavLink to="/home">Home</NavLink>
-          <NavLink to="/home/about">About Us</NavLink>
           <Menu.Root>
             <Menu.Trigger asChild>
               <NavLink variant="outline" fontSize={22} fontWeight="bold">
@@ -58,16 +60,10 @@ const NavDashboard = () => {
               <Menu.Positioner>
                 <Menu.Content>            
                   <Menu.Item value="new-txt-a">
-                  <Link to="/home/management/building-list">List of building</Link>                                
+                    <Link to="/home/management/building-list">Building Management</Link>                                
                   </Menu.Item>
                   <Menu.Item value="new-txt-a">
-                    <Link to="/home/management/add_organization">Create Organization</Link>                                
-                  </Menu.Item>
-                  <Menu.Item value="new-file-a">
-                  <Link to="/home/management/add_building">Create Building</Link>                 
-                  </Menu.Item>
-                  <Menu.Item value="new-win-a">
-                  <Link to="/home/management/create-room">Create rooms</Link>
+                    <Link to="/home/admin">Organization Management</Link>                                
                   </Menu.Item>
                 </Menu.Content>
               </Menu.Positioner>
@@ -82,9 +78,9 @@ const NavDashboard = () => {
             <Portal>
               <Menu.Positioner>
                 <Menu.Content>            
-                <Menu.Item value="new-win-a">
+                  {/* <Menu.Item value="new-win-a">
                     <Link to="/home/management/building-list">List of building</Link> 
-                  </Menu.Item>
+                  </Menu.Item> */}
                   <Menu.Item value="new-win-a">
                     <Link to="/home/management/report/table">Table</Link>
                   </Menu.Item>
@@ -95,6 +91,7 @@ const NavDashboard = () => {
               </Menu.Positioner>
             </Portal>
           </Menu.Root>
+          <NavLink to="/home/about">About</NavLink>
           <MenuRoot>
             <MenuTrigger asChild>
               <Button variant="outline" size="sm" borderColor={btnColor}>

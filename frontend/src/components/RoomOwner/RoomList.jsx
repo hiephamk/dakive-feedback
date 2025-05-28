@@ -1,19 +1,26 @@
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import { Box, Text, Container, VStack, Heading, HStack, Button, Flex, Dialog, Portal, Menu, CloseButton, Input } from '@chakra-ui/react'
+import { Box, Table, Center, Text, Container, VStack, Heading, HStack, InputGroup, Input, Button, Flex, Dialog, Portal, Menu, CloseButton} from '@chakra-ui/react'
+import { LuSearch } from "react-icons/lu"
 import axios from 'axios'
 import { useSelector } from 'react-redux'
 import useAccessToken from '../../services/token'
 import { BsThreeDotsVertical } from "react-icons/bs"
 import useRoom from './RoomHook'
+import useOrganization_Membership from '../Organization/Organization_Membership_Hook'
+import useBuilding from '../BuildingManagement/BuildingHook'
 
 const RoomList = () => {
   const { user, userInfo } = useSelector(state => state.auth)
   const accessToken = useAccessToken(user)
   const { buildingId } = useParams()
   const navigate = useNavigate()
+  const inputRef = useRef<HTMLInputElement | null>(null)
   const { rooms } = useRoom(buildingId)
+  const { buildings } = useBuilding()
+
+  const { members } = useOrganization_Membership()
 
   const [fetchRooms, setRooms] = useState([])
   const [roomId, setRoomId] = useState('')
@@ -127,6 +134,12 @@ const RoomList = () => {
     setRoomId("");
   };
 
+  const handleClearFilter = () => {
+    setRoomSize('')
+    setRoomId('')
+    setFloor('')
+  }
+
   const handleRoomSearch = async (e) => {
     e.preventDefault();
     if (!keyword.trim()) {
@@ -161,14 +174,42 @@ const RoomList = () => {
       handleRoomSearch(event);
     }
   };
+  const handleKeywordChange = (e) => {
+      const value = e.target.value;
+      setKeyword(value);
+
+      // When keyword is cleared (e.g. backspace to empty), fetch all
+      if (value.trim() === "") {
+          handleRoomSearch(); // Call without event
+      }
+    };
+
+    useEffect(() => {
+      if (keyword.trim() === "") {
+          ListOwnerRooms();
+      }
+    }, [keyword]);
+
+    const endElement = keyword ? (
+      <CloseButton
+        size="xs"
+        onClick={() => {
+          setKeyword("")
+          inputRef.current?.focus()
+        }}
+        me="-2"
+      />
+    ) : undefined
   const handleCreateRoom = (buildingId) => {
     buildingId = Number(buildingId)
     navigate(`/home/management/create-room/${buildingId}`)
   }
   return (
-    <Container justifyContent="space-between">
-      <HStack gap="20px" justifyContent={"space-evenly"}>
-        <Box my={10} p={4} fontSize="18px" fontWeight="bold" border={"1px solid"} rounded={"7px"}>
+  <Box w={"100%"} maxW={"100vw"} justifyContent="space-between">
+    <HStack gap="20px" justifyContent="space-evenly">
+      {/* Floor Filter */}
+      <HStack gap={"20px"}>
+        <Box my={10} p={4} fontSize="16px" border="1px solid" rounded="7px">
           <select value={floor} onChange={handleFloorChange} disabled={!buildingId}>
             <option value="">All Floors</option>
             {[...new Set((Array.isArray(rooms) ? rooms : []).map(room => room.floor))].map((uniqueFloor, idx) => (
@@ -176,17 +217,21 @@ const RoomList = () => {
             ))}
           </select>
         </Box>
-        <Box my={10} p={4} fontSize="18px" fontWeight="bold" border={"1px solid"} rounded={"7px"}>
+        {/* Room Size Filter */}
+        <Box my={10} p={4} fontSize="16px" border="1px solid" rounded="7px">
           <select value={room_size} onChange={handleRoomSizeChange} disabled={!buildingId}>
             <option value="">All Size</option>
             {[...new Set((Array.isArray(rooms) ? rooms : [])
               .filter(room => !floor || room.floor === Number(floor))
               .map(room => room.room_size))].map((uniqueRoomSize, idx) => (
-              <option key={idx} value={uniqueRoomSize}>{uniqueRoomSize ? `${uniqueRoomSize}` : "N/A"}</option>
+              <option key={idx} value={uniqueRoomSize}>
+                {uniqueRoomSize ? `${uniqueRoomSize}` : "N/A"}
+              </option>
             ))}
           </select>
         </Box>
-        <Box my={10} p={4} fontSize="18px" fontWeight="bold" border={"1px solid"} rounded={"7px"}>
+        {/* Room Filter */}
+        <Box my={10} p={4} fontSize="16px" border="1px solid" rounded="7px">
           <select value={roomId} onChange={handleRoomChange} disabled={!buildingId}>
             <option value="">All Rooms</option>
             {(Array.isArray(rooms) ? rooms : [])
@@ -197,101 +242,169 @@ const RoomList = () => {
               ))}
           </select>
         </Box>
-        <HStack gap="10px">
-          <form onSubmit={handleRoomSearch}>
-            <label htmlFor="search">Search Room: </label>
-            <input
+        <Box>
+          <Button onClick={handleClearFilter}>Clear</Button>
+        </Box>
+      </HStack>
+
+      {/* Search Box */}
+      <Center shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={"10px"} rounded={"7px"} >
+        <form onSubmit={handleRoomSearch}>
+          <InputGroup flex="1" startElement={<LuSearch />} endElement={endElement} rounded={"5px"}>
+            <Input 
+              // ref={inputRef}
               id='search'
               type="search"
               value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
+              onChange={handleKeywordChange}
+              // onChange={(e) => setKeyword(e.target.value)}
               onkeydown={handleKeyDown}
               placeholder="Enter keyword to search"
-              style={{ border: "1px solid", borderRadius: "7px", padding: "5px" }}
+              w={"300px"}
             />
-            <Button type="submit" mx="10px">Search</Button>
-          </form>
-        </HStack>
-      </HStack>
+          </InputGroup>
+        </form>
+      </Center>
+    </HStack>
 
-      <Flex wrap={"wrap"} justifyContent={"space-evenly"} alignItems={"center"}>
-        {fetchRooms.length > 0 ? (
-          fetchRooms.map((room) => (
-              <Box key={room.id} shadow="1px 1px 15px 5px rgb(75, 75, 79)" p={4} my={4} w="300px" h={"270px"} mx="auto" rounded={6}>
-                <Flex justifyContent="space-between">
-                  <Box>
-                    <Heading fontSize={24}>Room: {room.name}</Heading>
-                    <Box>Room size: {room.room_size ? `${room.room_size}` : "N/A"}</Box>
-                    <Box>Floor: {room.floor}</Box>
-                    <Box>Building: {room.building_name || "N/A"}</Box>
-                    <Box>Description: {room.description || "N/A"}</Box>
-                  </Box>
-                  <Box mx="18px">
-                    <Dialog.Root size="xs">
-                      <Menu.Root>
-                        <Menu.Trigger asChild>
-                          <Button variant="ghost" size="xs">
-                            <BsThreeDotsVertical />
-                          </Button>
-                        </Menu.Trigger>
-                        <Portal>
-                          <Menu.Positioner>
-                            <Menu.Item>
-                              <Button variant="outline" size="xs" onClick={() => handleUpdateRoom(room.id)}>Update</Button>
-                            </Menu.Item>
-                            <Menu.Item>
-                              <Button variant="outline" size="xs" onClick={() => handleDuplicateRoom(room)}>Duplicate</Button>
-                            </Menu.Item>
-                            <Menu.Item>
-                              <Dialog.Trigger asChild>
-                                <Button variant="outline" size="xs">Delete</Button>
-                              </Dialog.Trigger>
-                            </Menu.Item>
-                          </Menu.Positioner>
-                        </Portal>
-                      </Menu.Root>
+    {/* Room Cards */}
+    <Flex wrap="wrap" justifyContent="space-evenly" alignItems="center">
+      {fetchRooms.length > 0 ? (
+        fetchRooms.map((room) => (
+          <Box key={room.id} shadow="1px 1px 15px 5px rgb(75, 75, 79)" p={4} my={4} w="300px" h="400px" rounded={6}>
+            <Box>
+              <Flex justifyContent={"space-between"} w={"100%"} borderBottom={"1px solid"}>
+                <Heading fontSize={"18px"}>Room Details</Heading>
+                <Box>
+                  {buildings
+                    .filter(item => item.id === Number(buildingId))
+                    .flatMap(building =>
+                      members.filter(m => m.organization === building.organization && m.user === userInfo?.id)
+                    )
+                    .filter(item => item.role === 'editor')
+                    .map(item => (
+                      <Box key={item.id}>
+                        <Dialog.Root size="xs">
+                          <Menu.Root>
+                            <Menu.Trigger asChild>
+                              <Button variant="ghost" size="xs">
+                                <BsThreeDotsVertical />
+                              </Button>
+                            </Menu.Trigger>
+                            <Portal>
+                              <Menu.Positioner>
+                                <Menu.Item>
+                                  <Button variant="outline" size="xs" onClick={() => handleUpdateRoom(room.id)}>Update</Button>
+                                </Menu.Item>
+                                <Menu.Item>
+                                  <Button variant="outline" size="xs" onClick={() => handleDuplicateRoom(room)}>Duplicate</Button>
+                                </Menu.Item>
+                                <Menu.Item>
+                                  <Dialog.Trigger asChild>
+                                    <Button variant="outline" size="xs">Delete</Button>
+                                  </Dialog.Trigger>
+                                </Menu.Item>
+                              </Menu.Positioner>
+                            </Portal>
+                          </Menu.Root>
 
-                      <Portal>
-                        <Dialog.Backdrop />
-                        <Dialog.Positioner>
-                          <Dialog.Content>
-                            <Dialog.Header>
-                              <Dialog.Title>Delete Room</Dialog.Title>
-                            </Dialog.Header>
-                            <Dialog.Body>
-                              <Text>Do you really want to delete the room?</Text>
-                            </Dialog.Body>
-                            <Dialog.Footer>
-                              <Dialog.ActionTrigger asChild>
-                                <Button variant="outline">Cancel</Button>
-                              </Dialog.ActionTrigger>
-                              <Button onClick={() => { handleDeleteRoom(room.id) }}>Delete</Button>
-                            </Dialog.Footer>
-                            <Dialog.CloseTrigger asChild>
-                              <CloseButton size="sm" />
-                            </Dialog.CloseTrigger>
-                          </Dialog.Content>
-                        </Dialog.Positioner>
-                      </Portal>
-                    </Dialog.Root>
-                  </Box>
-                </Flex>
-                <HStack my={4} mx="auto">
-                  <Button variant="outline" onClick={() => handlClickQRCode(room.id)}>Create QrCode</Button>
-                  <Button variant="outline" onClick={() => handlClickReport(room.id)}>View reports</Button>
-                </HStack>
+                          <Portal>
+                            <Dialog.Backdrop />
+                            <Dialog.Positioner>
+                              <Dialog.Content>
+                                <Dialog.Header>
+                                  <Dialog.Title>Delete Room</Dialog.Title>
+                                </Dialog.Header>
+                                <Dialog.Body>
+                                  <Text>Do you really want to delete the room?</Text>
+                                </Dialog.Body>
+                                <Dialog.Footer>
+                                  <Dialog.ActionTrigger asChild>
+                                    <Button variant="outline">Cancel</Button>
+                                  </Dialog.ActionTrigger>
+                                  <Button onClick={() => handleDeleteRoom(room.id)}>Delete</Button>
+                                </Dialog.Footer>
+                                <Dialog.CloseTrigger asChild>
+                                  <CloseButton size="sm" />
+                                </Dialog.CloseTrigger>
+                              </Dialog.Content>
+                            </Dialog.Positioner>
+                          </Portal>
+                        </Dialog.Root>
+                      </Box>
+                    ))}
+                </Box>
+              </Flex>
+              <Box h="270px" overflow={"auto"} mt={"10px"} maxW={"300px"}>
+                <Table.Root showColumnBorder>
+                  <Table.Body>
+                    <Table.Row>
+                      <Table.Cell>Name</Table.Cell>
+                      <Table.Cell>{room.name}</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell>Building</Table.Cell>
+                      <Table.Cell>{room.building_name}</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell>Size</Table.Cell>
+                      <Table.Cell>{room.size}</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell>Floor</Table.Cell>
+                      <Table.Cell>{room.floor}</Table.Cell>
+                    </Table.Row>
+                    <Table.Row>
+                      <Table.Cell>Description</Table.Cell>
+                      <Table.Cell>{room.description}</Table.Cell>
+                    </Table.Row>
+                
+                  </Table.Body>
+                </Table.Root>
               </Box>
-          ))
-        ) : (
-          <Box>
-            <Heading>No rooms found</Heading>
-            {/* <Link to="/home/management/create-room/${buildingId}">Create rooms</Link> */}
-            <Button onClick={() => handleCreateRoom(buildingId)}>Create New Rooms</Button>
+            </Box>
+            {/* QR and Report Buttons */}
+            <HStack my={4} mx="auto" justifyContent={"space-evenly"}>
+              {buildings
+                  .filter(item => item.id === Number(buildingId))
+                  .flatMap(building =>
+                    members.filter(m => m.organization === building.organization && m.user === userInfo?.id)
+                  )
+                  .filter(item => item.role === 'editor')
+                  .map(item => (
+                    <Box key={item.id}>
+                      <Button onClick={() => handlClickQRCode(room.id)}>Create QR-Code</Button>
+                    </Box>
+                  ))}
+              
+              <Button onClick={() => handlClickReport(room.id)}>View reports</Button>
+            </HStack>
           </Box>
-        )}
-      </Flex>
-    </Container>
-  );
+        ))
+      ) : (
+        <Box>
+          <Heading>No rooms found</Heading>
+          {members
+              .filter(member => member.user === userInfo?.id && member.role === "editor")
+              .map(org => (
+                  <Box key={org.id}>
+                      {buildings
+                          .filter(building => building.organization === org.organization)
+                          .map(item => (
+                            <Box key={item.id}>
+                              {item.id === Number(buildingId) ? (<Button onClick={() => handleCreateRoom(buildingId)}>Create New Rooms</Button>):("")}
+                            </Box>
+                          )) 
+                      }
+                  </Box>
+              ))
+          }
+        </Box>
+      )}
+    </Flex>
+  </Box>
+);
+
 };
 
 export default RoomList;

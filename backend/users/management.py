@@ -30,6 +30,8 @@ class CustomUserManager(BaseUserManager):
             first_name=first_name,
             last_name=last_name,
             email=email,
+            organizationid=extra_fields.pop("organizationid", None),
+            # is_active=extra_fields.pop("is_active", None),
             **extra_fields
         )
 
@@ -67,4 +69,3 @@ class CustomUserManager(BaseUserManager):
         user.save()
 
         return user
-
