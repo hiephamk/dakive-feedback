@@ -140,6 +140,16 @@ const Add_Member = ({onSuccess}) => {
         duration: 3000,
         isClosable: true,
       });
+      if (error.response && error.response.status === 400) {
+        // Extract error message from the response
+        const errorMessage = error.response.data.non_field_errors || error.response.data.name || 'This name already exists';
+        // setErrors(errorMessage);
+        alert(errorMessage)
+      } else {
+          console.error("Unexpected error:", error);
+          // setErrors('An unexpected error occurred');
+          alert("An unexpected error occurred");
+        }
     }
   };
 

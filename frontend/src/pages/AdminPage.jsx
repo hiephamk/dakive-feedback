@@ -198,7 +198,9 @@ useEffect(() => {
 
       const updatedMembers = members.filter(item => item.user === userInfo?.id);
       const adminOrgIds = updatedMembers.map(item => item.organization);
-      const filteredOrgs = freshOrganizations.filter(org => adminOrgIds.includes(org.id));
+      let filteredOrgs = freshOrganizations.filter(org => adminOrgIds.includes(org.id));
+      filteredOrgs = filteredOrgs.sort((a,b) => b.id - a.id)
+
 
       if (filteredOrgs.length > 0) {
         const firstOrgId = filteredOrgs[0].id;
@@ -308,6 +310,10 @@ useEffect(() => {
       }
     }, [keyword]);
 
+    useEffect(() => {
+      console.log("members: ", members)
+    }, [members]);
+
     const endElement = keyword ? (
       <CloseButton
         size="xs"
@@ -329,7 +335,7 @@ useEffect(() => {
                 <InputGroup flex="1" startElement={<LuSearch />} endElement={endElement} rounded={"5px"}>
                   <Input 
                     // ref={inputRef}
-                    id='search'
+                    id='search-org'
                     type="search"
                     value={keyword}
                     onChange={handleKeywordChange}

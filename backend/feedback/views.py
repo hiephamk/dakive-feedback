@@ -25,7 +25,7 @@ class RoomReportListView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Room_Report.objects.filter(building__owner=user).order_by('-created_at')
+        return Room_Report.objects.all().order_by('-created_at')
 
 class RoomReportAnalyticsView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]

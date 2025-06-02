@@ -113,12 +113,17 @@ const Organizations = () => {
           owner:userInfo.id
         });
         navigate('/home/admin', { state: { shouldRefresh: true } })
-      } catch (error) {
-        if(error.response && error.response.status === 401) {
-                alert("Please login again.");
-            }else {
-                console.error(error);
-            }
+      } catch (err) {
+        if (err.response && err.response.status === 400) {
+        // Extract error message from the response
+        const errorMessage = err.response.data.non_field_errors || err.response.data.name || 'This name already exists';
+        setErrors(errorMessage);
+        alert(errorMessage)
+      } else {
+          console.error("Unexpected error:", err);
+          setErrors('An unexpected error occurred');
+          alert("An unexpected error occurred");
+        }
       }
     };
 

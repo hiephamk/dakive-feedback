@@ -41,3 +41,19 @@ class OrganizationManagerSerializer(serializers.ModelSerializer):
         if owner:
             return MemberSerializer(owner).data
         return None
+    
+    def validate(self, data):
+        organization = data.get('organization')
+        user= data.get('user')
+
+        # For create a new building
+        if self.instance is None:
+            if Organization_membership.objects.filter(organization__exact=organization, user=user).exists():
+                raise serializers.ValidationError("This user is already a member of this organization.")
+
+        else:
+            # For update, exclude current Organization
+            if Organization_membership.objects.filter(organization__exact=organization, user=user).exclude(pk=self.instance.pk).exists():
+                raise serializers.ValidationError("This user is already a member of this organization.")
+
+        return data

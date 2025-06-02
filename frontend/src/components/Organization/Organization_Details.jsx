@@ -23,8 +23,7 @@ const Organization_Details = () => {
   const { organizations, ListOrganizations } = useOrganization();
   const { buildings } = useBuilding()
   const { users } = useUsers()
-console.log("users:", users)
-console.log("userInfo.id:", userInfo.id)
+
 
   const [members, setMembers ] = useState([])
   const [ loading, setLoading] = useState(false)
@@ -218,7 +217,7 @@ const handleMemberAdded = () => {
                           <Table.Row key={member.id}>
                             <Table.Cell>{member.members_full_name}</Table.Cell>
                             <Table.Cell>{member.members_email}</Table.Cell>
-                            <Table.Cell>{member.is_admin ? 'Yes' : 'No'}</Table.Cell>
+                            <Table.Cell>{member.is_admin ? member.members_owner.id === member.user ? 'Yes - Owner' : "Yes" : "No"}</Table.Cell>
                             <Table.Cell>
                               {members.length > 0 && members
                                 .some(mem => mem.user === userInfo.id && (mem.is_admin) && mem.organization === Number(orgId)) ? (
@@ -231,17 +230,30 @@ const handleMemberAdded = () => {
                                       {member.role}
                                     </Button>)
                               }
-                            </Table.Cell>
-                            <Table.Cell>
-                              {members.length > 0 && members
-                                .some(mem => mem.user === userInfo.id && (mem.is_admin) && mem.organization === Number(orgId)) ? (
+
+                                {/* {(member.user !== userInfo.id && !member.is_admin && member.members_owner.id !== member.user) ? (
                                   <>
-                                    <Button onClick={() => handleDeleteMember(member.id)}>
-                                      Delete
+                                    <Button onClick={() => handleUpdate(member.id)}>
+                                      {member.role}
                                     </Button>
                                   </>
                                 ):(<Button disabled>
-                                      Delete
+                                      {member.role}
+                                    </Button>)
+                                } */}
+                              
+                            </Table.Cell>
+                            <Table.Cell>
+
+                                {members.length > 0 && members
+                                .some(mem => mem.user === userInfo.id && (mem.is_admin) && mem.organization === Number(orgId)) ? (
+                                  <>
+                                    <Button onClick={() => handleUpdate(member.id)}>
+                                      {member.role}
+                                    </Button>
+                                  </>
+                                ):(<Button disabled>
+                                      {member.role}
                                     </Button>)
                               }
                             </Table.Cell>
