@@ -39,5 +39,18 @@ class Room_Report(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+class Sensor_Report(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    building = models.ForeignKey(Building, on_delete=models.CASCADE)
+    # time = models.DateTimeField()
+    temperature = models.FloatField(null=True, blank=True)
+    humidity = models.FloatField(null=True, blank=True)
+    co2 = models.FloatField(null=True, blank=True)
+    light= models.BooleanField(null=True, blank=True, default=False)
+    motion = models.BooleanField(default=False, null=True, blank=True) 
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return f"Sensor Report for {self.room.name} in {self.building} - (roomId: {self.room.id})"
 

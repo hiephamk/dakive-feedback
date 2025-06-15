@@ -37,6 +37,10 @@ import AdminPage from "./pages/AdminPage";
 import UpdateBuildingOrg from "./components/BuildingManagement/UpadateBuildingOrg";
 import Organizations from "./components/Organization/Organizations";
 import UpdateOrg from "./components/Organization/UpadateOrg";
+import SensorDataBuildings from "./components/Sensor-Data/SensorDataBuildings";
+import SensorDataRooms from "./components/Sensor-Data/SensorDataRooms";
+import UserFeedbackData_Building from "./components/UserFeedback/UserFeedbackData_Building";
+import SensorReportsList from "./components/Sensor-Data/SensorReportsList";
 
 function App() {
   return (
@@ -59,7 +63,12 @@ function App() {
             <Route path="/home/admin/building/update/:buildingId" element={<UpdateBuildingOrg/>}/>
             <Route path="/home/admin/organization/update/:orgId" element={<UpdateOrg/>}/>
           </Route>
-          {/* <Route path="/home" element={<HomeBuidingManagement/>}/> */}
+          <Route path="/home/management/sensor-data/room-list/:id" element={<SensorDataRooms/>}/>
+          <Route path="/home/management/sensor-data/reports/:buildingid/:externalid" element={<SensorReportsList/>}/>
+          {/* <Route path="/home/management/sensor-data/reports/:buildingid/:externalid" element={<BuildingReports/>}/> */}
+          <Route path="/home/management/sensor-data/building-list" element={<SensorDataBuildings/>}/>
+          <Route path="/home/management/building-reports/:buildingId" element={<UserFeedbackData_Building/>}/>
+          {/* <Route path="/home/management/building-reports/:buildingId" element={<BuildingReports/>}/> */}
           <Route path="/home/about" element={<About/>}/>
           <Route path="/home/community" element={<Community/>}/>
           <Route path="/home/profile" element={<Account/>}/>
@@ -68,12 +77,11 @@ function App() {
           <Route path="/home/management/report/room/:roomId" element={<ReportByRoom/>}/>
           <Route path="/home/management/building-list" element={<BuildingList/>}/>          
           <Route path="/home/management/create-room" element={<CreateRoom/>}/>
-          <Route path="/home/management/create-room/:buildingId" element={<CreateRoomAsBuildingId/>}/>
+          <Route path="/home/management/create-room/:buildingId/:externalId" element={<CreateRoomAsBuildingId/>}/>
           <Route path="/home/management/feedback/create-form/:buildingId/:roomId" element={<RoomReportOwner/>}/>
-          <Route path="/home/management/room-list/:buildingId" element={<RoomList/>}/>
+          <Route path="/home/management/room-list/:buildingId/:externalId" element={<RoomList/>}/>
           <Route path="/home/management/report/chart" element={<RoomReportAnalytics/>}/>
           <Route path="/home/management/report/table" element={<Report/>}/>
-          <Route path="/home/management/building-reports/:buildingId" element={<BuildingReports/>}/>
           <Route path="/home/management/building/update/:buildingId" element={<UpdateBuilding/>}/>
           <Route path="/home/management/room/update/:roomId" element={<UpdateRoom/>}/>
           <Route path="/home/login" element={<Home_login/>}/>

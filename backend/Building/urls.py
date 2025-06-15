@@ -20,6 +20,9 @@ urlpatterns = [
     path('rooms/update/<int:pk>/', views.RoomDetailView.as_view(), name='room-update'),
     path('rooms/owner/list/<int:pk>/', views.RoomDetailView.as_view(), name='room-update'),
     path('rooms/search_rooms/', views.RoomSearchView.as_view(), name='search-rooms'),
+    
+    path('rooms/by-external/', views.RoomByExternalIDView.as_view(), name='room-by-external'),
+    path('buildings/by-external/', views.BuildingByExternalIDView.as_view(), name='building-by-external'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

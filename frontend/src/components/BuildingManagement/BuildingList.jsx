@@ -85,6 +85,9 @@ const BuildingList = () => {
     const handleClickViewReport = (buildingId) => {
         navigate(`/home/management/building-reports/${buildingId}`)
     }
+    const handleSensorData = () => {
+        navigate(`/home/management/sensor-data/building-list`)
+    }
 
     const handleUpdateBuilding = (building) => {
         navigate(`/home/management/building/update/${building}`)
@@ -343,7 +346,7 @@ const BuildingList = () => {
                                         w={"300px"} h={"470px"} my={"10px"}>
                                         <VStack>
                                             <Flex justifyContent={"space-between"} p={"10px"} w={"100%"}>
-                                                 <Image p={"2px"} bg={"white"} w="85%" rounded={"5px"} height="150px" src={building.building_img || '/building.png'}/>
+                                                 <Image p={"2px"} bg={"white"} rounded={"5px"} height="150px"  src={building.building_img || '/building.png'}/>
                                                 <Box>
                                                     <Dialog.Root size="xs">
                                                         
@@ -435,7 +438,23 @@ const BuildingList = () => {
                                         </VStack>
                                         <HStack justifyContent="space-between" p={2}>
                                             <Button variant="outline" size="xs" onClick={()=> handleClickViewRoom(building.id)}>View rooms</Button>
-                                            <Button variant="outline" size="xs" onClick={()=> handleClickViewReport(building.id)} >View Report</Button>
+                                            <Menu.Root>
+                                                <Menu.Trigger asChild>
+                                                    <Button>View Report</Button>
+                                                </Menu.Trigger>
+                                                <Portal>
+                                                    <Menu.Positioner>
+                                                        <Menu.Content>
+                                                            <Menu.Item value="user-feedback">
+                                                                <Button variant="outline" size="xs" onClick={()=> handleClickViewReport(building.id)} >User Feedback</Button>
+                                                            </Menu.Item>
+                                                            <Menu.Item value="user-feedback">
+                                                                <Button variant="outline" size="xs" onClick={()=> handleSensorData(building.id)} >Sensor Data</Button>
+                                                            </Menu.Item>
+                                                        </Menu.Content>
+                                                    </Menu.Positioner>
+                                                </Portal>
+                                            </Menu.Root>
                                         </HStack>
                                     </Box>
 

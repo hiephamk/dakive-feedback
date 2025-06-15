@@ -19,6 +19,20 @@ const Building = () => {
 
     const [organizationId, setOrganizationId] = useState('');
     const [buildingImg, setBuildingImage] = useState(null);
+
+    const generateRandom = (length = 8) => {
+        const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        console.log("Generated external_id:", result); // Log for debugging
+        return result;
+    };
+    useEffect(()=> {
+        generateRandom()
+    },[])
+
     const [formData, setFormData] = useState({
         name: "",
         building_size: "",
@@ -30,6 +44,7 @@ const Building = () => {
         description: "",
         owner: userInfo?.id|| "",
         organization: organizationId || "",
+        external_id: generateRandom()
     });
 
     useEffect(() => {
@@ -98,6 +113,7 @@ const Building = () => {
                 description:"",
                 owner: userInfo?.id || "",
                 organization: organizationId || "",
+                external_id: generateRandom(),
             });
             setBuildingImage(null);
             navigate('/home/management/building-list');
@@ -189,7 +205,7 @@ const Building = () => {
                         )}
                     </Box>
                 </HStack>
-                <Button onClick={handleSubmit} my={"20px"}>Create Building</Button>
+                <Button onClick={handleSubmit} my={"20px"}>Create</Button>
             </VStack>
         </Container>
     );

@@ -4,6 +4,9 @@ import useAccessToken from '../../services/token';
 import axios from 'axios';
 import { Container, Box, Heading, Text, VStack, Wrap, WrapItem } from '@chakra-ui/react';
 import { Bar } from 'react-chartjs-2';
+import useOrganization_Membership from '../Organization/Organization_Membership_Hook';
+import useBuilding from './BuildingHook';
+// import useRoom from '../RoomOwner/RoomHook';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -23,7 +26,9 @@ const RoomReportAnalytics = () => {
   const [roomAnalytics, setRoomAnalytics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const { members } = useOrganization_Membership()
+  const { buildings } = useBuilding()
+  // const { rooms } = useRoom()
   // Fetch analytics data for all rooms
   const fetchAnalytics = async () => {
     if (!accessToken) return;
@@ -151,29 +156,55 @@ const RoomReportAnalytics = () => {
           <Text color="red.500" textAlign="center">{error}</Text>
         ) : roomAnalytics.length > 0 ? (
           <Wrap spacing={6} justify="center" p={2}>
-            {roomAnalytics.map((room) => (
-              <WrapItem key={room.id}>
-                <Box 
-                  w={{ base: "100%", md: "400px" }} // Responsive width
-                  h="420px" // Fixed height for chart
-                  border="1px solid" 
-                  p={"10px"} 
-                  borderRadius="md"
-                  boxShadow="md"
-                >
-                  <Heading size="md" mb={2}>
-                    {room.room_name} - {room.building_name}
-                  </Heading>
-                  <Text mb={2} fontSize="sm">
-                    Update: {new Date(room.created_at).toLocaleDateString()}
-                  </Text>
-
-                  <Box h="300px"> {/* Container for chart */}
-                    <Bar data={getChartData(room)} options={chartOptions} />
-                  </Box>
-                </Box>
-              </WrapItem>
-            ))}
+            {members.length > 0 && 
+              members
+                .filter(mem => mem.user === userInfo?.id)
+                .flatMap(mem => {
+                  // Find the building for this member's organization
+                  const memberBuilding = buildings.find(building => building.organization === mem.organization);
+                  
+                  // Only proceed if building exists
+                  if (!memberBuilding) return [];
+                  
+                  // Filter room analytics for this specific building
+                  const buildingRooms = roomAnalytics.filter(room => 
+                    room.building === memberBuilding.id || 
+                    room.building_name === memberBuilding.name
+                  );
+                  
+                  return buildingRooms.map(room => (
+                    <Box 
+                      key={`member-${mem.id}-room-${room.id || room.room_name}`} // Unique key for each combination
+                      w={{ base: "100%", md: "400px" }}
+                      h="420px"
+                      border="1px solid"
+                      borderColor="gray.200"
+                      p={4}
+                      borderRadius="md"
+                      boxShadow="md"
+                      bg="white"
+                    >
+                      <Heading size="md" mb={2} color="gray.700">
+                        {room.room_name} - {room.building_name}
+                      </Heading>
+                      <Text mb={2} fontSize="sm" color="gray.600">
+                        Updated: {new Date(room.created_at).toLocaleDateString()}
+                      </Text>
+                      
+                      <Box h="300px">
+                        <Bar 
+                          data={getChartData(room)} 
+                          options={{
+                            ...chartOptions,
+                            maintainAspectRatio: false,
+                            responsive: true
+                          }} 
+                        />
+                      </Box>
+                    </Box>
+                  ));
+                })
+            }
           </Wrap>
         ) : (
           <Text textAlign="center">No data available for any rooms</Text>

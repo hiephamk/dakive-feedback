@@ -6,11 +6,32 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db.models import Avg, Q
 from django.db.models.functions import Round
 
-from .serializers import RoomReportSerializer
-from .models import Room_Report
+from .serializers import RoomReportSerializer, SensorReportSerializer
+from .models import Room_Report, Sensor_Report
 
 
-# Create your views here.
+class SensorReportUserView(generics.ListCreateAPIView):
+    serializer_class = SensorReportSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    authentication_classes = [JWTAuthentication]
+    queryset = Sensor_Report.objects.all()
+    
+class SensorReportCreateView(generics.ListCreateAPIView):
+    serializer_class = SensorReportSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    queryset = Sensor_Report.objects.all()
+
+class SensorReportDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = SensorReportSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    queryset = Sensor_Report.objects.all()
+
+    # def get_queryset(self):
+    #     # user = self.request.user
+    #     return Sensor_Report.objects.all().order_by('-created_at')
+    
 class RoomReportCreateView(generics.CreateAPIView):
     serializer_class = RoomReportSerializer
     permission_classes = [AllowAny]
@@ -30,6 +51,8 @@ class RoomReportListView(generics.ListAPIView):
 class RoomReportAnalyticsView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
+    serializer_class= RoomReportSerializer
+    
 
     def get(self, request):
         reports = Room_Report.objects.all()
@@ -84,3 +107,28 @@ class RoomReportAnalyticsView(generics.RetrieveAPIView):
                 })
 
         return Response(room_data)
+    
+class SensorDataSearchView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = SensorReportSerializer 
+    authentication_classes = [JWTAuthentication]
+
+    def get_queryset(self):
+        keyword = self.request.GET.get('keyword', '').strip()
+        if not keyword:
+            return Sensor_Report.objects.none()
+
+        keywords = keyword.split()
+        query = Q()
+        for word in keywords:
+            query |= (
+                Q(temperature__icontains=word) |
+                Q(humidity__icontains=word) |
+                Q(co2__icontains=word) |
+                Q(light__icontains=word) |
+                Q(motion__icontains=word) |
+                Q(created_at__icontains=word) |
+                Q(updated_at__icontains=word)
+            )
+
+        return Sensor_Report.objects.filter(query).order_by('-created_at')

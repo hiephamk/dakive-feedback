@@ -15,7 +15,7 @@ const useBuilding = () => {
         },
       };
     const url = import.meta.env.VITE_BUILDING_LIST_URL
-    console.log("URL:", url)
+
     const ListBuildings = async () => {       
       if(!accessToken) return
         try {

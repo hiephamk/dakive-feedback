@@ -13,12 +13,17 @@ const CreateRoom = () => {
     // Fetch organizations
     const {buildings} = useBuilding(userInfo?.id);
     const [buildingId, setBuildingId] = useState('');
+
+    const generateRandom = (length = 8) => {
+        return Math.random().toString(36).substring(2, 2 + length)
+     }
     const [formData, setFormData] = useState({
         name: "",
-        // room_size:"",
+        room_size:"",
         floor: "",
         description: "",
-        building: buildingId || "", // Use lowercase key name
+        building: buildingId || "",
+        external_id:generateRandom()
     });
 
     // Update formData when organizationId changes
@@ -54,6 +59,7 @@ const CreateRoom = () => {
                 floor: "",
                 description:"",
                 building: buildingId, 
+                external_id:""
             });
         } catch (error) {
             console.error("Error creating room:", error.response?.data || error.message);

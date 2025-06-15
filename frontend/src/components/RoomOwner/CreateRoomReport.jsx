@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router';
-import { Box, Input, VStack, Button, Center, Container, Heading, HStack, Flex, Textarea } from '@chakra-ui/react';
+import { Box, Input, VStack, Button, Center, Container, Heading, HStack, Flex, Textarea, Switch } from '@chakra-ui/react';
 import axios from 'axios';
 import { FaFrown, FaMeh, FaSmile, FaGrin, FaGrinStars } from 'react-icons/fa';
 import NavUserReport from '../NavBars/NavUserReport';
+import formatDate from '../formatDate'
 
 const CreateRoomReport = () => {
   const { roomId} = useParams();
   const [buildingId, setBuildingId] = useState('');
   
   const [rooms, setRooms] = useState([])
+  const [sensorData, setSensorData] = useState([])
+  const [isShow, setIsShow ] = useState(false)
 
   const fetchRoom = async ()=> {
     const url = import.meta.env.VITE_ROOM_LIST_FEEDBACK_URL
@@ -30,6 +33,33 @@ const CreateRoomReport = () => {
   useEffect(()=> {
     if(roomId){
       fetchRoom()
+    }
+  },[roomId])
+
+
+  const fetchSensorData = async() => {
+    // const url = "http://localhost:8000/api/rooms/reports/sync-data/user-view/"
+    const url = import.meta.env.VITE_ROOM_SENSOR_REPORT_USERVIEW_URL
+    try {
+      const res = await axios.get(url)
+      const items = res.data
+      const filteredItems = items
+      .filter((room) => room.room === Number(roomId))
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // Sort descending by date
+      // console.log("filter data: ", filteredItems[0])
+      if (filteredItems.length > 0) {
+        setSensorData(filteredItems[0]);
+      } else {
+        setSensorData(null);
+      }
+    }catch(error){
+      console.error("fetch sensor data error", error.response.data || error.message)
+    }
+  }
+  useEffect(()=>{
+    if(roomId){
+
+      fetchSensorData()
     }
   },[roomId])
 
@@ -145,11 +175,21 @@ const CreateRoomReport = () => {
 
   // Feedback icons and values
   const feedbackOptions = [
-    { icon: <FaFrown />, value: 1, label: 'Disappointed' },
-    { icon: <FaMeh />, value: 2, label: 'Neutral' },
-    { icon: <FaSmile />, value: 3, label: 'Okay' },
-    { icon: <FaGrin />, value: 4, label: 'Happy' },
-    { icon: <FaGrinStars />, value: 5, label: 'Very Happy' },
+    { icon: <Box p={"10px"} rounded={"5px"} shadow="3px 3px 15px 5px rgb(75, 75, 79)">
+      <FaFrown />
+    </Box>, value: 1, label: 'Disappointed' },
+    { icon: <Box p={"10px"} rounded={"5px"} shadow="3px 3px 15px 5px rgb(75, 75, 79)">
+      <FaMeh />
+    </Box>, value: 2, label: 'Neutral' },
+    { icon: <Box p={"10px"} rounded={"5px"} shadow="3px 3px 15px 5px rgb(75, 75, 79)">
+      <FaSmile />
+    </Box>, value: 3, label: 'Okay' },
+    { icon: <Box p={"10px"} rounded={"5px"} shadow="3px 3px 15px 5px rgb(75, 75, 79)">
+      <FaGrin />
+    </Box>, value: 4, label: 'Happy' },
+    { icon: <Box p={"10px"} rounded={"5px"} shadow="3px 3px 15px 5px rgb(75, 75, 79)">
+      <FaGrinStars />
+    </Box>, value: 5, label: 'Very Happy' },
   ];
 
   // Render rating icons for a specific field
@@ -171,7 +211,22 @@ const CreateRoomReport = () => {
       ))}
     </Flex>
   );
+  useEffect(() => {
+    if (!isShow || !roomId) {
+      return; // Don't start auto-refresh if toggle is off or no roomId
+    }
 
+    // Initial fetch when toggle is turned on
+    fetchSensorData();
+
+    // // Set up interval for auto-refresh every 30 seconds
+    // const interval = setInterval(() => {
+    //   fetchSensorData();
+    // }, 30000);
+
+    // // Cleanup interval when toggle is turned off or component unmounts
+    // return () => clearInterval(interval);
+  }, [isShow, fetchSensorData, roomId]);
   return (
     <Container>
         <NavUserReport/>
@@ -196,6 +251,34 @@ const CreateRoomReport = () => {
                     readOnly
                   />
                 </HStack>
+                <Box border={"1px solid"} rounded={"7px"} p={"10px"} my={"10px"}>
+                  <Box my={"20px"}>
+                    <Switch.Root
+                      checked={isShow}
+                      onCheckedChange={(e) => setIsShow(e.checked)}
+                    >
+                      <Switch.HiddenInput />
+                        <Switch.Control>
+                          <Switch.Thumb />
+                        </Switch.Control>
+                        <Switch.Label>Show Sensor Data</Switch.Label>
+
+                    </Switch.Root>
+                  </Box>
+                  <Box>
+                    {isShow && (sensorData ? (
+                      <HStack key={sensorData.id} my={"5px"} p={"5px"} justifyContent={"space-between"}>
+                          {/* <Box border={"1px solid"} rounded={"3px"} p={"5px"}>Room Name: {sensorData.room_name}</Box> */}
+                          <Box rounded={"3px"} p={"10px"}>Temp: {sensorData.temperature}°C</Box>
+                          <Box rounded={"3px"} p={"10px"}>Humid: {sensorData.humidity}%</Box>
+                          <Box rounded={"3px"} p={"10px"}>CO2: {sensorData.co2}</Box>
+                          {/* <Box border={"1px solid"} rounded={"3px"} p={"5px"}>{formatDate(sensorData.created_at)}</Box> */}
+                        </HStack>
+                    ):(""))
+                    }
+                  </Box>
+                  
+                </Box>
                 {/* Rating Fields */}
                 <Box>
                   <Box my={6}>

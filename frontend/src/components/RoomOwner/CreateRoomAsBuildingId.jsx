@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import useAccessToken from '../../services/token';
-import { Box, Text, HStack, Input, VStack, Button, Center, Heading, Container } from '@chakra-ui/react';
+import { Box, Text, HStack, Input, VStack, Button, Center, Heading, Container, Field } from '@chakra-ui/react';
 import axios from 'axios';
 import useBuilding from '../BuildingManagement/BuildingHook';
 import { useParams, useNavigate } from 'react-router-dom'
@@ -11,16 +11,25 @@ const CreateRoomAsBuildingId = () => {
     const accessToken = useAccessToken(user);
     const navigate = useNavigate()
 
+    // const [external_id, setExternalId] = useState('')
     // Fetch organizations
     const {buildings} = useBuilding(userInfo?.id);
     // const [buildingId, setBuildingId] = useState('');
-    const { buildingId } = useParams();
+    const { buildingId, externalId } = useParams();
+    
+
+    // return Math.random().toString(36).substring(2, 2 + length)
+    
+    const generateRandom = (length = 8) => {
+        return Math.random().toString(36).substring(2, 2 + length)
+    }
     const [formData, setFormData] = useState({
         name: "",
-        // room_size:"",
+        room_size:"",
         floor: "",
         description: "",
-        building: "", // Use lowercase key name
+        building: buildingId || "",
+        external_id: generateRandom() || ""
     });
 
     // Update formData when organizationId changes
@@ -55,9 +64,10 @@ const CreateRoomAsBuildingId = () => {
                 room_size:"",
                 floor: "",
                 description:"",
-                building: buildingId, 
+                building: buildingId,
             });
-            navigate(`/home/management/room-list/${buildingId}`)
+            
+            navigate(`/home/management/room-list/${buildingId}/${externalId}`)
         } catch (error) {
             console.error("Error creating room:", error.response?.data || error.message);
         }
@@ -76,11 +86,38 @@ const CreateRoomAsBuildingId = () => {
                     ))
                     }
                 </Box>
-                
-                <Input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Name" />
-                <Input type="text" name="room_size" value={formData.room_size} onChange={handleChange} placeholder="Room size" />
-                <Input type="text" name="floor" value={formData.floor} onChange={handleChange} placeholder="Floor" />
-                <Input type="text" name="description" value={formData.description} onChange={handleChange} placeholder="Descriptions" />
+                <Field.Root required>
+                    <HStack>
+                        <Field.Label w={"200px"}>
+                            Name: <Field.RequiredIndicator/>
+                        </Field.Label>
+                        <Input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Name" />
+                    </HStack>
+                </Field.Root>
+                <Field.Root required>
+                    <HStack>
+                        <Field.Label w={"200px"}>
+                            Floor: <Field.RequiredIndicator/>
+                        </Field.Label>
+                        <Input type="text" name="floor" value={formData.floor} onChange={handleChange} placeholder="Floor" />
+                    </HStack>
+                </Field.Root>
+                <Field.Root>
+                    <HStack>
+                        <Field.Label w={"200px"}>
+                            Room Size:
+                        </Field.Label>
+                        <Input type="text" name="room_size" value={formData.room_size} onChange={handleChange} placeholder="Room size" />
+                    </HStack>
+                </Field.Root>
+                <Field.Root>
+                    <HStack>
+                        <Field.Label w={"200px"}>
+                            Description:
+                        </Field.Label>
+                        <Input type="text" name="description" value={formData.description} onChange={handleChange} placeholder="Descriptions" />
+                    </HStack>
+                </Field.Root>
                 <Button onClick={handleSubmit}>Create</Button>
             </VStack>
         </Container>

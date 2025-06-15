@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef} from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import {useSelector} from "react-redux"
-import { Box,Collapsible, InputGroup, Input, Button,CloseButton, HStack, VStack, Menu, Portal, Spinner, Center, Flex, Heading} from '@chakra-ui/react'
+import { Box,Collapsible,Dialog, InputGroup,Text, Input, Button,CloseButton, HStack, VStack, Menu, Portal, Spinner, Center, Flex, Heading} from '@chakra-ui/react'
 import { LuSearch } from "react-icons/lu"
 
 import useAccessToken from '../services/token'
@@ -289,7 +289,7 @@ useEffect(() => {
 
     const handleKeyDown = (event) => {
         if (event && event.key === "Enter") {
-            event.preventDefault();
+            // event.preventDefault();
             handleOrganizationSearch();
         }
     };
@@ -340,7 +340,7 @@ useEffect(() => {
                     value={keyword}
                     onChange={handleKeywordChange}
                     // onChange={(e) => setKeyword(e.target.value)}
-                    onkeydown={handleKeyDown}
+                    onKeyDown={handleKeyDown}
                     placeholder="Enter keyword to search"
                   />
                 </InputGroup>
@@ -349,12 +349,12 @@ useEffect(() => {
           
           <Center>
             <Collapsible.Root rounded={"7px"} w={"100%"}>
-              <Collapsible.Trigger p={"7px"} w={'100%'} shadow="3px 3px 15px 5px rgb(75, 75, 79)" my={"20px"} rounded={"7px"}>
-                <Flex justifyContent={"space-evenly"}>
-                  <Button variant={"outline"}>Filter Organizations</Button>
-                  <Button onClick={handleClearFilters} variant={"outline"}>Clear</Button>
-                </Flex>
-              </Collapsible.Trigger>
+              <Flex justifyContent={"space-between"} gap={"10px"}>
+                <Collapsible.Trigger  p={"7px"} w={'100%'} shadow="3px 3px 15px 5px rgb(75, 75, 79)" my={"20px"} rounded={"7px"}>
+                  Filter Organizations
+                </Collapsible.Trigger>
+                <Button onClick={handleClearFilters} px={"5px"} shadow="3px 3px 15px 5px rgb(75, 75, 79)" my={"20px"} rounded={"7px"}>Clear</Button>
+              </Flex>
               <Collapsible.Content >
                 <VStack gap={"10px"} rounded={"7px"} p={"10px"} mb={"20px"}>
                   <Box p={2} w={"100%"} fontSize="14px" border={"1px solid"} rounded={"7px"}>
@@ -462,7 +462,7 @@ useEffect(() => {
             </Collapsible.Root>
           </Center>
           <Box py={"5px"} px={"10px"} rounded={'5px'} shadow="3px 3px 15px 5px rgb(75, 75, 79)">
-            <Box  py={"5px"} px={"10px"} rounded={'5px'}>
+            <Box>
               {members.length > 0 && members
                 .filter(member => member.user === userInfo.id && member.is_admin)
                 .map(member => organizations
@@ -478,28 +478,68 @@ useEffect(() => {
                       {org.name}
                     </Button>
                     {org.owner === userInfo?.id ? (
-                      <Menu.Root>
-                      <Menu.Trigger asChild>
-                        <Button variant="outline" size="sm">
-                          <BsThreeDotsVertical />
-                        </Button>
-                      </Menu.Trigger>
-                      <Portal>
-                        <Menu.Positioner>
-                          <Menu.Content>
-                            <Menu.Item value="update">
-                              <Button onClick={() => handleUpdateOrg(org.id)}>update</Button>
-                            </Menu.Item>
-                            <Menu.Item value="delete">
-                              <Button w={"fit-content"} onClick={()=> deleteOrganization(org.id)}>Delete</Button>
-                            </Menu.Item>
-                            <Menu.Item value="duplicate">
-                              <Button w={"fit-content"} onClick={()=> handleDuplicateOrganization(org)}>Duplicate</Button>
-                            </Menu.Item>
-                          </Menu.Content>
-                        </Menu.Positioner>
-                      </Portal>
-                    </Menu.Root>
+                      <Dialog.Root size="xs">
+                          <Menu.Root>
+                            <Menu.Trigger asChild>
+                              <Button variant="surface" size="xs">
+                                <BsThreeDotsVertical />
+                              </Button>
+                            </Menu.Trigger>
+                            <Portal>
+                              <Menu.Positioner>
+                                <Menu.Item>
+                                  <Button
+                                    variant="outline"
+                                    size="xs"
+                                    onClick={() => handleUpdateOrg(org.id)}
+                                  >
+                                    Update
+                                  </Button>
+                                </Menu.Item>
+                                <Menu.Item>
+                                  <Dialog.Trigger asChild>
+                                    <Button variant="outline" size="xs">
+                                      Delete
+                                    </Button>
+                                  </Dialog.Trigger>
+                                </Menu.Item>
+                                <Menu.Item>
+                                  <Button
+                                    variant="outline"
+                                    size="xs"
+                                    onClick={() => handleDuplicateOrganization(org)}
+                                  >
+                                    Duplicate
+                                  </Button>
+                                </Menu.Item>
+                              </Menu.Positioner>
+                            </Portal>
+                          </Menu.Root>
+                          <Portal>
+                            <Dialog.Backdrop />
+                            <Dialog.Positioner>
+                              <Dialog.Content>
+                                <Dialog.Header>
+                                  <Dialog.Title>Delete Organization</Dialog.Title>
+                                </Dialog.Header>
+                                <Dialog.Body>
+                                  <Text>Do you really want to delete the organization?</Text>
+                                </Dialog.Body>
+                                <Dialog.Footer>
+                                  <Dialog.ActionTrigger asChild>
+                                    <Button variant="outline">Cancel</Button>
+                                  </Dialog.ActionTrigger>
+                                  <Button onClick={() => deleteOrganization(org.id)}>
+                                    Delete
+                                  </Button>
+                                </Dialog.Footer>
+                                <Dialog.CloseTrigger asChild>
+                                  <CloseButton size="sm" />
+                                </Dialog.CloseTrigger>
+                              </Dialog.Content>
+                            </Dialog.Positioner>
+                          </Portal>
+                        </Dialog.Root>
                     ):("")}
                   </HStack>
                 )))

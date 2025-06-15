@@ -7,7 +7,23 @@ from .serializers import RoomSerializer, BuildingSerializer, OrganizationSeriali
 from .models import Room, Building, Organization
 
 
-# Create your views here.
+class RoomByExternalIDView(generics.ListAPIView):
+    serializer_class = RoomSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get_queryset(self):
+        external_id = self.request.query_params.get('external_id')
+        return Room.objects.filter(external_id=external_id)
+
+class BuildingByExternalIDView(generics.ListAPIView):
+    serializer_class = BuildingSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get_queryset(self):
+        external_id = self.request.query_params.get('external_id')
+        return Building.objects.filter(external_id=external_id)
 
 class RoomListViewFeedback(generics.ListCreateAPIView):
     queryset = Room.objects.all()
