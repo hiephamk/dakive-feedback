@@ -2,11 +2,14 @@ import { useEffect, useState, useRef } from 'react';
 import useRoom from './RoomHook';
 import { useParams} from 'react-router';
 import {QRCodeCanvas} from 'qrcode.react';
-import { Box, VStack, Button, Center, Container, Heading, HStack } from '@chakra-ui/react';
+import { Box, VStack, Button, Center, Container, Heading, HStack, Switch } from '@chakra-ui/react';
+// import { colorPalettes } from "compositions/lib/color-palettes"
 
 const CreateRoomReport = () => {
     const [roomName, setRoomName]=useState('')
     const [buildingName, setBuildingName]=useState('')
+    const [showSensorData, setShowSensorData] = useState(null)
+    const [isChecked, setIsChecked] = useState(false)
     
     const {roomId, buildingId }= useParams();
     const {rooms} = useRoom(buildingId)
@@ -90,22 +93,65 @@ const CreateRoomReport = () => {
         printWindow.close();
       };
     };
-    
+
+    const generateRandom = (length = 10) => {
+      let result = '';
+      while (result.length < length) {
+        result += Math.random().toString(36).substring(2);
+      }
+      return result.substring(0, length);
+    };
+    const [token1] = useState(generateRandom())
+    const [token2] = useState(generateRandom())
+
+
+    useEffect(() => {
+      const token = isChecked
+        ? 'x8Kbf6R4Ti'
+        : 'mUDfq8mo33';
+      setShowSensorData(token);
+    }, [isChecked]);
+    const link = `http://localhost:5173/room/feedback/${roomId}/${token1}${showSensorData}${token2}/`
+
+    const handleCopy = async () => {
+      try {
+        await navigator.clipboard.writeText(link);
+        // Optional: show a toast or message
+        console.log('Link copied!');
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+      }
+    };
     return (
-      <Container mt={5} p={4} rounded={8}>
+      <Box mt={5} p={4} rounded={8}>
           <HStack gap={4} justifyContent="center">       
-          <VStack shadow="3px 3px 15px 5px rgb(75, 75, 79)" rounded={8} p={4}>
+          <VStack shadow="3px 3px 15px 5px rgb(75, 75, 79)" rounded={8} p={4} w={"500px"}>
+              <Heading my={"20px"}>QRCode for Room Feedback</Heading>
             <Box>
-              <Heading>Create QRCode for Room Feedback</Heading>
+              <Switch.Root
+                checked={isChecked}
+                onCheckedChange={(e) => setIsChecked(e.checked)}
+                colorPalette={"blue"}
+              >
+                <Switch.HiddenInput />
+                  <Switch.Control>
+                    <Switch.Thumb />
+                  </Switch.Control>
+                  <Switch.Label fontWeight={"bold"}fontSize={"16px"}>Show Sensor Data</Switch.Label>
+
+              </Switch.Root>
             </Box>
             <Box>
               <Center ref={qrCodeRef} my={4}>
-                <VStack>
-                  <QRCodeCanvas value={`http://localhost:5173/room/feedback/${roomId}/`} size={128} />
+                <VStack border={"1px solid"} p={"20px"}>
+                  <QRCodeCanvas value={link} size={200} />
                 </VStack>
               </Center>
-              <Box w="100%">{`http://localhost:5173/room/feedback/${roomId}/`}</Box>
-              <HStack my={4}>
+              <HStack maxW={"480px"} justifyContent={"space-between"}>
+                <Box border={"1px solid"} p={"10px"} rounded={"5px"} fontStyle={'italic'} maxW={"80%"}>{link}</Box>
+                <Button onClick={handleCopy} height={"70px"}>copy link</Button>
+              </HStack>
+              <HStack my={4} justifyContent={"space-evenly"}>
                 <Button onClick={downloadQRCode}>Download QRcode</Button>
                 <Button onClick={printQRCode}>Print QRCode</Button>
               </HStack>
@@ -114,7 +160,7 @@ const CreateRoomReport = () => {
           </VStack>
         </HStack>
 
-      </Container>
+      </Box>
     );
 };
 

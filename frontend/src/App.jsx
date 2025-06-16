@@ -86,7 +86,7 @@ function App() {
           <Route path="/home/management/room/update/:roomId" element={<UpdateRoom/>}/>
           <Route path="/home/login" element={<Home_login/>}/>
         </Route>
-          <Route path="/room/feedback/:roomId/" element={<CreateRoomReport/>}/>
+          <Route path="/room/feedback/:roomId/:showSensorData/" element={<CreateRoomReport/>}/>
           <Route path="*" element={<NotFound/>}/>
       </Routes>
     </Router>

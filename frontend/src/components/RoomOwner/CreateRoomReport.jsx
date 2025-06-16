@@ -5,15 +5,17 @@ import { Box, Input, VStack, Button, Center, Container, Heading, HStack, Flex, T
 import axios from 'axios';
 import { FaFrown, FaMeh, FaSmile, FaGrin, FaGrinStars } from 'react-icons/fa';
 import NavUserReport from '../NavBars/NavUserReport';
-import formatDate from '../formatDate'
+// import formatDate from '../formatDate'
 
 const CreateRoomReport = () => {
-  const { roomId} = useParams();
+  const { roomId, showSensorData} = useParams();
   const [buildingId, setBuildingId] = useState('');
   
   const [rooms, setRooms] = useState([])
   const [sensorData, setSensorData] = useState([])
   const [isShow, setIsShow ] = useState(false)
+
+  const token = "x8Kbf6R4Ti"
 
   const fetchRoom = async ()=> {
     const url = import.meta.env.VITE_ROOM_LIST_FEEDBACK_URL
@@ -37,16 +39,17 @@ const CreateRoomReport = () => {
   },[roomId])
 
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchSensorData = async() => {
-    // const url = "http://localhost:8000/api/rooms/reports/sync-data/user-view/"
+
     const url = import.meta.env.VITE_ROOM_SENSOR_REPORT_USERVIEW_URL
     try {
       const res = await axios.get(url)
       const items = res.data
       const filteredItems = items
-      .filter((room) => room.room === Number(roomId))
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // Sort descending by date
-      // console.log("filter data: ", filteredItems[0])
+        .filter((room) => room.room === Number(roomId))
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
       if (filteredItems.length > 0) {
         setSensorData(filteredItems[0]);
       } else {
@@ -56,6 +59,7 @@ const CreateRoomReport = () => {
       console.error("fetch sensor data error", error.response.data || error.message)
     }
   }
+  
   useEffect(()=>{
     if(roomId){
 
@@ -251,20 +255,21 @@ const CreateRoomReport = () => {
                     readOnly
                   />
                 </HStack>
-                <Box border={"1px solid"} rounded={"7px"} p={"10px"} my={"10px"}>
-                  <Box my={"20px"}>
-                    <Switch.Root
-                      checked={isShow}
-                      onCheckedChange={(e) => setIsShow(e.checked)}
-                    >
-                      <Switch.HiddenInput />
-                        <Switch.Control>
-                          <Switch.Thumb />
-                        </Switch.Control>
-                        <Switch.Label>Show Sensor Data</Switch.Label>
-
-                    </Switch.Root>
-                  </Box>
+                <Box>
+                    {showSensorData.includes(token) ? (
+                      <Box  border={"1px solid"} rounded={"7px"} p={"10px"} my={"10px"}>
+                        <Switch.Root
+                          checked={isShow}
+                          onCheckedChange={(e) => setIsShow(e.checked)}
+                        >
+                          <Switch.HiddenInput />
+                          <Switch.Control>
+                            <Switch.Thumb />
+                          </Switch.Control>
+                          <Switch.Label>Show Sensor Data</Switch.Label>
+                        </Switch.Root>
+                      </Box>
+                    ):("")}
                   <Box>
                     {isShow && (sensorData ? (
                       <HStack key={sensorData.id} my={"5px"} p={"5px"} justifyContent={"space-between"}>
