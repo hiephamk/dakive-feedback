@@ -50,7 +50,8 @@ const NavDashboard = () => {
           {/* <Image sizes='sm' src="https://www.hamk.fi/wp-content/uploads/2024/01/HAMK_Logo_text_small_ENG_NEGA-1.svg"/> */}
           {/* <NavLink to="/dashboard">Dashboard</NavLink> */}
           <NavLink to="/home">Home</NavLink>
-          <Menu.Root>
+          <NavLink to="/home/admin">Management</NavLink>
+          {/* <Menu.Root>
             <Menu.Trigger asChild>
               <NavLink variant="outline" fontSize={22} fontWeight="bold">
                 Management
@@ -60,9 +61,6 @@ const NavDashboard = () => {
               <Menu.Positioner>
                 <Menu.Content>            
                   <Menu.Item value="new-txt-a">
-                    <Link to="/home/management/sensor-data/building-list">Sensor Data</Link>                                
-                  </Menu.Item>
-                  <Menu.Item value="new-txt-a">
                     <Link to="/home/management/building-list">Building Management</Link>                                
                   </Menu.Item>
                   <Menu.Item value="new-txt-a">
@@ -71,7 +69,7 @@ const NavDashboard = () => {
                 </Menu.Content>
               </Menu.Positioner>
             </Portal>
-          </Menu.Root>
+          </Menu.Root> */}
           <Menu.Root>
             <Menu.Trigger asChild>
               <NavLink variant="outline" fontSize={22} fontWeight="bold">
@@ -144,17 +142,11 @@ const NavDashboard = () => {
             </Button>
           </MenuTrigger>
           <MenuContent>
-            <MenuItem value="new-txt-a">
+            <MenuItem value="new-win-a">
               <NavLink to="/home">Home</NavLink>
             </MenuItem>
             <MenuItem value="new-win-a">
-              <NavLink to="/home/management/add_organization">Add Organizations</NavLink>
-            </MenuItem>
-            <MenuItem value="new-win-a">
-              <NavLink to="/home/management/add_building">Add Buildings</NavLink>
-            </MenuItem>
-            <MenuItem value="new-win-a">
-              <NavLink to="/home/management/building-list">List of buildings</NavLink>
+              <NavLink to="/home/admin">Management</NavLink>
             </MenuItem>
             <MenuItem value="new-win-a">
               <NavLink to="/home/management/report/chart">Report</NavLink>

@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react'
 import { useSelector } from 'react-redux'
 import useAccessToken from '../../services/token'
-import {Box, Input, VStack, Button, Center, Heading, Container } from '@chakra-ui/react'
+import {Box, Input, VStack, Button, Center, Heading, Container, Field, HStack } from '@chakra-ui/react'
 import { useNavigate, useParams } from 'react-router'
 import api from '../../services/api'
 
@@ -97,10 +97,7 @@ const UpdateOrg = () => {
         name: "Organization Name",
         street: "Street",
         city: "City",
-        country: "Country",
         postal_code: "Postal Code",
-        email:"Email",
-        website:"Website",
     };
     for (const field in requiredFields){
       if (!formData[field]){
@@ -151,66 +148,67 @@ const UpdateOrg = () => {
   return (
     <Container justifyContent="center" maxW="500px">
       <VStack  shadow="3px 3px 15px 5px rgb(75, 75, 79)" m={4} p={4} rounded={8} minW="100%">
-        <Heading>Update Organization</Heading>
-        <Input
-            type='text'
-            name='name'
-            value={formData.name}
-            onChange={handleChange}
-            placeholder='Name'
-        />
-        <Input
-            type='text'
-            name='street'
-            value={formData.street}
-            onChange={handleChange}
-            placeholder='Street'
-        />
-        <Input
-            type='text'
-            name='city'
-            value={formData.city}
-            onChange={handleChange}
-            placeholder='City'
-        />
-        <Input
-            type='text'
-            name='state'
-            value={formData.state}
-            onChange={handleChange}
-            placeholder='State'
-        />
-        <Input
-            type='text'
-            name='country'
-            value={formData.country}
-            onChange={handleChange}
-            placeholder='Country'
-        />
-        <Input
-            type='text'
-            name='postal_code'
-            value={formData.postal_code}
-            onChange={handleChange}
-            placeholder='Postal Code'
-        />
-        <Input
-            type='text'
-            name='email'
-            value={formData.email}
-            onChange={handleChange}
-            placeholder='Email'
-        />
-        {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
-        <Input
-            type='text'
-            name='website'
-            value={formData.website}
-            onChange={handleChange}
-            placeholder='http://example.com'
-        />
-        <Button onClick={handleSubmit}>Update</Button>
-      </VStack>
+              <Heading>Update Organization</Heading>
+              <Field.Root required>
+                  <HStack>
+                      <Field.Label w={"200px"}>
+                          Name: <Field.RequiredIndicator />
+                      </Field.Label>
+                      <Input type="text" name="name" value={formData.name} onChange={handleChange}/>
+                  </HStack>
+              </Field.Root>
+              <Field.Root required>
+                  <HStack>
+                      <Field.Label w={"200px"}>
+                          Street: <Field.RequiredIndicator />
+                      </Field.Label>
+                      <Input type="text" name="street" value={formData.street} onChange={handleChange}/>
+                  </HStack>
+              </Field.Root>
+              <Field.Root required>
+                  <HStack>
+                      <Field.Label w={"200px"}>
+                          City: <Field.RequiredIndicator />
+                      </Field.Label>
+                      <Input type="text" name="city" value={formData.city} onChange={handleChange}/>
+                  </HStack>
+              </Field.Root>
+              <Field.Root required>
+                  <HStack>
+                      <Field.Label w={"200px"}>
+                          Postal Code: <Field.RequiredIndicator />
+                      </Field.Label>
+                      <Input type="text" name="postal_code" value={formData.postal_code} onChange={handleChange}/>
+                  </HStack>
+              </Field.Root>
+              <Field.Root required>
+                  <HStack>
+                      <Field.Label w={"200px"}>
+                          Country:
+                      </Field.Label>
+                      <Input type="text" name="country" value={formData.country} onChange={handleChange}/>
+                  </HStack>
+              </Field.Root>
+              <Field.Root required>
+                  <HStack>
+                      <Field.Label w={"200px"}>
+                          Email:
+                      </Field.Label>
+                      <Input type="text" name="email" value={formData.email} onChange={handleChange}/>
+                  </HStack>
+              </Field.Root>
+              {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
+              <Field.Root required>
+                  <HStack>
+                      <Field.Label w={"200px"}>
+                          Website: 
+                      </Field.Label>
+                      <Input type="text" name="website" value={formData.website} onChange={handleChange}/>
+                  </HStack>
+              </Field.Root>
+              {errors.website && <p style={{ color: 'red' }}>{errors.website}</p>}
+              <Button onClick={handleSubmit}>Create Organinzation</Button>
+            </VStack>
     </Container>
   )
 }

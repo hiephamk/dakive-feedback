@@ -104,9 +104,9 @@ const SyncRooms = ({ iotBuildingId, localBuildingId, onSyncSuccess }) => {
 
   return (
     <Center mt={"20px"}>
-      <HStack spacing={4} align="stretch" w={"70%"}>
-        <VStack>
-          <HStack w={"100%"}>
+      <VStack gap={"20px"}>
+        <VStack gap={"20px"}>
+          <HStack w={"500px"}>
             <label htmlFor="url">URL</label>
             <Input
               id="url"
@@ -115,18 +115,18 @@ const SyncRooms = ({ iotBuildingId, localBuildingId, onSyncSuccess }) => {
               onChange={(e) => setIotApiUrl(e.target.value)}
               disabled={isLoading}
               border={"1px solid"}
-              shadow="3px 3px 15px 5px rgb(75, 75, 79)"
             />
           </HStack>
-          <HStack>
+          <HStack w={"500px"}>
             <label htmlFor="api-token">API-Token </label>
             <Input
               id="api-token"
-              w={"50vw"}
               placeholder="Enter api-token"
               value={apiToken}
               onChange={(e) => setApiToken(e.target.value)}
               disabled={isLoading}
+              type="password"
+              border={"1px solid"}
             />
           </HStack>
         </VStack>
@@ -137,7 +137,7 @@ const SyncRooms = ({ iotBuildingId, localBuildingId, onSyncSuccess }) => {
         >
           Sync Rooms
         </Button>
-      </HStack>
+      </VStack>
     </Center>
 
   );

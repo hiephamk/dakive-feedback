@@ -12,40 +12,19 @@ import {
 } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import useAccessToken from "../../services/token";
-import { useParams } from "react-router-dom";
 
-const SyncSensorRoomData = ({ onSyncSuccess }) => {
+const SyncSensorRoomData = ({ onSyncSuccess, buildingid, roomid }) => {
   const { user } = useSelector((state) => state.auth);
   const accessToken = useAccessToken(user);
 
-  const { buildingid, externalid } = useParams();
+  // const { buildingid, externalid } = useParams();
 
   const [rooms, setRooms] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
 
-  const API_KEY = "II6dsQDctGjWeoHgnT5wPjXlyJVmmUbvASnh2Zay";
-
-  const fetchLocalRoomId = async (externalRoomId) => {
-    const res = await axios.get(
-      `http://localhost:8000/api/rooms/by-external/?external_id=${externalRoomId}`,
-      {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      }
-    );
-    return res.data[0]?.id;
-  };
-
-  const fetchLocalBuildingId = async (externalId) => {
-    const res = await axios.get(
-      `http://localhost:8000/api/buildings/by-external/?external_id=${externalId}`,
-      {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      }
-    );
-    return res.data[0]?.id;
-  };
+  const API_KEY = "II6dsQDctGjWeoHgnT5wPjXlyJVmmUbvASnh2Zay"
 
   const listRooms = async () => {
     try {
@@ -53,7 +32,7 @@ const SyncSensorRoomData = ({ onSyncSuccess }) => {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       const filtered = res.data.filter(
-        (item) => item.building === Number(buildingid)
+        (item) => (item.building === Number(buildingid)) && (item.id === Number(roomid))
       );
       setRooms(filtered);
     } catch (error) {
@@ -63,7 +42,8 @@ const SyncSensorRoomData = ({ onSyncSuccess }) => {
 
   useEffect(() => {
     listRooms();
-  }, []);
+  }, [roomid, buildingid, accessToken]);
+
 
   const handleSync = async () => {
     if (rooms.length === 0) return;
@@ -79,11 +59,7 @@ const SyncSensorRoomData = ({ onSyncSuccess }) => {
 
     setIsLoading(true);
     try {
-      const localBuildingId = await fetchLocalBuildingId(externalid);
-      if (!localBuildingId) {
-        alert("Local building not found.");
-        return;
-      }
+
 
       for (const room of rooms) {
         const externalRoomId = room.external_id;
@@ -93,7 +69,7 @@ const SyncSensorRoomData = ({ onSyncSuccess }) => {
         const response = await axios.get(url, {
           headers: { "x-api-key": API_KEY },
         });
-
+        console.log("Iot Data: ", response.data)
         const readings =
           response.data?.results?.[0]?.series?.[0]?.values || [];
         if (readings.length === 0) {
@@ -101,22 +77,17 @@ const SyncSensorRoomData = ({ onSyncSuccess }) => {
           continue;
         }
 
-        const localRoomId = await fetchLocalRoomId(externalRoomId);
-        if (!localRoomId) {
-          console.warn(`Local room not found for ${externalRoomId}`);
-          continue;
-        }
-
         for (const [time, temperature, humidity, co2, light, motion] of readings) {
+
           const payload = {
-            room: localRoomId,
-            building: localBuildingId,
+            room: roomid,
+            building: buildingid,
             temperature,
             humidity,
             co2,
             light,
             motion: Boolean(motion),
-            created_at: time,
+            created_at: time
           };
 
           try {
@@ -155,17 +126,16 @@ const SyncSensorRoomData = ({ onSyncSuccess }) => {
 
   useEffect(() => {
     const now = new Date();
-    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+    const oneHourAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     setEndTime(formatDateForInput(now));
     setStartTime(formatDateForInput(oneHourAgo));
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     if (!rooms.length || !startTime || !endTime || !accessToken) {
       return; // Don't start auto-sync until everything is ready
     }
 
-    // Initial sync
     handleSync();
 
     // Set up interval for auto-sync every 10 minutes
@@ -178,33 +148,11 @@ const SyncSensorRoomData = ({ onSyncSuccess }) => {
 
     // Cleanup interval on component unmount or dependency change
     return () => clearInterval(interval);
-  }, [rooms.length, accessToken]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomid, buildingid, rooms, accessToken]);
+
   return (
     <Box>
-      {/* <HStack gap={'20px'} justifyContent={"space-evenly"}>
-        <HStack>
-          <Text>Start Time:</Text>
-          <Input
-            id="start"
-            type="datetime-local"
-            value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
-          />
-        </HStack>
-        <HStack>
-          <Text>End Time:</Text>
-          <Input
-            type="datetime-local"
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-          />
-        </HStack>
-        <Box>
-          <Button onClick={handleSync} isLoading={isLoading} colorScheme="teal">
-            Sync Sensor Data
-          </Button>
-        </Box>
-      </HStack> */}
       <Box>
         {isLoading && (
             <Center>
@@ -212,6 +160,9 @@ const SyncSensorRoomData = ({ onSyncSuccess }) => {
             </Center>
           )}
       </Box>
+      {/* <Button onClick={handleSync} isLoading={isLoading}>
+        Sync Sensor Report
+      </Button> */}
     </Box>
   );
 };

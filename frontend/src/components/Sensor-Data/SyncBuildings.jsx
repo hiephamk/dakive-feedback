@@ -72,7 +72,7 @@ const SyncBuildings = ({ organizationId, onSyncSuccess }) => {
             (postError.response?.data?.name ||
               postError.response?.data?.non_field_errors)
           ) {
-            console.warn(
+            alert(
               `Building "${payload.name}" already exists in organization ${organizationId}, skipping.`
             );
             continue;
@@ -96,7 +96,7 @@ const SyncBuildings = ({ organizationId, onSyncSuccess }) => {
         const errorMessage =
           err.response.data.non_field_errors?.[0] ||
           err.response.data.name?.[0] ||
-          "This name already exists";
+          "This building already exists";
         alert(`Sync failed: ${errorMessage}`);
       } else {
         alert("Sync failed: An unexpected error occurred.");
@@ -107,44 +107,46 @@ const SyncBuildings = ({ organizationId, onSyncSuccess }) => {
   };
 
   return (
-    <Center>
-      <HStack spacing={4} align="stretch">
-        <VStack>
-          <HStack>
-            <label htmlFor="url">URL: </label>
-            <Input
-              id="url"
-              w={"50vw"}
-              placeholder="Enter IoT API URL"
-              value={iotUrl}
-              onChange={(e) => setIotUrl(e.target.value)}
-              disabled={isLoading}
-            />
-          </HStack>
-          <HStack>
-            <label htmlFor="api-token">API-Token </label>
-            <Input
-              id="api-token"
-              w={"50vw"}
-              placeholder="Enter api-token"
-              value={apiToken}
-              onChange={(e) => setApiToken(e.target.value)}
-              disabled={isLoading}
-            />
-          </HStack>
-        </VStack>
-        <Center>
-          <Button
-            w={"50%"}
-            onClick={handleSync}
-            disabled={!organizationId || isLoading}
-            isLoading={isLoading}
-          >
-            Sync
-          </Button>
-        </Center>
-      </HStack>
-    </Center>
+    <Box maxW={"100%"}>
+      <Center>
+        <HStack spacing={4} align="stretch">
+          <VStack>
+            <HStack w={"40vw"}>
+              <label w="200px" htmlFor="url">URL: </label>
+              <Input
+                id="url"
+                placeholder="Enter IoT API URL"
+                value={iotUrl}
+                onChange={(e) => setIotUrl(e.target.value)}
+                disabled={isLoading}
+              />
+            </HStack>
+            <HStack w={"40vw"}>
+              <label htmlFor="api-token">API-Token </label>
+              <Input
+                id="api-token"
+                placeholder="Enter api-token"
+                value={apiToken}
+                onChange={(e) => setApiToken(e.target.value)}
+                disabled={isLoading}
+                type="password"
+                
+              />
+            </HStack>
+          </VStack>
+          <Center>
+            <Button
+              w={"50%"}
+              onClick={handleSync}
+              disabled={!organizationId || isLoading}
+              isLoading={isLoading}
+            >
+              Sync
+            </Button>
+          </Center>
+        </HStack>
+      </Center>
+    </Box>
   );
 };
 

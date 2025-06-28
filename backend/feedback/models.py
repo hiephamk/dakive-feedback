@@ -1,24 +1,10 @@
 from django.db import models
-from Building.models import Building, Room
-# Create your models here.
-# class Room_Report(models.Model):
-#     room = models.ForeignKey(Room, on_delete=models.CASCADE)
-#     building = models.ForeignKey(Building, on_delete=models.CASCADE)
-#     room_status = models.CharField(max_length=255, blank=True, null=True)
-#     heat_status = models.CharField(max_length=255, blank=True, null=True)
-#     electric_status = models.CharField(max_length=255, blank=True, null=True)
-#     internet_status = models.CharField(max_length=255, blank=True, null=True)
-#     noise_status = models.CharField(max_length=255, blank=True, null=True)
-#     air_status = models.CharField(max_length=255, blank=True, null=True)
-#     neighborhood_status = models.CharField(max_length=255, blank=True, null=True)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-#     def __str__(self):
-#         return f"Report of {self.room.name }"
+from Building.models import Building, Room, Organization
 
 class Room_Report(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     building = models.ForeignKey(Building, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='room_report')
     temperature_rating = models.IntegerField()
     temperature_notes = models.TextField(blank=True, null=True)
     air_quality_rating = models.IntegerField()
@@ -38,19 +24,21 @@ class Room_Report(models.Model):
     feedback_status = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    hasViewed = models.BooleanField(default=False)
+    def __str__(self):
+        return f"room Report for {self.room.name} in {self.building} - (roomId: {self.room})"
 
 class Sensor_Report(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     building = models.ForeignKey(Building, on_delete=models.CASCADE)
-    # time = models.DateTimeField()
     temperature = models.FloatField(null=True, blank=True)
     humidity = models.FloatField(null=True, blank=True)
     co2 = models.FloatField(null=True, blank=True)
-    light= models.BooleanField(null=True, blank=True, default=False)
+    light= models.IntegerField(null=True, blank=True, default=False)
     motion = models.BooleanField(default=False, null=True, blank=True) 
     created_at = models.DateTimeField()
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Sensor Report for {self.room.name} in {self.building} - (roomId: {self.room.id})"
+        return f" {self.room.name} in {self.building.name}"
 

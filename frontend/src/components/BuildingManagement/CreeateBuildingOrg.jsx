@@ -118,12 +118,12 @@ const CreateBuildingOrg = () => {
     };
 
     return (
-        <Container justifyContent="center" mt={10}>
+        <Container justifyContent="center">
             <Center>
                 <VStack w={"70%"}>
-                    <HStack p={4} rounded={7} minW="100%" gap={4} justifyContent={"space-evenly"}>
+                    <Heading mt={"20px"}>Create New Building</Heading>
+                    <HStack p={4} rounded={7} minW="100%" gap={4} justifyContent={"space-between"}>
                         <VStack>
-                            <Heading my={4}>Create New Building</Heading>
                             <Field.Root required>
                                 <HStack>
                                     <Field.Label w={"200px"}>
@@ -218,7 +218,7 @@ const CreateBuildingOrg = () => {
                         <Box>
                             <Box>
                                 <FileUpload.Root
-                                    maxW="xl"
+                                    w="xs"
                                     alignItems="stretch"
                                     maxFiles={1}
                                     type="file"
@@ -233,7 +233,7 @@ const CreateBuildingOrg = () => {
                                         </Icon>
                                         <FileUpload.DropzoneContent>
                                         <Box>Drag and drop files here</Box>
-                                        <Box color="fg.muted">up to 5MB</Box>
+                                        {/* <Box color="fg.muted">up to 5MB</Box> */}
                                         </FileUpload.DropzoneContent>
                                     </FileUpload.Dropzone>
                                     <FileUpload.List />

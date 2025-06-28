@@ -11,10 +11,11 @@ class RoomByExternalIDView(generics.ListAPIView):
     serializer_class = RoomSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
+    queryset = Room.objects.all()
 
-    def get_queryset(self):
-        external_id = self.request.query_params.get('external_id')
-        return Room.objects.filter(external_id=external_id)
+    # def get_queryset(self):
+    #     external_id = self.request.query_params.get('external_id')
+    #     return Room.objects.filter(external_id=external_id)
 
 class BuildingByExternalIDView(generics.ListAPIView):
     serializer_class = BuildingSerializer

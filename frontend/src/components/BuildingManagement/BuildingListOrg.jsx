@@ -23,6 +23,7 @@ import {
   VStack,
   Stack,
   Table,
+  HoverCard
 } from '@chakra-ui/react';
 import { LuSearch } from 'react-icons/lu';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -122,7 +123,9 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
   const handleClickViewReport = (buildingId) => {
     navigate(`/home/management/building-reports/${buildingId}`);
   };
-
+  const SensorDataView = (buildingid, externalid) => {
+    navigate(`/home/management/sensor-data/reports/${buildingid}/${externalid}`)
+  }
   const handleUpdateBuilding = (building) => {
     navigate(`/home/admin/building/update/${building}`);
   };
@@ -277,12 +280,6 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
     />
   ) : undefined;
 
-
-  const SensorDataView = (buildingid, externalid) => {
-    navigate(`/home/management/sensor-data/reports/${buildingid}/${externalid}`)
-  }
-
-
   return (
     <Box w={'75vw'} maxW={'100%'} justifyContent={'center'}>
       <Box>
@@ -291,7 +288,8 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
             <label htmlFor="city"></label>
             <select value={building_city} onChange={handleBuildingCityChange} id="city">
               <option value="">All Cities</option>
-              {[...new Set(buildings.filter((item) => item.organization === organization).map((building) => building.city))].map((uniqueBuildingCity, idx) => (
+              {[...new Set(buildings.filter((item) => item.organization === organization).map((building) => building.city))]
+              .map((uniqueBuildingCity, idx) => (
                 <option key={idx} value={uniqueBuildingCity}>
                   {uniqueBuildingCity}
                 </option>
@@ -365,7 +363,7 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
       {/* list building */}
 
       <Box justifyContent={'space-evenly'} alignItems={'center'} rounded={8}>
-        <Tabs.Root defaultValue={'card'}>
+        <Tabs.Root defaultValue={'list'}>
           <Tabs.List>
             <Tabs.Trigger value="list" fontSize={'30px'}>
               <FaListUl />
@@ -434,32 +432,62 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
                                   </Button>
                                 </Menu.Trigger>
                                 <Portal>
-                                  <Menu.Positioner>
-                                    <Menu.Item>
-                                      <Button
-                                        variant="outline"
-                                        size="xs"
-                                        onClick={() => handleUpdateBuilding(item.id)}
-                                      >
-                                        Update
-                                      </Button>
-                                    </Menu.Item>
-                                    <Menu.Item>
-                                      <Dialog.Trigger asChild>
-                                        <Button variant="outline" size="xs">
-                                          Delete
+                                  <Menu.Positioner border={"1px solid"} rounded={"5px"} background="#99a3a4" >
+                                    <Menu.Content>
+                                      <Menu.Item value='view-room'>
+                                        <Button
+                                          variant="outline" size="xs"
+                                          onClick={() => handleClickViewRoom(item.id, item.external_id)}
+                                        >
+                                          View rooms
                                         </Button>
-                                      </Dialog.Trigger>
-                                    </Menu.Item>
-                                    <Menu.Item>
-                                      <Button
-                                        variant="outline"
-                                        size="xs"
-                                        onClick={() => handleDuplicateBuilding(item)}
-                                      >
-                                        Duplicate
-                                      </Button>
-                                    </Menu.Item>
+                                      </Menu.Item>
+                                      {/* <Menu.Item>
+                                        <HoverCard.Root>
+                                          <HoverCard.Trigger asChild>
+                                            <Button variant="outline" size="xs">View Report</Button>
+                                          </HoverCard.Trigger>
+                                          <Portal>
+                                            <HoverCard.Positioner>
+                                              <HoverCard.Content gap={"10px"} background="#99a3a4" p={"5px"}>
+                                                <HoverCard.Arrow/>
+                                                <Box value='sensor-data'>
+                                                  <Button variant={"outline"} onClick={() => SensorDataView(item.id, item.external_id)}>Sensor Report</Button>
+                                                </Box>
+                                                <Box value='user-feedback'>
+                                                  <Button variant={"outline"} onClick={() => handleClickViewReport(item.id)}>User Feedback</Button>
+                                                </Box>
+                                              </HoverCard.Content>
+                                            </HoverCard.Positioner>
+                                          </Portal>
+                                        </HoverCard.Root>
+                                      </Menu.Item> */}
+                                      <Menu.Item value='update'>
+                                        <Button
+                                          variant="outline"
+                                          size="xs"
+                                          onClick={() => handleUpdateBuilding(item.id)}
+                                        >
+                                          Update
+                                        </Button>
+                                      </Menu.Item>
+                                      <Menu.Item value='delete'>
+                                        <Dialog.Trigger asChild>
+                                          <Button variant="outline" size="xs">
+                                            Delete
+                                          </Button>
+                                        </Dialog.Trigger>
+                                      </Menu.Item>
+                                      <Menu.Item>
+                                        <Button
+                                          variant="outline"
+                                          size="xs"
+                                          onClick={() => handleDuplicateBuilding(item)}
+                                        >
+                                          Duplicate
+                                        </Button>
+                                      </Menu.Item>
+                                    </Menu.Content>
                                   </Menu.Positioner>
                                 </Portal>
                               </Menu.Root>
@@ -489,7 +517,50 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
                               </Portal>
                             </Dialog.Root>
                           ) : (
-                            <Text>No permission</Text>
+                            <Dialog.Root size="xs">
+                              <Menu.Root>
+                                <Menu.Trigger asChild>
+                                  <Button variant="surface" size="xs">
+                                    <BsThreeDotsVertical />
+                                  </Button>
+                                </Menu.Trigger>
+                                <Portal>
+                                  <Menu.Positioner border={"1px solid"} rounded={"5px"} background="#99a3a4" >
+                                    <Menu.Content>
+                                      <Menu.Item>
+                                        <Button
+                                          variant="outline" size="xs"
+                                          onClick={() => handleClickViewRoom(item.id, item.external_id)}
+                                        >
+                                          View rooms
+                                        </Button>
+                                      </Menu.Item>
+                                    </Menu.Content>
+                                    {/* <Menu.Item>
+                                      <HoverCard.Root>
+                                        <HoverCard.Trigger asChild>
+                                          <Button variant="outline" size="xs">View Report</Button>
+                                        </HoverCard.Trigger>
+                                        <Portal>
+                                          <HoverCard.Positioner>
+                                            <HoverCard.Content gap={"10px"} background="#99a3a4" p={"5px"}>
+                                              <HoverCard.Arrow/>
+                                              <Box value='sensor-data'>
+                                                <Button variant={"outline"} onClick={() => SensorDataView(item.id, item.external_id)}>Sensor Report</Button>
+                                              </Box>
+                                              <Box value='user-feedback'>
+                                                <Button variant={"outline"} onClick={() => handleClickViewReport(item.id)}>User Feedback</Button>
+                                              </Box>
+                                            </HoverCard.Content>
+                                          </HoverCard.Positioner>
+                                        </Portal>
+                                      </HoverCard.Root>
+                                    </Menu.Item> */}
+                                    
+                                  </Menu.Positioner>
+                                </Portal>
+                              </Menu.Root>
+                            </Dialog.Root>
                           )}
                         </Table.Cell>
                       </Table.Row>
@@ -548,31 +619,42 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
                               </Menu.Trigger>
                               <Portal>
                                 <Menu.Positioner>
-                                  <Menu.Item>
-                                    <Button
-                                      variant="outline"
-                                      size="xs"
-                                      onClick={() => handleUpdateBuilding(building.id)}
-                                    >
-                                      Update
-                                    </Button>
-                                  </Menu.Item>
-                                  <Menu.Item>
-                                    <Dialog.Trigger asChild>
-                                      <Button variant="outline" size="xs">
-                                        Delete
+                                  <Menu.Content>
+                                    <Menu.Item>
+                                      <Button
+                                        variant="outline"
+                                        size="xs"
+                                        onClick={() => handleClickViewRoom(building.id, building.external_id)}
+                                      >
+                                        View rooms
                                       </Button>
-                                    </Dialog.Trigger>
-                                  </Menu.Item>
-                                  <Menu.Item>
-                                    <Button
-                                      variant="outline"
-                                      size="xs"
-                                      onClick={() => handleDuplicateBuilding(building)}
-                                    >
-                                      Duplicate
-                                    </Button>
-                                  </Menu.Item>
+                                    </Menu.Item>
+                                    <Menu.Item>
+                                      <Button
+                                        variant="outline"
+                                        size="xs"
+                                        onClick={() => handleUpdateBuilding(building.id)}
+                                      >
+                                        Update
+                                      </Button>
+                                    </Menu.Item>
+                                    <Menu.Item>
+                                      <Dialog.Trigger asChild>
+                                        <Button variant="outline" size="xs">
+                                          Delete
+                                        </Button>
+                                      </Dialog.Trigger>
+                                    </Menu.Item>
+                                    <Menu.Item>
+                                      <Button
+                                        variant="outline"
+                                        size="xs"
+                                        onClick={() => handleDuplicateBuilding(building)}
+                                      >
+                                        Duplicate
+                                      </Button>
+                                    </Menu.Item>
+                                  </Menu.Content>
                                 </Menu.Positioner>
                               </Portal>
                             </Menu.Root>
@@ -602,7 +684,28 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
                             </Portal>
                           </Dialog.Root>
                         ) : (
-                          ''
+                          <Menu.Root>
+                            <Menu.Trigger asChild>
+                              <Button variant="surface" size="xs">
+                                <BsThreeDotsVertical />
+                              </Button>
+                            </Menu.Trigger>
+                            <Portal>
+                              <Menu.Positioner>
+                                <Menu.Content>
+                                  <Menu.Item>
+                                    <Button
+                                      variant="outline"
+                                      size="xs"
+                                      onClick={() => handleClickViewRoom(building.id, building.external_id)}
+                                    >
+                                      View rooms
+                                    </Button>
+                                  </Menu.Item>
+                                </Menu.Content>
+                              </Menu.Positioner>
+                            </Portal>
+                          </Menu.Root>
                         )}
                       </Flex>
                       <Box pl={2} h="220px" overflow={'auto'} mt={'10px'} maxW={'300px'}>
@@ -667,20 +770,14 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
                         </Table.Root>
                       </Box>
                     </VStack>
-                      <HStack p={2} position={"absolute"} bottom={"5px"} gap={"50px"}>
-                        <Button
+                      {/* <Center>
+                        <Button my={"5px"}
                           onClick={() => handleClickViewRoom(building.id, building.external_id)}
                         >
                           View rooms
                         </Button>
                         <Menu.Root>
                           <Menu.Trigger asChild>
-                            {/* <Button
-                            variant="outline"
-                            size="xs"
-                            onClick={() => handleClickViewReport(building.id)}
-                          >
-                          </Button> */}
                             <Button>View Report</Button>
                           </Menu.Trigger>
                           <Portal>
@@ -696,7 +793,7 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
                             </Menu.Positioner>
                           </Portal>
                         </Menu.Root>
-                      </HStack>
+                      </Center> */}
                   </Box>
                 ))}
             </HStack>

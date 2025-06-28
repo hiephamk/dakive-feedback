@@ -1,26 +1,32 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { Link as RouterLink } from 'react-router';
+import { Link as RouterLink, useNavigate } from 'react-router';
 import { Box, Input, VStack, Button, Center, Container, Heading, HStack, Flex, Textarea, Switch } from '@chakra-ui/react';
-import axios from 'axios';
+import api from '../../services/api';
 import { FaFrown, FaMeh, FaSmile, FaGrin, FaGrinStars } from 'react-icons/fa';
 import NavUserReport from '../NavBars/NavUserReport';
+import useOrganization from '../Organization/OrganizationHook';
+import SyncSensorRoomData from '../Sensor-Data/SyncSensorRoomData';
+import formatDate from '../formatDate';
 // import formatDate from '../formatDate'
 
 const CreateRoomReport = () => {
   const { roomId, showSensorData} = useParams();
+  const { organizations } = useOrganization()
+
   const [buildingId, setBuildingId] = useState('');
+  const [organizationId, setOrganizationId] = useState('')
   
   const [rooms, setRooms] = useState([])
   const [sensorData, setSensorData] = useState([])
   const [isShow, setIsShow ] = useState(false)
-
+  const navigate = useNavigate()
   const token = "x8Kbf6R4Ti"
 
   const fetchRoom = async ()=> {
     const url = import.meta.env.VITE_ROOM_LIST_FEEDBACK_URL
     try {
-      const response = await axios.get(url)
+      const response = await api.get(url)
       const filterItem = response.data.filter((room) => room.id === Number(roomId))
       if(filterItem.length > 0){
 
@@ -44,7 +50,7 @@ const CreateRoomReport = () => {
 
     const url = import.meta.env.VITE_ROOM_SENSOR_REPORT_USERVIEW_URL
     try {
-      const res = await axios.get(url)
+      const res = await api.get(url)
       const items = res.data
       const filteredItems = items
         .filter((room) => room.room === Number(roomId))
@@ -60,16 +66,18 @@ const CreateRoomReport = () => {
     }
   }
   
-  useEffect(()=>{
-    if(roomId){
-
-      fetchSensorData()
+    useEffect(() => {
+    if (!isShow || !roomId) {
+      return; // Don't start auto-refresh if toggle is off or no roomId
     }
-  },[roomId])
+
+    fetchSensorData();
+  }, [isShow, fetchSensorData, roomId]);
 
   const [formData, setFormData] = useState({
     room: roomId || '',
     building: buildingId || '',
+    organization:organizationId || '',
     temperature_rating: '',
     temperature_notes: '',
     air_quality_rating: '',
@@ -95,6 +103,7 @@ const CreateRoomReport = () => {
       const selectedRoom = rooms.find((room) => room.id === Number(roomId));
       if (selectedRoom) {
         setBuildingId(selectedRoom?.building);
+        setOrganizationId(selectedRoom?.organization.id);
       }
     }
   }, [roomId, rooms]);
@@ -105,8 +114,9 @@ const CreateRoomReport = () => {
       ...prev,
       room: roomId,
       building: buildingId,
+      organization: organizationId
     }));
-  }, [roomId, buildingId]);
+  }, [roomId, buildingId, organizationId]);
 
   // Handle text input changes
   const handleChange = (e) => {
@@ -145,9 +155,10 @@ const CreateRoomReport = () => {
     }
     const url = `${import.meta.env.VITE_ROOM_REPORT_CREATE_URL}${roomId}/`;
     try {
-      const response = await axios.post(url, formData);
-      alert('The room report was sent.');
-      console.log('Send room report', response.data);
+      await api.post(url, formData);
+      // alert('The room report was sent.');
+      
+      navigate('/room/feedback/finished/')
 
       // Reset form fields
       setFormData({
@@ -215,22 +226,7 @@ const CreateRoomReport = () => {
       ))}
     </Flex>
   );
-  useEffect(() => {
-    if (!isShow || !roomId) {
-      return; // Don't start auto-refresh if toggle is off or no roomId
-    }
 
-    // Initial fetch when toggle is turned on
-    fetchSensorData();
-
-    // // Set up interval for auto-refresh every 30 seconds
-    // const interval = setInterval(() => {
-    //   fetchSensorData();
-    // }, 30000);
-
-    // // Cleanup interval when toggle is turned off or component unmounts
-    // return () => clearInterval(interval);
-  }, [isShow, fetchSensorData, roomId]);
   return (
     <Container>
         <NavUserReport/>
@@ -255,6 +251,13 @@ const CreateRoomReport = () => {
                     readOnly
                   />
                 </HStack>
+                {/* <HStack>
+                  <label>Organization:</label>
+                  <Input
+                    value={rooms.find((room) => room.id === Number(roomId))?.organization?.id || ''}
+                    readOnly
+                  />
+                </HStack> */}
                 <Box>
                     {showSensorData.includes(token) ? (
                       <Box  border={"1px solid"} rounded={"7px"} p={"10px"} my={"10px"}>
@@ -277,7 +280,12 @@ const CreateRoomReport = () => {
                           <Box rounded={"3px"} p={"10px"}>Temp: {sensorData.temperature}°C</Box>
                           <Box rounded={"3px"} p={"10px"}>Humid: {sensorData.humidity}%</Box>
                           <Box rounded={"3px"} p={"10px"}>CO2: {sensorData.co2}</Box>
-                          {/* <Box border={"1px solid"} rounded={"3px"} p={"5px"}>{formatDate(sensorData.created_at)}</Box> */}
+                          <Box rounded={"3px"} p={"10px"}>updated: {formatDate(sensorData.updated_at)}</Box>
+                          <SyncSensorRoomData
+                            onSyncSuccess={fetchSensorData}
+                            roomid={Number(roomId)}
+                            buildingid={buildingId}
+                          />
                         </HStack>
                     ):(""))
                     }

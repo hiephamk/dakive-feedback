@@ -1,24 +1,39 @@
 from rest_framework import serializers
 from .models import Room, Building, Organization
+from organization.models import Organization_membership
+from feedback.models import Room_Report
 
 class RoomSerializer(serializers.ModelSerializer):
-    building_name = serializers.SerializerMethodField()
+    building_name = serializers.SerializerMethodField(read_only=True)
+    organization = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = Room
         fields = '__all__'
     def get_building_name(self, obj):
         return obj.building.name if obj.building else None
+    
+    def get_organization(self, obj):
+        # Fix: Return serializable data instead of model instance
+        org = obj.get_organization
+        if org:
+            return {
+                'id': org.id,
+                'name': org.name,
+            }
+        return None
+    
     def validate(self, data):
         name = data.get('name')
         building = data.get('building')
+        external_id = data.get('external_id')
 
         # For create a new room
         if self.instance is None:
-            if Room.objects.filter(name__iexact=name, building=building).exists():
+            if Room.objects.filter(name__iexact=name, external_id__iexact=external_id, building=building).exists():
                 raise serializers.ValidationError("The name already exists in this building.")
         else:
             # For update, exclude current room
-            if Room.objects.filter(name__iexact=name, building=building).exclude(pk=self.instance.pk).exists():
+            if Room.objects.filter(name__iexact=name, external_id__iexact=external_id, building=building).exclude(pk=self.instance.pk).exists():
                 raise serializers.ValidationError("The name already exists in this building.")
         
         return data
@@ -37,19 +52,24 @@ class BuildingSerializer(serializers.ModelSerializer):
     def validate(self, data):
         name = data.get('name')
         organization= data.get('organization')
+        external_id = data.get('external_id')
 
         # For create a new building
         if self.instance is None:
-            if Building.objects.filter(name__iexact=name, organization=organization).exists():
+            if Building.objects.filter(name__iexact=name, external_id__iexact=external_id, organization=organization).exists():
                 raise serializers.ValidationError("This name already exists")
         else:
             # For update, exclude current building
-            if Building.objects.filter(name__iexact=name, organization=organization).exclude(pk=self.instance.pk).exists():
+            if Building.objects.filter(name__iexact=name, external_id__iexact=external_id, organization=organization).exclude(pk=self.instance.pk).exists():
                 raise serializers.ValidationError("This name already exists")
         
         return data
 
 class OrganizationSerializer(serializers.ModelSerializer):
+    building_count = serializers.SerializerMethodField()
+    totalRoom_count = serializers.SerializerMethodField()
+    report_count = serializers.SerializerMethodField()
+    member_count = serializers.SerializerMethodField()
     class Meta:
         model = Organization
         fields = "__all__"
@@ -67,3 +87,15 @@ class OrganizationSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("This name already exists")
         
         return data
+    def get_building_count(self, obj):
+        return obj.buildings.count()
+    
+    def get_report_count(self, obj):
+        # return Room_Report.objects.filter(building__organization=obj).count()
+        return obj.room_report.count()
+    
+    def get_totalRoom_count(self, obj):
+        return Room.objects.filter(building__organization=obj).count()
+    
+    def get_member_count(self, obj):
+        return obj.memberships.count()

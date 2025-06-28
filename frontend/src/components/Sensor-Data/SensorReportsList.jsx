@@ -2,7 +2,6 @@ import {useEffect, useState, useRef} from 'react'
 import { Center, Box, Table, Spinner, HStack, Button, InputGroup, Input, CloseButton } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import useAccessToken from "../../services/token";
-import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import SyncSensorReports from './SyncSensorReports';
 import SyncSensorRoomData from './SyncSensorRoomData';
@@ -30,7 +29,7 @@ const SensorReportsList = () => {
   const [sensorData, setSensorData] = useState([])
   const [loading, setLoading] = useState(false)
 
-  const { buildingid, externalId } = useParams()
+  const { buildingid, externalid} = useParams()
   
   const now = new Date();
   const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
@@ -40,7 +39,7 @@ const SensorReportsList = () => {
     setLoading(true)
     const url = import.meta.env.VITE_ROOM_REPORT_SENSOR_LIST_URL 
     try {
-      const res = await axios.get(url, {
+      const res = await api.get(url, {
         headers: {
               Authorization: `Bearer ${accessToken}`,
               "Content-Type": "application/json",
@@ -102,7 +101,7 @@ const SensorReportsList = () => {
     };
     try {
 
-      const res = await axios.get(url, config);
+      const res = await api.get(url, config);
       const searchFilter = Array.isArray(res.data) ? res.data : [];
       setSensorData(searchFilter);
 
@@ -155,7 +154,7 @@ const SensorReportsList = () => {
             (mem.is_admin || mem.role === "editor")) 
             && (
             <Center my={"30px"}>
-              <SyncSensorRoomData onSyncSuccess={fetchSensorReport}/>
+              <SyncSensorRoomData onSyncSuccess={fetchSensorReport} buildingid={buildingid} externalid={externalid}/>
             </Center>
       )}
       
@@ -268,7 +267,7 @@ const SensorReportsList = () => {
                           <Table.Cell border={"1px solid"}>{data.co2}</Table.Cell>
                           <Table.Cell border={"1px solid"}>{data.light}</Table.Cell>
                           <Table.Cell border={"1px solid"}>{data.motion}</Table.Cell>
-                          <Table.Cell border={"1px solid"}>{formatDate(data.created_at)}</Table.Cell>
+                          <Table.Cell border={"1px solid"}>{formatDate(data.updated_at)}</Table.Cell>
                         </Table.Row>
                       ))
                     ):(

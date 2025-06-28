@@ -5,11 +5,14 @@ from Building.models import Organization
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
+    user_name = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'email', 'organizationid', 'is_active', 'date_joined']
+        fields = '__all__'
         read_only_fields = ['id', 'date_joined']
-
+        
+    def get_user_name(self, obj):
+        return f"{obj.first_name} {obj.last_name} - {obj.email}"
 
 class CreateUserSerializer(UserCreateSerializer):
     # Define organizationid as PrimaryKeyRelatedField for proper handling

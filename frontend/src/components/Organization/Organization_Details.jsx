@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Text, Button, VStack, Tabs, Table, HStack, Center } from '@chakra-ui/react';
+import { Box, Text, Button, VStack, Tabs, Table, HStack, Center, Switch} from '@chakra-ui/react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import useAccessToken from '../../services/token';
 import useOrganization from './OrganizationHook';
@@ -32,6 +32,7 @@ const Organization_Details = () => {
   const [refetchMember, setRefetchMembers] = useState(0);
   const [fetchBuildings, setFetchBuildings] = useState([]);
   const [refetchBuildings, setRefetchBuildings] = useState(0); // Trigger for BuildingListOrg
+  const [isChecked, setIChecked] = useState(true)
 
   // Fetch members
   const fetchMembers = async () => {
@@ -148,7 +149,7 @@ const Organization_Details = () => {
   }, [error]);
 
   return (
-    <Box shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={"10px"} h="fit-content" minH={"85vh"} rounded={'8px'} overflow={"auto"} maxHeight="100vh">
+    <Box shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={"10px"} h="fit-content" minH={"85vh"} rounded={'8px'} overflow={"auto"} maxHeight="100vh" maxW={"90%"}>
       <Tabs.Root defaultValue={'buildings'}>
         <Tabs.List>
           <Tabs.Trigger fontSize={"20px"} fontWeight={"bold"} value="buildings">Buildings</Tabs.Trigger>
@@ -172,35 +173,35 @@ const Organization_Details = () => {
                       <Table.Body>
                         <Table.Row>
                           <Table.Cell fontWeight="bold">Name</Table.Cell>
-                          <Table.Cell>{item.name || 'N/A'}</Table.Cell>
+                          <Table.Cell>{item.name}</Table.Cell>
                         </Table.Row>
                         <Table.Row>
                           <Table.Cell fontWeight="bold">Street</Table.Cell>
-                          <Table.Cell>{item.street || 'N/A'}</Table.Cell>
+                          <Table.Cell>{item.street}</Table.Cell>
                         </Table.Row>
                         <Table.Row>
                           <Table.Cell fontWeight="bold">City</Table.Cell>
-                          <Table.Cell>{item.city || 'N/A'}</Table.Cell>
+                          <Table.Cell>{item.city}</Table.Cell>
                         </Table.Row>
                         <Table.Row>
                           <Table.Cell fontWeight="bold">Post Code</Table.Cell>
-                          <Table.Cell>{item.postal_code || 'N/A'}</Table.Cell>
+                          <Table.Cell>{item.postal_code}</Table.Cell>
                         </Table.Row>
                         <Table.Row>
                           <Table.Cell fontWeight="bold">State</Table.Cell>
-                          <Table.Cell>{item.state || 'N/A'}</Table.Cell>
+                          <Table.Cell>{item.state}</Table.Cell>
                         </Table.Row>
                         <Table.Row>
                           <Table.Cell fontWeight="bold">Country</Table.Cell>
-                          <Table.Cell>{item.country || 'N/A'}</Table.Cell>
+                          <Table.Cell>{item.country}</Table.Cell>
                         </Table.Row>
                         <Table.Row>
                           <Table.Cell fontWeight="bold">Email</Table.Cell>
-                          <Table.Cell>{item.email || 'N/A'}</Table.Cell>
+                          <Table.Cell>{item.email}</Table.Cell>
                         </Table.Row>
                         <Table.Row>
                           <Table.Cell fontWeight="bold">Website</Table.Cell>
-                          <Table.Cell>{item.website || 'N/A'}</Table.Cell>
+                          <Table.Cell>{item.website}</Table.Cell>
                         </Table.Row>
                       </Table.Body>
                     </Table.Root>
@@ -355,19 +356,6 @@ const Organization_Details = () => {
                   )}
               </Tabs.List>
               <Tabs.Content value="list-building">
-                {members.length > 0 &&
-                  members.some(
-                    (mem) =>
-                      mem.user === userInfo.id &&
-                      (mem.is_admin || mem.role === "editor") &&
-                      mem.organization === Number(orgId)
-                  ) && (
-                    <SyncBuildings
-                      organizationId={Number(orgId)}
-                      onSyncSuccess={ListBuildings}
-                    />
-                )}
-                
                 <BuildingListOrg
                   organization={Number(orgId)}
                   buildings={fetchBuildings}
@@ -375,6 +363,7 @@ const Organization_Details = () => {
                 />
               </Tabs.Content>
               <Tabs.Content value="new-building">
+
                 {members.length > 0 &&
                   members.some(
                     (mem) =>
@@ -382,7 +371,32 @@ const Organization_Details = () => {
                       (mem.is_admin || mem.role === "editor") &&
                       mem.organization === Number(orgId)
                   ) && (
-                    <CreateBuildingOrg />
+                    <VStack>
+                      <Box border={"1px solid"} p={"20px"} rounded={"5px"} shadow="3px 3px 15px 5px rgb(75, 75, 79)">
+                        <Switch.Root
+                          checked={isChecked}
+                          onCheckedChange={(e) => setIChecked(e.checked)}
+                          invalid
+                        >
+                          <Switch.HiddenInput/>
+                          <Switch.Label>Sync Buildings from Sensor</Switch.Label>
+                          <Switch.Control bg={"blue"}/>
+                          <Switch.Label>Create new Buildings</Switch.Label>
+                        </Switch.Root>
+                      </Box>       
+                      {isChecked ? (
+                        <Box border={"1px solid"} mt={"20px"} rounded={"7px"}>
+                          <CreateBuildingOrg />
+                        </Box>):(
+                        <Box border={"1px solid"} mt={"20px"} p={"20px"} rounded={"7px"}>
+                          <SyncBuildings
+                            organizationId={Number(orgId)}
+                            onSyncSuccess={ListBuildings}
+                          />
+                      </Box>
+                      )}
+                      
+                    </VStack>
                 )}
               </Tabs.Content>
             </Tabs.Root>

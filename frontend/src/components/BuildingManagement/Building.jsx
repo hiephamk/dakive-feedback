@@ -26,7 +26,6 @@ const Building = () => {
         for (let i = 0; i < length; i++) {
             result += characters.charAt(Math.floor(Math.random() * characters.length));
         }
-        console.log("Generated external_id:", result); // Log for debugging
         return result;
     };
     useEffect(()=> {
@@ -39,7 +38,7 @@ const Building = () => {
         street: "",
         city: "",
         state: "",
-        country: "",
+        country: "Finland",
         postal_code: "",
         description: "",
         owner: userInfo?.id|| "",

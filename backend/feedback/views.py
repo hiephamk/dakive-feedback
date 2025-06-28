@@ -52,7 +52,7 @@ class RoomReportAnalyticsView(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     serializer_class= RoomReportSerializer
-    
+    # queryset = Room_Report.objects.all()
 
     def get(self, request):
         reports = Room_Report.objects.all()
@@ -87,6 +87,9 @@ class RoomReportAnalyticsView(generics.RetrieveAPIView):
                 room_data.append({
                     'room_id': room_id,
                     'room_name': latest_report.room.name,
+                    'building_id': latest_report.building.id,
+                    'organization_id': latest_report.organization.id,
+                    'organization_name': latest_report.organization.name,
                     'building_name': latest_report.building.name,
                     'created_at': latest_report.created_at.isoformat(),  # Latest report timestamp
                     'temperature': latest_report.temperature_rating if latest_report.temperature_rating is not None else 0,

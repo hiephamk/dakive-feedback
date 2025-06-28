@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import useRoom from './RoomHook';
+import useRoom from '../RoomOwner/RoomHook';
 import { useParams} from 'react-router';
 import {QRCodeCanvas} from 'qrcode.react';
 import { Box, VStack, Button, Center, Container, Heading, HStack, Switch } from '@chakra-ui/react';

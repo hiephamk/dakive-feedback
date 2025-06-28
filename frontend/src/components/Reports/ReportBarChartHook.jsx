@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import useAccessToken from '../../services/token';
-import axios from 'axios';
-import { Container, Box, Heading, Text, VStack, Wrap, WrapItem } from '@chakra-ui/react';
+import api from '../../services/api';
+import { Container, Box, Heading, Text, VStack,HStack, Wrap, Button, Center } from '@chakra-ui/react';
 import { Bar } from 'react-chartjs-2';
 import useOrganization_Membership from '../Organization/Organization_Membership_Hook';
-import useBuilding from './BuildingHook';
-// import useRoom from '../RoomOwner/RoomHook';
+import useBuilding from '../BuildingManagement/BuildingHook';
+import useOrganization from '../Organization/OrganizationHook';
+import useRoom from '../RoomOwner/RoomHook';
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -16,40 +18,42 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import formatDate from '../formatDate';
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const RoomReportAnalytics = () => {
+const ReportBarChartHook = () => {
   const { user, userInfo } = useSelector((state) => state.auth);
   const accessToken = useAccessToken(user);
   const [roomAnalytics, setRoomAnalytics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { members } = useOrganization_Membership()
-  const { buildings } = useBuilding()
-  // const { rooms } = useRoom()
-  // Fetch analytics data for all rooms
+  const { organizations } = useOrganization()
+  const [buildingId, setBuildingId] = useState('')
+  const [roomId, setRoomId] = useState('')
+  
+  const { buildings } = useBuilding();
+  const { rooms } = useRoom(buildingId)
+
   const fetchAnalytics = async () => {
     if (!accessToken) return;
     setLoading(true);
     setError(null);
     const url = import.meta.env.VITE_ROOM_REPORT_ANALYTICS_URL;
     try {
-      const res = await axios.get(url, {
+      const res = await api.get(url, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
+          // 'Content-Type': 'application/json',
         },
-      });
-      const reportChart = res.data
-      // console.log("roomdata:", res.data)
-      if (reportChart.length > 0) {
-        setRoomAnalytics(reportChart);
-      } else {
-        console.warn("Unexpected response format:", res.data);
-        setRoomAnalytics([]);
-      }
+    });
+    const sortedData = res.data.sort(
+    (a, b) => new Date(b.created_at) - new Date(a.created_at)
+    );
+    setRoomAnalytics(sortedData.length > 0 ? sortedData[0] : null);
+console.log("res.data", res.data)
     } catch (error) {
       if(error.response && error.response.status === 401) {
           alert("Please login again.");
@@ -65,7 +69,7 @@ const RoomReportAnalytics = () => {
     if (accessToken) {
       fetchAnalytics();
     }
-  }, [accessToken, userInfo?.id]);
+  }, [accessToken, userInfo?.id, buildingId, roomId]);
 
   // Chart options
   const chartOptions = {
@@ -145,73 +149,72 @@ const RoomReportAnalytics = () => {
       },
     ],
   });
+  const handleBuildingChange = (e) => {
+    const selectedBuildingId = e.target.value;
+    setBuildingId(selectedBuildingId);
+    setRoomId('');
+  };
+
+  const handleRoomChange = (e) => {
+    setRoomId(e.target.value);
+  };
+
+  const handleClearItem = () => {
+    setBuildingId("");
+    setRoomId("");
+  };
 
   return (
-    <Container maxW="container.xl" my={4}>
+    <Box maxW={"40%"}>
       <VStack spacing={6} align="stretch">
-        <Heading size="lg" textAlign="center">Average Rating of Room's Conditions</Heading>
+
         {loading ? (
           <Text textAlign="center">Loading...</Text>
         ) : error ? (
           <Text color="red.500" textAlign="center">{error}</Text>
-        ) : roomAnalytics.length > 0 ? (
-          <Wrap spacing={6} justify="center" p={2}>
-            {members.length > 0 && 
-              members
-                .filter(mem => mem.user === userInfo?.id)
-                .flatMap(mem => {
-                  // Find the building for this member's organization
-                  const memberBuilding = buildings.find(building => building.organization === mem.organization);
-                  
-                  // Only proceed if building exists
-                  if (!memberBuilding) return [];
-                  
-                  // Filter room analytics for this specific building
-                  const buildingRooms = roomAnalytics.filter(room => 
-                    room.building === memberBuilding.id || 
-                    room.building_name === memberBuilding.name
-                  );
-                  
-                  return buildingRooms.map(room => (
-                    <Box 
-                      key={`member-${mem.id}-room-${room.id || room.room_name}`} // Unique key for each combination
-                      w={{ base: "100%", md: "400px" }}
-                      h="420px"
-                      border="1px solid"
-                      borderColor="gray.200"
-                      p={4}
-                      borderRadius="md"
-                      boxShadow="md"
-                      bg="white"
-                    >
-                      <Heading size="md" mb={2} color="gray.700">
-                        {room.room_name} - {room.building_name}
-                      </Heading>
-                      <Text mb={2} fontSize="sm" color="gray.600">
-                        Updated: {new Date(room.created_at).toLocaleDateString()}
-                      </Text>
-                      
-                      <Box h="300px">
-                        <Bar 
-                          data={getChartData(room)} 
-                          options={{
-                            ...chartOptions,
-                            maintainAspectRatio: false,
-                            responsive: true
-                          }} 
-                        />
-                      </Box>
-                    </Box>
-                  ));
-                })
-            }
-          </Wrap>
         ) : (
-          <Text textAlign="center">No data available for any rooms</Text>
+          <Wrap spacing={6} justify="center" p={2}>
+            {members
+                .filter(item => item.user === userInfo?.id && item.role === "editor") ? (
+                    <Box 
+                        w={{ base: "100%", md: "400px" }}
+                        h="420px"
+                        border="1px solid"
+                        borderColor="gray.200"
+                        p={4}
+                        borderRadius="md"
+                        boxShadow="md"
+                        bg="white"
+                        shadow="3px 3px 15px 5px rgb(75, 75, 79)"
+                        >
+                        <VStack w={"100%"}>
+                            <Text fontWeight={"bold"} size="md" mb={2} color="gray.700">
+                            {roomAnalytics.room_name} - {roomAnalytics.building_name} - {roomAnalytics.organization_name}
+                            </Text>
+                            <Text mb={2} fontSize="sm" color="gray.600">
+                            {/* Updated: {new Date(roomAnalytics.created_at).toLocaleDateString()} */}
+                            Created: {formatDate(roomAnalytics.created_at)}
+                            </Text>
+                        </VStack>
+                        <Box h="300px">
+                            <Bar 
+                                data={getChartData(roomAnalytics )} 
+                                options={{
+                                ...chartOptions,
+                                maintainAspectRatio: false,
+                                responsive: true
+                                }} 
+                            />
+                        </Box>
+                    </Box>
+                ):("")
+            }
+            
+          </Wrap>
         )}
       </VStack>
-    </Container>
+    </Box>
   );
 };
 
-export default RoomReportAnalytics;
+export default ReportBarChartHook;

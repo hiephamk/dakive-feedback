@@ -34,23 +34,23 @@ const AdminPage = () => {
 
   const [keyword, setKeyword] = useState("")
 
-   useEffect(() => {
-    if (!members.length || !organizations.length || selectedOrgId) return;
+  //  useEffect(() => {
+  //   if (!members.length || !organizations.length || selectedOrgId) return;
 
-    const orgMember = members.find(item => item.user === userInfo?.id && item.is_admin);
-    const orgid = orgMember?.organization;
+  //   const orgMember = members.find(item => item.user === userInfo?.id && item.is_admin);
+  //   const orgid = orgMember?.organization;
 
-    console.log("orgId:", orgid);
+  //   console.log("orgId:", orgid);
 
-    if (orgid) {
-      const firstOrg = organizations.find(item => item.id === orgid);
+  //   if (orgid) {
+  //     const firstOrg = organizations.find(item => item.id === orgid);
 
-      if (firstOrg) {
-        setSelectedOrgId(firstOrg.id);
-        navigate(`/home/admin/organization/details/${firstOrg.id}`, { replace: true });
-      }
-    }
-  }, [members, organizations, selectedOrgId, navigate, userInfo?.id]);
+  //     if (firstOrg) {
+  //       setSelectedOrgId(firstOrg.id);
+  //       navigate(`/home/admin/organization/details/${firstOrg.id}`, { replace: true });
+  //     }
+  //   }
+  // }, [members, organizations, selectedOrgId, navigate, userInfo?.id]);
 
   const fetchMembers = async () => {
     if (!accessToken || !userInfo?.id) return;
@@ -193,20 +193,20 @@ useEffect(() => {
 
   if (isAdminRootPath || shouldRefresh || (location.pathname.startsWith('/home/admin') && !selectedOrgId)) {
     const loadAndSelect = async () => {
-      const freshOrganizations = await ListOrganizations();
+      // const freshOrganizations = await ListOrganizations();
       await fetchMembers();
+      await ListOrganizations()
+      // const updatedMembers = members.filter(item => item.user === userInfo?.id);
+      // const adminOrgIds = updatedMembers.map(item => item.organization);
+      // let filteredOrgs = freshOrganizations.filter(org => adminOrgIds.includes(org.id));
+      // filteredOrgs = filteredOrgs.sort((a,b) => b.id - a.id)
 
-      const updatedMembers = members.filter(item => item.user === userInfo?.id);
-      const adminOrgIds = updatedMembers.map(item => item.organization);
-      let filteredOrgs = freshOrganizations.filter(org => adminOrgIds.includes(org.id));
-      filteredOrgs = filteredOrgs.sort((a,b) => b.id - a.id)
 
-
-      if (filteredOrgs.length > 0) {
-        const firstOrgId = filteredOrgs[0].id;
-        setSelectedOrgId(firstOrgId);
-        navigate(`/home/admin/organization/details/${firstOrgId}`);
-      }
+      // if (filteredOrgs.length > 0) {
+      //   const firstOrgId = filteredOrgs[0].id;
+      //   setSelectedOrgId(firstOrgId);
+      //   navigate(`/home/admin`);
+      // }
 
       // Only set this after attempting once
       hasTriedToLoad.current = true;
@@ -218,7 +218,8 @@ useEffect(() => {
       navigate(location.pathname, { replace: true, state: {} });
     }
   }
-}, [location.pathname, location.state?.shouldRefresh, navigate, userInfo?.id, organizations, members, selectedOrgId]);
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [location.pathname, location.state?.shouldRefresh, userInfo?.id, organizations, members, selectedOrgId]);
 
 
 
@@ -310,9 +311,6 @@ useEffect(() => {
       }
     }, [keyword]);
 
-    useEffect(() => {
-      console.log("members: ", members)
-    }, [members]);
 
     const endElement = keyword ? (
       <CloseButton
@@ -329,7 +327,11 @@ useEffect(() => {
     <Box p="10px" boxSizing={"border-box"}>
       <Flex gap={"25px"} width="100%" p="10px" boxSizing={"border-box"}>
         <Box w="15vw" p={"10px"} h="85vh" rounded={"8px"} minW={"fit-content"} minH={"100vh"} overflow={"auto"}>
-          <Center><Button onClick={handleCreateNewOrg} shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={"10px"} my={"20px"}>Create New Organizations</Button></Center>
+          <Center>
+            <Button onClick={handleCreateNewOrg} shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={"10px"} my={"20px"}>
+              Create New Organizations
+            </Button>
+          </Center>
           <Center my={"20px"} shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={"10px"} rounded={"7px"} w={"100%"}>
               <form onSubmit={handleOrganizationSearch}>
                 <InputGroup flex="1" startElement={<LuSearch />} endElement={endElement} rounded={"5px"}>
@@ -487,31 +489,33 @@ useEffect(() => {
                             </Menu.Trigger>
                             <Portal>
                               <Menu.Positioner>
-                                <Menu.Item>
-                                  <Button
-                                    variant="outline"
-                                    size="xs"
-                                    onClick={() => handleUpdateOrg(org.id)}
-                                  >
-                                    Update
-                                  </Button>
-                                </Menu.Item>
-                                <Menu.Item>
-                                  <Dialog.Trigger asChild>
-                                    <Button variant="outline" size="xs">
-                                      Delete
+                                <Menu.Content>
+                                  <Menu.Item>
+                                    <Button
+                                      variant="outline"
+                                      size="xs"
+                                      onClick={() => handleUpdateOrg(org.id)}
+                                    >
+                                      Update
                                     </Button>
-                                  </Dialog.Trigger>
-                                </Menu.Item>
-                                <Menu.Item>
-                                  <Button
-                                    variant="outline"
-                                    size="xs"
-                                    onClick={() => handleDuplicateOrganization(org)}
-                                  >
-                                    Duplicate
-                                  </Button>
-                                </Menu.Item>
+                                  </Menu.Item>
+                                  <Menu.Item>
+                                    <Dialog.Trigger asChild>
+                                      <Button variant="outline" size="xs">
+                                        Delete
+                                      </Button>
+                                    </Dialog.Trigger>
+                                  </Menu.Item>
+                                  <Menu.Item>
+                                    <Button
+                                      variant="outline"
+                                      size="xs"
+                                      onClick={() => handleDuplicateOrganization(org)}
+                                    >
+                                      Duplicate
+                                    </Button>
+                                  </Menu.Item>
+                                </Menu.Content>
                               </Menu.Positioner>
                             </Portal>
                           </Menu.Root>

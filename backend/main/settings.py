@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     "users",
     "Building",
     "feedback",
-    "organization"
+    "organization",
+    "community"
 ]
 
 MIDDLEWARE = [
