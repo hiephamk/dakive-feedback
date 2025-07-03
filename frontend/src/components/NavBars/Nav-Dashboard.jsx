@@ -15,21 +15,21 @@ import {MenuContent, MenuItem, MenuRoot, MenuTrigger} from "../ui/menu"
 const NavDashboard = () => {
   const { user, userInfo } = useSelector((state) => state.auth)
   const {colorMode, toggleColorMode} = useColorMode()
-  const [isDesktop, setIsDesktop] = useState(false);
   const dispatch = useDispatch()
   // const { role, members, orgainzationId } = useOrganization_Member_Details(userInfo?.id)
-
-
+  
+  
   const {last_name, profile_img} = useProfile(userInfo.id)
-
+  
   const navigate = useNavigate()
   const btnColor = useColorModeValue("gray.50", "black")
   const handleLogout = () => {
-      dispatch(logout())
-      dispatch(reset())
-      navigate("/login")
+    dispatch(logout())
+    dispatch(reset())
+    navigate("/login")
   }
-
+  
+  const [isDesktop, setIsDesktop] = useState(false);
   useEffect(() => {
     const mediaQuery = window.matchMedia("(min-width: 450px)");
     setIsDesktop(mediaQuery.matches);
@@ -79,9 +79,9 @@ const NavDashboard = () => {
             <Portal>
               <Menu.Positioner>
                 <Menu.Content>            
-                  {/* <Menu.Item value="new-win-a">
-                    <Link to="/home/management/building-list">List of building</Link> 
-                  </Menu.Item> */}
+                  <Menu.Item value="new-win-a">
+                    <Link to="/home/management/sensor-data/reports/">Sensor Data</Link> 
+                  </Menu.Item>
                   <Menu.Item value="new-win-a">
                     <Link to="/home/management/report/table">Table</Link>
                   </Menu.Item>

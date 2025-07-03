@@ -70,10 +70,12 @@ function App() {
 
           </Route>
           <Route path="/home/management/sensor-data/room-list/:id" element={<SensorDataRooms/>}/>
-          <Route path="/home/management/sensor-data/reports/:buildingid/:externalid" element={<SensorReportsList/>}/>
+          <Route path="/home/management/sensor-data/reports/" element={<SensorReportsList/>}/>
+          {/* <Route path="/home/management/sensor-data/reports/:buildingid/:externalid" element={<SensorReportsList/>}/> */}
           {/* <Route path="/home/management/sensor-data/reports/:buildingid/:externalid" element={<BuildingReports/>}/> */}
           <Route path="/home/management/sensor-data/building-list" element={<SensorDataBuildings/>}/>
           <Route path="/home/management/building-reports/:buildingId" element={<UserFeedbackData_Building/>}/>
+          {/* <Route path="/home/management/sensor-data" element={<UserFeedbackData_Building/>}/> */}
           {/* <Route path="/home/management/building-reports/:buildingId" element={<BuildingReports/>}/> */}
           <Route path="/home/about" element={<About/>}/>
           <Route path="/home/community" element={<Community/>}/>

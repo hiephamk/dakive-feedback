@@ -53,7 +53,6 @@ const ReportBarChartHook = () => {
     (a, b) => new Date(b.created_at) - new Date(a.created_at)
     );
     setRoomAnalytics(sortedData.length > 0 ? sortedData[0] : null);
-console.log("res.data", res.data)
     } catch (error) {
       if(error.response && error.response.status === 401) {
           alert("Please login again.");
@@ -165,27 +164,27 @@ console.log("res.data", res.data)
   };
 
   return (
-    <Box maxW={"40%"}>
-      <VStack spacing={6} align="stretch">
+    <Box>
+      <VStack>
 
         {loading ? (
           <Text textAlign="center">Loading...</Text>
         ) : error ? (
           <Text color="red.500" textAlign="center">{error}</Text>
         ) : (
-          <Wrap spacing={6} justify="center" p={2}>
+          <Wrap>
             {members
                 .filter(item => item.user === userInfo?.id && item.role === "editor") ? (
                     <Box 
-                        w={{ base: "100%", md: "400px" }}
-                        h="420px"
-                        border="1px solid"
-                        borderColor="gray.200"
-                        p={4}
+                        // w={{ base: "100%", md: "400px" }}
+                        // h="400px"
+                        // border="1px solid"
+                        // borderColor="gray.200"
+                        // p={4}
                         borderRadius="md"
                         boxShadow="md"
-                        bg="white"
-                        shadow="3px 3px 15px 5px rgb(75, 75, 79)"
+                        // bg="white"
+                        
                         >
                         <VStack w={"100%"}>
                             <Text fontWeight={"bold"} size="md" mb={2} color="gray.700">

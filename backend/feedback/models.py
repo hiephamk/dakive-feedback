@@ -28,6 +28,19 @@ class Room_Report(models.Model):
     def __str__(self):
         return f"room Report for {self.room.name} in {self.building} - (roomId: {self.room})"
 
+    @property
+    def average_rating(self):
+        ratings = [
+            self.temperature_rating,
+            self.air_quality_rating,
+            self.draft_rating,
+            self.odor_rating,
+            self.lighting_rating,
+            self.structural_change_rating,
+            self.cleanliness_rating,
+        ]
+        return round(sum(ratings) / len(ratings),2)
+
 class Sensor_Report(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     building = models.ForeignKey(Building, on_delete=models.CASCADE)
@@ -36,8 +49,8 @@ class Sensor_Report(models.Model):
     co2 = models.FloatField(null=True, blank=True)
     light= models.IntegerField(null=True, blank=True, default=False)
     motion = models.BooleanField(default=False, null=True, blank=True) 
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(unique=True)
+    updated_at = models.DateTimeField(auto_now_add=True, unique=True)
 
     def __str__(self):
         return f" {self.room.name} in {self.building.name}"

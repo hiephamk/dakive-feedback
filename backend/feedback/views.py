@@ -20,7 +20,7 @@ class SensorReportCreateView(generics.ListCreateAPIView):
     serializer_class = SensorReportSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
-    queryset = Sensor_Report.objects.all()
+    queryset = Sensor_Report.objects.all().order_by('-created_at')
 
 class SensorReportDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = SensorReportSerializer
@@ -82,7 +82,10 @@ class RoomReportAnalyticsView(generics.RetrieveAPIView):
                     avg_structural=Round(Avg('structural_change_rating'), 1),
                     avg_cleanliness=Round(Avg('cleanliness_rating'), 1)
                 )
-
+                room_avg_ratings = []
+                for report in all_reports:
+                    room_avg_ratings.append(report.average_rating)
+                overall_avg_rating = round(sum(room_avg_ratings) / len(room_avg_ratings), 2) if room_avg_ratings else 0
                 # Build the response dictionary
                 room_data.append({
                     'room_id': room_id,
@@ -99,6 +102,7 @@ class RoomReportAnalyticsView(generics.RetrieveAPIView):
                     'lighting': latest_report.lighting_rating if latest_report.lighting_rating is not None else 0,
                     'structural': latest_report.structural_change_rating if latest_report.structural_change_rating is not None else 0,
                     'cleanliness': latest_report.cleanliness_rating if latest_report.cleanliness_rating is not None else 0,
+                    # 'average_rating':latest_report.average_rating if latest_report.average_rating is not None else 0,
                     # Add average ratings
                     'avg_temperature': avg_ratings['avg_temperature'] if avg_ratings['avg_temperature'] is not None else 0,
                     'avg_air_quality': avg_ratings['avg_air_quality'] if avg_ratings['avg_air_quality'] is not None else 0,
@@ -107,6 +111,7 @@ class RoomReportAnalyticsView(generics.RetrieveAPIView):
                     'avg_lighting': avg_ratings['avg_lighting'] if avg_ratings['avg_lighting'] is not None else 0,
                     'avg_structural': avg_ratings['avg_structural'] if avg_ratings['avg_structural'] is not None else 0,
                     'avg_cleanliness': avg_ratings['avg_cleanliness'] if avg_ratings['avg_cleanliness'] is not None else 0,
+                    'overall_avg_rating': overall_avg_rating,
                 })
 
         return Response(room_data)
@@ -133,5 +138,4 @@ class SensorDataSearchView(generics.ListAPIView):
                 Q(created_at__icontains=word) |
                 Q(updated_at__icontains=word)
             )
-
         return Sensor_Report.objects.filter(query).order_by('-created_at')

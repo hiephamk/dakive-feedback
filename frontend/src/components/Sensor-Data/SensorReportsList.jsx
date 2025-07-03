@@ -46,23 +46,23 @@ const SensorReportsList = () => {
             },
       })
       let filterData = Array.isArray(res.data) ? res.data : []
-      if(building_name){
-        filterData = filterData.filter(item => item.building_name === building_name)
-      }
-      if(room_name) {
-        filterData = filterData.filter(item => item.room_name === room_name)
-      }
-      if(startTime){
-        filterData = filterData.filter(item => item.created_at >= startTime)
-      }
-      if(endTime){
-        filterData = filterData.filter(item => item.created_at <= endTime)
-      }
-      filterData = filterData.filter(item => {
-        const createdAt = new Date(item.created_at);
-        return now - createdAt <= THIRTY_DAYS;
-      });
-      filterData = filterData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      // if(building_name){
+      //   filterData = filterData.filter(item => item.building_name === building_name)
+      // }
+      // if(room_name) {
+      //   filterData = filterData.filter(item => item.room_name === room_name)
+      // }
+      // if(startTime){
+      //   filterData = filterData.filter(item => item.created_at >= startTime)
+      // }
+      // if(endTime){
+      //   filterData = filterData.filter(item => item.created_at <= endTime)
+      // }
+      // filterData = filterData.filter(item => {
+      //   const createdAt = new Date(item.created_at);
+      //   return now - createdAt <= THIRTY_DAYS;
+      // });
+      // filterData = filterData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
       setSensorData(filterData)
 
     }catch(error) {
@@ -147,7 +147,7 @@ const SensorReportsList = () => {
 
   return (
     <Box>
-      {members.length > 0 &&
+      {/* {members.length > 0 &&
         members.some(
           (mem) =>
             mem.user === userInfo.id &&
@@ -156,9 +156,9 @@ const SensorReportsList = () => {
             <Center my={"30px"}>
               <SyncSensorRoomData onSyncSuccess={fetchSensorReport} buildingid={buildingid} externalid={externalid}/>
             </Center>
-      )}
+      )} */}
       
-      {loading ? (<Center><Spinner size="lg" /></Center>):(
+      {loading ? (<Center><Spinner size="sm" /></Center>):(
           <Box>
             <Center>
               <HStack gap={"20px"} my={"30px"}>
@@ -257,7 +257,7 @@ const SensorReportsList = () => {
                 <Table.Body>
                   {sensorData.length > 0 ? (
                     sensorData
-                    .filter(item => item.building === Number(buildingid))
+                    // .filter(item => item.building === Number(buildingid))
                     .map(data => (
                         <Table.Row key={data.id}>
                           <Table.Cell border={"1px solid"}>{data.building_name}</Table.Cell>

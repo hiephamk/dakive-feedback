@@ -7,6 +7,8 @@ class RoomReportSerializer(serializers.ModelSerializer):
     building_name = serializers.SerializerMethodField(read_only=True)
     organization_name = serializers.SerializerMethodField(read_only=True)
     room_external_id = serializers.SerializerMethodField(read_only=True)
+    average_rating = serializers.SerializerMethodField(read_only=True)
+    
     class Meta:
         model = Room_Report
         fields = '__all__'
@@ -20,6 +22,10 @@ class RoomReportSerializer(serializers.ModelSerializer):
         return obj.organization.name
     def get_room_external_id(self, obj):
         return obj.room.external_id
+    
+    def get_average_rating(self,obj):
+        return obj.average_rating
+
 class SensorReportSerializer(serializers.ModelSerializer):
     room_name = serializers.SerializerMethodField(read_only=True)
     building_name = serializers.SerializerMethodField(read_only=True)

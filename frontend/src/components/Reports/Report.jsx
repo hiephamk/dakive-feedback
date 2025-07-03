@@ -11,21 +11,28 @@ import * as XLSX from "xlsx";
 import formatDate from '../formatDate'
 import SyncSensorRoomData from '../Sensor-Data/SyncSensorRoomData';
 import useOrganization from '../Organization/OrganizationHook';
+import SensorReportsList from '../Sensor-Data/SensorReportsList';
 
 
 const Report = () => {
   const { user, userInfo } = useSelector((state) => state.auth);
   const accessToken = useAccessToken(user);
   const [reports, setReports] = useState([]);
+
   const [roomId, setRoomId] = useState('');
+  const [orgId, setOrgId] = useState('');
   const [buildingId, setBuildingId] = useState('');
+
   const [iShow, setIShow] = useState(false);
   const { buildings } = useBuilding();
   const { rooms } = useRoom(buildingId);
+  const { organizations } = useOrganization()
 
   const [sensorData, setSensorData] = useState([]);
   const [members, setMembers] = useState([])
   const frozenSensorData = useRef([]);
+
+  const [loading, setLoading] = useState(false)
 
   const fetchMembers = async () => {
     if (!accessToken || !userInfo?.id) return;
@@ -64,6 +71,9 @@ const Report = () => {
       });
       let filteredReports = res.data;
       
+      if (orgId) {
+        filteredReports = filteredReports.filter((item) => item.organization === Number(orgId));
+      }
       if (buildingId) {
         filteredReports = filteredReports.filter((item) => item.building === Number(buildingId));
       }
@@ -87,32 +97,28 @@ const Report = () => {
       fetchRoomReport();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken, userInfo?.id, buildingId, roomId]);
+  }, [accessToken, userInfo?.id, buildingId, roomId, orgId]);
 
   const fetchSensorReport = async () => {
     if (!accessToken) return;
+    setLoading(true)
     const url = import.meta.env.VITE_ROOM_REPORT_SENSOR_LIST_URL;
     try {
-      const res = await api.get(url, {
+      const resp = await api.get(url, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
       });
-      let filterData = Array.isArray(res.data) ? res.data : [];
-      filterData = filterData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      const filterData = resp.data
+      // let filterData = resp.data.filter(item => Math.abs(new Date(item.created_at).getTime() - new Date(reports.created_at).getTime()) < 30*60*1000)
       setSensorData(filterData)
     } catch (error) {
       console.error("fetch sensor data error", error.response?.data || error.message);
+    }finally{
+      setLoading(false)
     }
   };
-
-useEffect(() => {
-  if (accessToken && iShow && frozenSensorData.current) {
-    fetchSensorReport();
-  }
-}, [accessToken, iShow]);
-
 
   const feedbackIcons = {
     1: { icon: <FaFrown color="red" />, desc: "Very poor/Significant issues" },
@@ -234,6 +240,11 @@ useEffect(() => {
     setBuildingId(selectedBuildingId);
     setRoomId('');
   };
+  const handleOrgChange = (e) => {
+    const selectedOrgId = e.target.value;
+    setOrgId(selectedOrgId)
+    setBuildingId('');
+  };
 
   const handleRoomChange = (e) => {
     setRoomId(e.target.value);
@@ -242,10 +253,13 @@ useEffect(() => {
   const handleClearItem = () => {
     setBuildingId("");
     setRoomId("");
+    setOrgId("");
   };
-useEffect(()=>{
-  console.log("sensorData:",sensorData)
-},[sensorData])
+
+    useEffect(()=>{
+      console.log("fetch sensorData:",sensorData)
+    },[sensorData])
+
   return (
     <Box w={"100%"} maxW={"100vw"}>
       <Box>
@@ -255,11 +269,49 @@ useEffect(()=>{
         </HStack>
         <HStack gap={10} my={10}>
           <Box border="1px solid" p={4} fontSize="18px" rounded={7}>
+            <label htmlFor="org"></label>
+            <select
+              value={orgId}
+              onChange={handleOrgChange}
+              id="org"
+            >
+              <option value="">All Organizations</option>
+              {members.length > 0 && 
+                members
+                  .filter(mem => mem.user === userInfo.id)
+                  .flatMap(mem => 
+                    organizations
+                      .filter(org => org.id === mem.organization)
+                      .flatMap(org => 
+                        reports.length > 0 
+                          ? [...new Set(reports
+                              .filter(report => report.organization === org.id)
+                              .map(report => ({
+                                id: report.organization,
+                                name: report.organization_name
+                              }))
+                            )]
+                          : []
+                      )
+                  )
+                  .filter((org, index, self) => 
+                    index === self.findIndex(b => b.id === org.id)
+                  )
+                  .map(org => (
+                    <option key={org.id} value={org.id}>
+                      {org.name}
+                    </option>
+                  ))
+              }
+            </select>
+          </Box>
+          <Box border="1px solid" p={4} fontSize="18px" rounded={7}>
             <label htmlFor="building"></label>
             <select
               value={buildingId}
               onChange={handleBuildingChange}
-              id="building"
+              id="organization"
+              disabled={!orgId}
             >
               <option value="">All Buildings</option>
               {members.length > 0 && 
@@ -395,9 +447,9 @@ useEffect(()=>{
                   <Table.ColumnHeader fontWeight="bold" fontSize="14px" border="1px solid" textAlign="center">
                     Created Time
                   </Table.ColumnHeader>
-                  <Table.ColumnHeader fontWeight="bold" fontSize="14px" border="1px solid" textAlign="center">
+                  {/* <Table.ColumnHeader fontWeight="bold" fontSize="14px" border="1px solid" textAlign="center">
                     Sync Data Time
-                  </Table.ColumnHeader>
+                  </Table.ColumnHeader> */}
 
                 </>
               ) : ("")}
@@ -414,7 +466,6 @@ useEffect(()=>{
                       reports
                         .filter(report => report.building === building.id && report.organization === building.organization)
                         .map(report => {
-                          // Find matching sensor data within 30 minutes of report
                           const sensor = sensorData.find(s => {
                             if (String(s.room) !== String(report.room)) {
                               return false;
@@ -424,6 +475,7 @@ useEffect(()=>{
                             const timeDiff = Math.abs(sensorTime - reportTime) / (1000 * 60);
                             return timeDiff <= 15;
                           });
+                          console.log("sensor:", sensor)
 
                           return (
                             <Table.Row key={report.id}>
@@ -480,7 +532,7 @@ useEffect(()=>{
                               {iShow && (
                                 <>
                                   <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                    {sensor ? sensor.temperature : '-'}
+                                    {loading ? <Spinner size={"sm"}/> : (sensor ? sensor.temperature : '-')}
                                   </Table.Cell>
                                   <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
                                     {sensor ? sensor.humidity : '-'}
@@ -497,16 +549,17 @@ useEffect(()=>{
                                   <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
                                     {sensor ? formatDate(new Date(sensor.created_at).getTime()+180*60*1000) : '-'}
                                   </Table.Cell>
-                                  <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                                  {/* <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
                                     {sensor ? formatDate(sensor.updated_at) : '-'}
-                                  </Table.Cell>
+                                  </Table.Cell> */}
                                   <Table.Cell>
-                                    <SyncSensorRoomData
+                                    {<SyncSensorRoomData
                                       onSyncSuccess={fetchSensorReport}
                                       roomid={report.room}
                                       buildingid={report.building}
+                                      created_at={report.created_at}
                                       // externalid={building.external_id}
-                                    />
+                                    />}
                                   </Table.Cell>
                                 </>
                               )}

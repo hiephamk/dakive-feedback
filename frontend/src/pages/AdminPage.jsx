@@ -4,6 +4,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import {useSelector} from "react-redux"
 import { Box,Collapsible,Dialog, InputGroup,Text, Input, Button,CloseButton, HStack, VStack, Menu, Portal, Spinner, Center, Flex, Heading} from '@chakra-ui/react'
 import { LuSearch } from "react-icons/lu"
+import HomeOrganization from '../components/Organization/HomeOrganization'
 
 import useAccessToken from '../services/token'
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -322,11 +323,20 @@ useEffect(() => {
         me="-2"
       />
     ) : undefined
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 450px)");
+    setIsDesktop(mediaQuery.matches);
+    const handleResize = (e) => setIsDesktop(e.matches);
+    mediaQuery.addEventListener("change", handleResize);
+    return () => mediaQuery.removeEventListener("change", handleResize);
+  }, []);
 
   return (
     <Box p="10px" boxSizing={"border-box"}>
-      <Flex gap={"25px"} width="100%" p="10px" boxSizing={"border-box"}>
-        <Box w="15vw" p={"10px"} h="85vh" rounded={"8px"} minW={"fit-content"} minH={"100vh"} overflow={"auto"}>
+      {isDesktop?(
+<Flex justifyContent={"space-between"} gap={"10px"} width="100vw" p="10px" boxSizing={"border-box"}>
+        <Box p={"10px"} mx={"10px"} h="85vh" rounded={"8px"} minW={"fit-content"} minH={"100vh"} overflow={"auto"} flexBasis={"20%"}>
           <Center>
             <Button onClick={handleCreateNewOrg} shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={"10px"} my={"20px"}>
               Create New Organizations
@@ -637,10 +647,13 @@ useEffect(() => {
             </Box>
           </Box>
         </Box>
-        <Box w="100vw">
+        <Box flexBasis={"80%"} mx={"10px"}>
           <Outlet />
         </Box>
       </Flex>
+      ):(
+      <HomeOrganization/>
+    )}
     </Box>
   )
 }

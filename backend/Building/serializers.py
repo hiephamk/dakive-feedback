@@ -41,6 +41,7 @@ class RoomSerializer(serializers.ModelSerializer):
 class BuildingSerializer(serializers.ModelSerializer):
     organization_name = serializers.SerializerMethodField()
     owner_name = serializers.SerializerMethodField()
+    room_average_rating = serializers.SerializerMethodField()
     class Meta:
         model = Building
         fields = "__all__"
@@ -64,7 +65,17 @@ class BuildingSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("This name already exists")
         
         return data
+    def get_room_average_rating(self, obj):
+        reports = Room_Report.objects.filter(building=obj)
 
+        if not reports.exists():
+            return 0
+
+        # Calculate average of the "average_rating" property on each report
+        total = sum([r.average_rating for r in reports])
+        avg = total / reports.count()
+        return round(avg, 2)
+    
 class OrganizationSerializer(serializers.ModelSerializer):
     building_count = serializers.SerializerMethodField()
     totalRoom_count = serializers.SerializerMethodField()

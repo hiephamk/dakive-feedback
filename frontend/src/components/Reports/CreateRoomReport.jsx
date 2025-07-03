@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Link as RouterLink, useNavigate } from 'react-router';
-import { Box, Input, VStack, Button, Center, Container, Heading, HStack, Flex, Textarea, Switch } from '@chakra-ui/react';
+import { Box, Input, VStack, Button, Center, Container, Heading, HStack, Flex, Textarea, Switch, Spinner } from '@chakra-ui/react';
 import api from '../../services/api';
 import { FaFrown, FaMeh, FaSmile, FaGrin, FaGrinStars } from 'react-icons/fa';
 import NavUserReport from '../NavBars/NavUserReport';
@@ -13,15 +13,16 @@ import formatDate from '../formatDate';
 const CreateRoomReport = () => {
   const { roomId, showSensorData} = useParams();
   const { organizations } = useOrganization()
-
+  const [syncTime, setSyncTime] = useState('')
   const [buildingId, setBuildingId] = useState('');
   const [organizationId, setOrganizationId] = useState('')
-  
+  const [loading, setLoading] = useState(false)
   const [rooms, setRooms] = useState([])
   const [sensorData, setSensorData] = useState([])
   const [isShow, setIsShow ] = useState(false)
   const navigate = useNavigate()
   const token = "x8Kbf6R4Ti"
+  const [selectedRoom, setSelectedRoom] = useState('')
 
   const fetchRoom = async ()=> {
     const url = import.meta.env.VITE_ROOM_LIST_FEEDBACK_URL
@@ -29,8 +30,8 @@ const CreateRoomReport = () => {
       const response = await api.get(url)
       const filterItem = response.data.filter((room) => room.id === Number(roomId))
       if(filterItem.length > 0){
-
         setRooms(filterItem)
+
       }else {
         setRooms([])
       }
@@ -44,10 +45,12 @@ const CreateRoomReport = () => {
     }
   },[roomId])
 
-
+useEffect(()=>{
+  console.log("rooms:", rooms)
+},[rooms])
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchSensorData = async() => {
-
+    setLoading(true)
     const url = import.meta.env.VITE_ROOM_SENSOR_REPORT_USERVIEW_URL
     try {
       const res = await api.get(url)
@@ -63,6 +66,8 @@ const CreateRoomReport = () => {
       }
     }catch(error){
       console.error("fetch sensor data error", error.response.data || error.message)
+    }finally{
+      setLoading(false)
     }
   }
   
@@ -72,10 +77,10 @@ const CreateRoomReport = () => {
     }
 
     fetchSensorData();
-  }, [isShow, fetchSensorData, roomId]);
+  }, [isShow, roomId]);
 
   const [formData, setFormData] = useState({
-    room: roomId || '',
+    room: roomId|| '',
     building: buildingId || '',
     organization:organizationId || '',
     temperature_rating: '',
@@ -98,9 +103,10 @@ const CreateRoomReport = () => {
   });
 
   // Sync roomId and buildingId from URL params
+
   useEffect(() => {
     if (roomId) {
-      const selectedRoom = rooms.find((room) => room.id === Number(roomId));
+      setSelectedRoom(rooms.find(item => String(item.id) === String(roomId)));
       if (selectedRoom) {
         setBuildingId(selectedRoom?.building);
         setOrganizationId(selectedRoom?.organization.id);
@@ -109,6 +115,7 @@ const CreateRoomReport = () => {
   }, [roomId, rooms]);
 
   // Update formData when roomId or buildingId changes
+
   useEffect(() => {
     setFormData((prev) => ({
       ...prev,
@@ -226,7 +233,14 @@ const CreateRoomReport = () => {
       ))}
     </Flex>
   );
+ useEffect(() => {
+    const now = new Date();
+    setSyncTime(new Date(now.getTime()));
 
+  }, []);
+  useEffect(()=>{
+    console.log("syncTime:", syncTime)
+  },[syncTime])
   return (
     <Container>
         <NavUserReport/>
@@ -237,60 +251,68 @@ const CreateRoomReport = () => {
             <Box p={4} rounded={5}>
               {/* Room and Building Info */}
               <Box w="100%">
-                <HStack>
-                  <label>Room:</label>
-                  <Input
-                    value={rooms.find((room) => room.id === Number(roomId))?.name || ''}
-                    readOnly
-                  />
-                </HStack>
-                <HStack>
-                  <label>Building:</label>
-                  <Input
-                    value={rooms.find((room) => room.id === Number(roomId))?.building_name || ''}
-                    readOnly
-                  />
-                </HStack>
-                {/* <HStack>
-                  <label>Organization:</label>
-                  <Input
-                    value={rooms.find((room) => room.id === Number(roomId))?.organization?.id || ''}
-                    readOnly
-                  />
-                </HStack> */}
                 <Box>
-                    {showSensorData.includes(token) ? (
-                      <Box  border={"1px solid"} rounded={"7px"} p={"10px"} my={"10px"}>
-                        <Switch.Root
-                          checked={isShow}
-                          onCheckedChange={(e) => setIsShow(e.checked)}
-                        >
-                          <Switch.HiddenInput />
-                          <Switch.Control>
-                            <Switch.Thumb />
-                          </Switch.Control>
-                          <Switch.Label>Show Sensor Data</Switch.Label>
-                        </Switch.Root>
-                      </Box>
-                    ):("")}
+                  <HStack>
+                    <label>Room:</label>
+                    <Input
+                      // value={rooms.name}
+                      value={rooms.find((room) => room.id === Number(roomId))?.name || ''}
+                      readOnly
+                    />
+                  </HStack>
+                  <HStack>
+                    <label>Building:</label>
+                    <Input
+                      // value={rooms.building_name}
+                      value={rooms.find((room) => room.id === Number(roomId))?.building_name || ''}
+                      readOnly
+                    />
+                  </HStack>
+
                   <Box>
-                    {isShow && (sensorData ? (
-                      <HStack key={sensorData.id} my={"5px"} p={"5px"} justifyContent={"space-between"}>
-                          {/* <Box border={"1px solid"} rounded={"3px"} p={"5px"}>Room Name: {sensorData.room_name}</Box> */}
-                          <Box rounded={"3px"} p={"10px"}>Temp: {sensorData.temperature}°C</Box>
-                          <Box rounded={"3px"} p={"10px"}>Humid: {sensorData.humidity}%</Box>
-                          <Box rounded={"3px"} p={"10px"}>CO2: {sensorData.co2}</Box>
-                          <Box rounded={"3px"} p={"10px"}>updated: {formatDate(sensorData.updated_at)}</Box>
-                          <SyncSensorRoomData
-                            onSyncSuccess={fetchSensorData}
-                            roomid={Number(roomId)}
-                            buildingid={buildingId}
-                          />
-                        </HStack>
-                    ):(""))
-                    }
-                  </Box>
+                      {showSensorData.includes(token) ? (
+                        <Box  border={"1px solid"} rounded={"7px"} p={"10px"} my={"10px"}>
+                          <Switch.Root
+                            checked={isShow}
+                            onCheckedChange={(e) => setIsShow(e.checked)}
+                          >
+                            <Switch.HiddenInput />
+                            <Switch.Control>
+                              <Switch.Thumb />
+                            </Switch.Control>
+                            <Switch.Label>Show Sensor Data</Switch.Label>
+                          </Switch.Root>
+                        </Box>
+                      ):("")}
+                    <Box>
+                      {isShow && (
+                        (
+                          <VStack>
+                            <Box>
+                              {selectedRoom ? (
+                              <SyncSensorRoomData
+                                onSyncSuccess={fetchSensorData}
+                                roomid={selectedRoom.id}
+                                buildingid={selectedRoom.building}
+                                created_at={syncTime}
+                              />
+                            ) : ("no sync")}
+                            </Box>
+                            <HStack key={sensorData && sensorData.id} my={"5px"} p={"5px"} justifyContent={"space-between"}>
+                            
+                              {/* <Box border={"1px solid"} rounded={"3px"} p={"5px"}>Room Name: {sensorData.room_name}</Box> */}
+                              <Box rounded={"3px"} p={"10px"}>Temp: {sensorData? sensorData.temperature : '-'}°C</Box>
+                              <Box rounded={"3px"} p={"10px"}>Humid: {sensorData?sensorData.humidity : '-'}%</Box>
+                              <Box rounded={"3px"} p={"10px"}>CO2: {sensorData? sensorData.co2 : '-'}</Box>
+                              <Box rounded={"3px"} p={"10px"}>updated: {sensorData ? formatDate(new Date(sensorData.created_at).getTime() + 3 * 60 * 60 * 1000) : '-'}</Box>
+                            </HStack>
+                          </VStack>
+                      ))
                   
+                      }
+                    </Box>
+                  
+                  </Box>
                 </Box>
                 {/* Rating Fields */}
                 <Box>

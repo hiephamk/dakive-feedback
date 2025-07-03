@@ -13,7 +13,7 @@ import {
 import { useSelector } from "react-redux";
 import useAccessToken from "../../services/token";
 
-const SyncSensorRoomData = ({ onSyncSuccess, buildingid, roomid }) => {
+const SyncSensorRoomData = ({ onSyncSuccess, buildingid, roomid, created_at }) => {
   const { user } = useSelector((state) => state.auth);
   const accessToken = useAccessToken(user);
 
@@ -58,9 +58,8 @@ const SyncSensorRoomData = ({ onSyncSuccess, buildingid, roomid }) => {
     const encodedEndTime = encodeURIComponent(new Date(endTime).toISOString());
 
     setIsLoading(true);
+
     try {
-
-
       for (const room of rooms) {
         const externalRoomId = room.external_id;
 
@@ -69,27 +68,43 @@ const SyncSensorRoomData = ({ onSyncSuccess, buildingid, roomid }) => {
         const response = await axios.get(url, {
           headers: { "x-api-key": API_KEY },
         });
-        console.log("Iot Data: ", response.data)
-        const readings =
-          response.data?.results?.[0]?.series?.[0]?.values || [];
-        if (readings.length === 0) {
-          console.warn(`No data for room ${externalRoomId}`);
-          continue;
-        }
+        // console.log("Iot Data: ", response.data)
+        let readings = response.data?.results?.[0]?.series?.[0]?.values || [];
+        readings= readings.find(s => {
+          const sensorTime = new Date(s[0]).getTime() + 180*60*1000;
+          const reportTime = new Date(created_at).getTime();
+          const timeDiff = Math.abs(sensorTime - reportTime) / (1000 * 60);
+          return timeDiff <= 15;
+        })
+        console.log("Filter Readings ", readings)
 
-        for (const [time, temperature, humidity, co2, light, motion] of readings) {
+        // if (readings.length === 0) {
+        //   console.warn(`No data for room ${externalRoomId}`);
+        //   continue;
+        // }
 
+        // for (const [time, temperature, humidity, co2, light, motion] of readings) {
+
+          // const payload = {
+          //   room: roomid,
+          //   building: buildingid,
+          //   temperature,
+          //   humidity,
+          //   co2,
+          //   light,
+          //   motion: Boolean(motion),
+          //   created_at: time
+          // };
           const payload = {
             room: roomid,
             building: buildingid,
-            temperature,
-            humidity,
-            co2,
-            light,
-            motion: Boolean(motion),
-            created_at: time
+            temperature: readings[1],
+            humidity: readings[2],
+            co2: readings[4] ?? null,
+            light: readings[3] ?? 0, // fallback to 0 if null
+            motion: readings[5] ?? false,
+            created_at: new Date(readings[0]).toISOString().split(".")[0] + "Z",
           };
-
           try {
             await axios.post(
               "http://localhost:8000/api/rooms/reports/sync-data/create/",
@@ -107,14 +122,14 @@ const SyncSensorRoomData = ({ onSyncSuccess, buildingid, roomid }) => {
               postErr.response?.data || postErr.message
             );
           }
-        }
+        // }
       }
 
       // alert("All sensor data synced successfully!");
       if (onSyncSuccess) onSyncSuccess();
     } catch (err) {
       console.error("Sync error:", err);
-      alert("Failed to sync sensor data.");
+      // alert("Failed to sync sensor data.");
     } finally {
       setIsLoading(false);
     }
@@ -126,9 +141,9 @@ const SyncSensorRoomData = ({ onSyncSuccess, buildingid, roomid }) => {
 
   useEffect(() => {
     const now = new Date();
-    const oneHourAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const syncTime = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     setEndTime(formatDateForInput(now));
-    setStartTime(formatDateForInput(oneHourAgo));
+    setStartTime(formatDateForInput(syncTime));
   }, []);
 
   useEffect(() => {
@@ -138,28 +153,27 @@ const SyncSensorRoomData = ({ onSyncSuccess, buildingid, roomid }) => {
 
     handleSync();
 
-    // Set up interval for auto-sync every 10 minutes
-    const interval = setInterval(() => {
-      // Update end time to current time for each sync
-      const now = new Date();
-      setEndTime(formatDateForInput(now));
-      handleSync();
-    }, 600000);
+    // const interval = setInterval(() => {
+    //   // Update end time to current time for each sync
+    //   const now = new Date();
+    //   setEndTime(formatDateForInput(now));
+    //   handleSync();
+    // }, 1000);
 
-    // Cleanup interval on component unmount or dependency change
-    return () => clearInterval(interval);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomid, buildingid, rooms, accessToken]);
+    // return () => clearInterval(interval);
+
+  }, [roomid,rooms, buildingid, accessToken, created_at]);
 
   return (
     <Box>
       <Box>
         {isLoading && (
             <Center>
-              <Spinner size="lg" thickness="4px" speed="0.65s" color="teal.500" />
+              <Spinner size="sm" thickness="4px" speed="0.65s" color="teal.500" />
             </Center>
           )}
       </Box>
+
       {/* <Button onClick={handleSync} isLoading={isLoading}>
         Sync Sensor Report
       </Button> */}
