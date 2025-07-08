@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.db.models import Avg
 from .models import Room, Building, Organization
 from organization.models import Organization_membership
 from feedback.models import Room_Report
@@ -42,6 +43,7 @@ class BuildingSerializer(serializers.ModelSerializer):
     organization_name = serializers.SerializerMethodField()
     owner_name = serializers.SerializerMethodField()
     room_average_rating = serializers.SerializerMethodField()
+    building_summary = serializers.SerializerMethodField()
     class Meta:
         model = Building
         fields = "__all__"
@@ -76,11 +78,32 @@ class BuildingSerializer(serializers.ModelSerializer):
         avg = total / reports.count()
         return round(avg, 2)
     
+    def get_building_summary(self, obj):
+        reports = Room_Report.objects.filter(building=obj)
+        if not reports.exists():
+            return None
+
+        summary = reports.aggregate(
+            avg_temperature=Avg('temperature_rating'),
+            avg_air_quality=Avg('air_quality_rating'),
+            avg_draft=Avg('draft_rating'),
+            avg_odor=Avg('odor_rating'),
+            avg_lighting=Avg('lighting_rating'),
+            avg_structural_change=Avg('structural_change_rating'),
+            avg_cleanliness=Avg('cleanliness_rating'),
+        )
+
+        for key, value in summary.items():
+            summary[key] = round(value, 2) if value is not None else None
+
+        return summary
+    
 class OrganizationSerializer(serializers.ModelSerializer):
     building_count = serializers.SerializerMethodField()
     totalRoom_count = serializers.SerializerMethodField()
     report_count = serializers.SerializerMethodField()
     member_count = serializers.SerializerMethodField()
+    buildings = BuildingSerializer(many=True, read_only=True)
     class Meta:
         model = Organization
         fields = "__all__"

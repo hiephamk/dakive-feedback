@@ -43,7 +43,7 @@ const UserFeedbackHook = () => {
         },
       });
     setReportChart(response.data)
-    console.log("response.data", response.data)
+    // console.log("response.data", response.data)
     } catch (error) {
       if(error.response && error.response.status === 401) {
           alert("Please login again.");
@@ -66,9 +66,9 @@ const UserFeedbackHook = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken, userInfo?.id]);
 
-  useEffect(()=>{
-    console.log("report-chart-hook:", reportChart)
-  },[reportChart])
+  // useEffect(()=>{
+  //   console.log("report-chart-hook:", reportChart)
+  // },[reportChart])
 
   return {reports, reportChart}
 };

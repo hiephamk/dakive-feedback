@@ -17,7 +17,7 @@ import SyncRooms from '../Sensor-Data/SyncRooms';
 const RoomList = () => {
   const { user, userInfo } = useSelector((state) => state.auth);
   const accessToken = useAccessToken(user);
-  const { buildingId, externalId } = useParams();
+  const { buildingId, externalId, orgId } = useParams();
   const navigate = useNavigate();
   const inputRef = useRef(null);
   const { rooms } = useRoom(buildingId);
@@ -86,7 +86,7 @@ const RoomList = () => {
   };
 
   const handleUpdateRoom = (roomId) => {
-    navigate(`/home/management/room/update/${roomId}`);
+    navigate(`/home/management/room/update/${roomId}/${orgId}`);
   };
 
   const handleDeleteRoom = (roomId) => {

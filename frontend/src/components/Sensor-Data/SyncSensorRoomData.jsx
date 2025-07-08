@@ -27,8 +27,9 @@ const SyncSensorRoomData = ({ onSyncSuccess, buildingid, roomid, created_at }) =
   const API_KEY = "II6dsQDctGjWeoHgnT5wPjXlyJVmmUbvASnh2Zay"
 
   const listRooms = async () => {
+    const url = import.meta.env.VITE_ROOM_LIST_URL
     try {
-      const res = await axios.get("http://localhost:8000/api/rooms/lists/", {
+      const res = await axios.get(url, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       const filtered = res.data.filter(
@@ -68,7 +69,7 @@ const SyncSensorRoomData = ({ onSyncSuccess, buildingid, roomid, created_at }) =
         const response = await axios.get(url, {
           headers: { "x-api-key": API_KEY },
         });
-        // console.log("Iot Data: ", response.data)
+        console.log("Iot Data: ", response.data)
         let readings = response.data?.results?.[0]?.series?.[0]?.values || [];
         readings= readings.find(s => {
           const sensorTime = new Date(s[0]).getTime() + 180*60*1000;
@@ -100,14 +101,15 @@ const SyncSensorRoomData = ({ onSyncSuccess, buildingid, roomid, created_at }) =
             building: buildingid,
             temperature: readings[1],
             humidity: readings[2],
-            co2: readings[4] ?? null,
-            light: readings[3] ?? 0, // fallback to 0 if null
+            co2: readings[3] ?? null,
+            light: readings[4] ?? 0, // fallback to 0 if null
             motion: readings[5] ?? false,
             created_at: new Date(readings[0]).toISOString().split(".")[0] + "Z",
           };
           try {
+            const url = import.meta.env.VITE_ROOM_REPORT_SENSOR_CREATE_URL
             await axios.post(
-              "http://localhost:8000/api/rooms/reports/sync-data/create/",
+              url,
               payload,
               {
                 headers: {

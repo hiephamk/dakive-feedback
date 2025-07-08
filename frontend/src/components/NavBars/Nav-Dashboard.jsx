@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { logout, reset } from '../../services/authSlice'
 import { Link } from 'react-router'
 import { useColorModeValue, useColorMode } from '../ui/color-mode'
-import { Box, HStack, Button, IconButton, Avatar, Text, Center, VStack,Image, Portal, Menu } from '@chakra-ui/react'
+import { Box, HStack, Button, IconButton, Avatar, Text, Center, VStack,Image, Portal, Menu, Flex } from '@chakra-ui/react'
 import { LuMoon, LuSun } from 'react-icons/lu'
 import { GiHamburgerMenu } from "react-icons/gi";
 import useProfile from '../../services/ProfileHook';
@@ -47,29 +47,9 @@ const NavDashboard = () => {
           <Button bg="black">
             <Image width="100px" bg="black" src="https://www.hamk.fi/wp-content/uploads/2024/01/HAMK_Logo_text_small_ENG_NEGA-1.svg"/>
           </Button>
-          {/* <Image sizes='sm' src="https://www.hamk.fi/wp-content/uploads/2024/01/HAMK_Logo_text_small_ENG_NEGA-1.svg"/> */}
-          {/* <NavLink to="/dashboard">Dashboard</NavLink> */}
           <NavLink to="/home">Home</NavLink>
           <NavLink to="/home/admin">Management</NavLink>
-          {/* <Menu.Root>
-            <Menu.Trigger asChild>
-              <NavLink variant="outline" fontSize={22} fontWeight="bold">
-                Management
-              </NavLink>
-            </Menu.Trigger>
-            <Portal>
-              <Menu.Positioner>
-                <Menu.Content>            
-                  <Menu.Item value="new-txt-a">
-                    <Link to="/home/management/building-list">Building Management</Link>                                
-                  </Menu.Item>
-                  <Menu.Item value="new-txt-a">
-                    <Link to="/home/admin">Organization Management</Link>                                
-                  </Menu.Item>
-                </Menu.Content>
-              </Menu.Positioner>
-            </Portal>
-          </Menu.Root> */}
+
           <Menu.Root>
             <Menu.Trigger asChild>
               <NavLink variant="outline" fontSize={22} fontWeight="bold">
@@ -135,27 +115,34 @@ const NavDashboard = () => {
   
         </HStack>
         ):(
-        <MenuRoot>
-          <MenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              <GiHamburgerMenu/> Menu
-            </Button>
-          </MenuTrigger>
-          <MenuContent>
-            <MenuItem value="new-win-a">
-              <NavLink to="/home">Home</NavLink>
-            </MenuItem>
-            <MenuItem value="new-win-a">
-              <NavLink to="/home/admin">Management</NavLink>
-            </MenuItem>
-            <MenuItem value="new-win-a">
-              <NavLink to="/home/management/report/chart">Report</NavLink>
-            </MenuItem>
-            <MenuItem value="new-win-a">
-              <NavLink to="/home/profile">Profile</NavLink>
-            </MenuItem>
-          </MenuContent>
-        </MenuRoot>
+        <Flex justifyContent={"space-between"}>
+          <MenuRoot>
+            <MenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <GiHamburgerMenu/> Menu
+              </Button>
+            </MenuTrigger>
+            <MenuContent>
+              <MenuItem value="new-win-a">
+                <NavLink to="/home">Home</NavLink>
+              </MenuItem>
+              <MenuItem value="new-win-a">
+                <NavLink to="/home/admin">Management</NavLink>
+              </MenuItem>
+              <MenuItem value="new-win-a">
+                <NavLink to="/home/management/report/chart">Report</NavLink>
+              </MenuItem>
+              <MenuItem value="new-win-a">
+                <NavLink to="/home/profile">Profile</NavLink>
+              </MenuItem>
+            </MenuContent>
+          </MenuRoot>
+           <IconButton onClick={toggleColorMode} size={"sm"}>
+            {
+              colorMode === 'light' ? <LuMoon/> : <LuSun/>
+            }
+          </IconButton>
+        </Flex>
         )
       }  
       </Box>

@@ -197,19 +197,6 @@ useEffect(() => {
       // const freshOrganizations = await ListOrganizations();
       await fetchMembers();
       await ListOrganizations()
-      // const updatedMembers = members.filter(item => item.user === userInfo?.id);
-      // const adminOrgIds = updatedMembers.map(item => item.organization);
-      // let filteredOrgs = freshOrganizations.filter(org => adminOrgIds.includes(org.id));
-      // filteredOrgs = filteredOrgs.sort((a,b) => b.id - a.id)
-
-
-      // if (filteredOrgs.length > 0) {
-      //   const firstOrgId = filteredOrgs[0].id;
-      //   setSelectedOrgId(firstOrgId);
-      //   navigate(`/home/admin`);
-      // }
-
-      // Only set this after attempting once
       hasTriedToLoad.current = true;
     };
 
@@ -335,7 +322,7 @@ useEffect(() => {
   return (
     <Box p="10px" boxSizing={"border-box"}>
       {isDesktop?(
-<Flex justifyContent={"space-between"} gap={"10px"} width="100vw" p="10px" boxSizing={"border-box"}>
+      <Flex justifyContent={"space-between"} gap={"10px"} width="100vw" p="10px" boxSizing={"border-box"}>
         <Box p={"10px"} mx={"10px"} h="85vh" rounded={"8px"} minW={"fit-content"} minH={"100vh"} overflow={"auto"} flexBasis={"20%"}>
           <Center>
             <Button onClick={handleCreateNewOrg} shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={"10px"} my={"20px"}>

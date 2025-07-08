@@ -298,7 +298,7 @@ const RoomReportAnalytics = () => {
             </Box>
           </HStack>
           ):(
-            <VStack my={10} maxW={"100%"} justifyContent={"space-evenly"}>
+            <VStack my={10} maxW={"100%"} justifyContent={"space-evenly"} >
             <Box border="1px solid" p={4} fontSize="18px" rounded={7}>
               <label htmlFor="org"></label>
               <select
@@ -411,7 +411,7 @@ const RoomReportAnalytics = () => {
         ) : error ? (
           <Text color="red.500" textAlign="center">{error}</Text>
         ) : roomAnalytics.length > 0 ? (
-          <Wrap spacing={6} justify="center" p={2}>
+          <Wrap spacing={6} justify="center" p={2} overflow={"auto"} h={'100vh'}>
             {members
                 .filter(mem => mem.user === userInfo?.id || mem.owner === userInfo?.id)
                 .map(mem => organizations

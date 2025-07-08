@@ -1,47 +1,26 @@
-import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import useAccessToken from '../../services/token';
-import api from '../../services/api';
-import { Container, Box, Heading, Text, VStack,HStack, Wrap, Button, Center } from '@chakra-ui/react';
-import { Bar } from 'react-chartjs-2';
-import useOrganization_Membership from '../Organization/Organization_Membership_Hook';
-import useBuilding from '../BuildingManagement/BuildingHook';
-import useOrganization from '../Organization/OrganizationHook';
-import useRoom from '../RoomOwner/RoomHook';
 
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import formatDate from '../formatDate';
+import {useState, useEffect} from 'react'
+import { useSelector } from 'react-redux'
+import useAccessToken from '../../services/token'
+import api from '../../services/api'
+import useBuilding from '../BuildingManagement/BuildingHook'
+import { Chart, useChart } from "@chakra-ui/charts"
+import { Box, HStack, Text, VStack, Spinner, Heading } from "@chakra-ui/react"
+import { Bar, BarChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis, ResponsiveContainer, LabelList } from "recharts"
 
-// Register Chart.js components
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-
-const ReportBarChartHook = () => {
+const ReportBarChartHook = ({orgId}) => {
   const { user, userInfo } = useSelector((state) => state.auth);
   const accessToken = useAccessToken(user);
-  const [roomAnalytics, setRoomAnalytics] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const { members } = useOrganization_Membership()
-  const { organizations } = useOrganization()
-  const [buildingId, setBuildingId] = useState('')
-  const [roomId, setRoomId] = useState('')
-  
-  const { buildings } = useBuilding();
-  const { rooms } = useRoom(buildingId)
+  const {buildings} = useBuilding()
+  const [loading, setLoading]=useState(false)
+  const [builidingAVG, setBuildingAVG] = useState([])
+  const [chartData, setChartData] = useState([])
 
   const fetchAnalytics = async () => {
     if (!accessToken) return;
     setLoading(true);
-    setError(null);
-    const url = import.meta.env.VITE_ROOM_REPORT_ANALYTICS_URL;
+    const url = `${import.meta.env.VITE_ORGANIZATION_BUILDING_AVG_RATING_URL}${orgId}/`
+    // console.log("url:", url)
     try {
       const res = await api.get(url, {
         headers: {
@@ -49,10 +28,13 @@ const ReportBarChartHook = () => {
           // 'Content-Type': 'application/json',
         },
     });
-    const sortedData = res.data.sort(
-    (a, b) => new Date(b.created_at) - new Date(a.created_at)
-    );
-    setRoomAnalytics(sortedData.length > 0 ? sortedData[0] : null);
+    const sortedData = res.data
+    console.log("barchart res.data:", res.data)
+    setBuildingAVG(sortedData);
+    
+    // Process data for single chart with multiple buildings
+    processBuildingsData(sortedData);
+    
     } catch (error) {
       if(error.response && error.response.status === 401) {
           alert("Please login again.");
@@ -64,156 +46,213 @@ const ReportBarChartHook = () => {
     }
   };
 
-  useEffect(() => {
-    if (accessToken) {
-      fetchAnalytics();
+  const processBuildingsData = (data) => {
+    if (!data || !data.buildings) return;
+    
+    // Create chart data where each building is a separate bar
+    const processedBuildings = data.buildings
+      .filter(building => building.building_summary && building.room_average_rating)
+      .sort((a,b) => a.room_average_rating - b.room_average_rating)
+      .slice(0, 5)
+       // Only include buildings with summary data
+      .map(building => ({
+        name: building.name, // Building name will be on X-axis
+        organization_name:building.organization_name,
+        Air_Quality: building.building_summary.avg_air_quality || 0,
+        Light: building.building_summary.avg_lighting || 0,
+        Temperature: building.building_summary.avg_temperature || 0,
+        Draft: building.building_summary.avg_draft || 0,
+        Odor: building.building_summary.avg_odor || 0,
+        Cleanliness: building.building_summary.avg_cleanliness || 0,
+        Structural_Change: building.building_summary.avg_structural_change || 0,
+      }));
+    
+    setChartData(processedBuildings);
+  };
+
+  // Custom tooltip to show individual values
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <Box bg="white" p={3} border="1px" borderColor="gray.200" borderRadius="md" shadow="md">
+          <Text fontWeight="bold" mb={2}>{`Building: ${label}`}</Text>
+          {payload.map((entry, index) => (
+            <Text key={index} color={entry.color} fontSize="sm">
+              {`${entry.name}: ${entry.value.toFixed(2)}`}
+            </Text>
+          ))}
+        </Box>
+      );
     }
-  }, [accessToken, userInfo?.id, buildingId, roomId]);
-
-  // Chart options
-  const chartOptions = {
-    responsive: true, // Ensure chart resizes with container
-    maintainAspectRatio: false, // Allow custom height
-    scales: {
-      y: {
-        beginAtZero: true,
-        max: 5,
-        title: {
-          display: true,
-          text: 'Average Rating (1-5)',
-        },
-      },
-      x: {
-        title: {
-          display: true,
-          text: 'Categories',
-        },
-      },
-    },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          label: (context) => `Rating: ${context.raw}`,
-        },
-      },
-    },
+    return null;
   };
 
-  // Chart labels
-  const chartLabels = [
-    'Temperature',
-    'Air Quality',
-    'Draft',
-    'Odor',
-    'Lighting',
-    'Structural',
-    'Cleanliness',
-  ];
+  useEffect(()=>{
+    fetchAnalytics()
+  },[accessToken, orgId])
 
-  // Function to create chart data for a room
-  const getChartData = (room) => ({
-    labels: chartLabels,
-    datasets: [
-      {
-        label: 'Rating',
-        data: [
-          room.avg_temperature || 0,
-          room.avg_air_quality || 0,
-          room.avg_draft || 0,
-          room.avg_odor || 0,
-          room.avg_lighting || 0,
-          room.avg_structural || 0,
-          room.avg_cleanliness || 0,
-        ],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.6)',
-          'rgba(54, 162, 235, 0.6)',
-          'rgba(255, 206, 86, 0.6)',
-          'rgba(75, 192, 192, 0.6)',
-          'rgba(153, 102, 255, 0.6)',
-          'rgba(255, 159, 64, 0.6)',
-          'rgba(199, 199, 199, 0.6)',
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
-          'rgba(199, 199, 199, 1)',
-        ],
-        borderWidth: 1,
-      },
-    ],
-  });
-  const handleBuildingChange = (e) => {
-    const selectedBuildingId = e.target.value;
-    setBuildingId(selectedBuildingId);
-    setRoomId('');
-  };
+  useEffect(()=>{
+    console.log("ChartData:", chartData)
+  },[builidingAVG])
 
-  const handleRoomChange = (e) => {
-    setRoomId(e.target.value);
-  };
-
-  const handleClearItem = () => {
-    setBuildingId("");
-    setRoomId("");
-  };
-
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" h="400px">
+        <Spinner size="xl" />
+      </Box>
+    );
+  }
+const organizationName = chartData[0]?.organization_name || "Organization";
   return (
-    <Box>
+    <Box w={"400px"}>
       <VStack>
-
-        {loading ? (
-          <Text textAlign="center">Loading...</Text>
-        ) : error ? (
-          <Text color="red.500" textAlign="center">{error}</Text>
-        ) : (
-          <Wrap>
-            {members
-                .filter(item => item.user === userInfo?.id && item.role === "editor") ? (
-                    <Box 
-                        // w={{ base: "100%", md: "400px" }}
-                        // h="400px"
-                        // border="1px solid"
-                        // borderColor="gray.200"
-                        // p={4}
-                        borderRadius="md"
-                        boxShadow="md"
-                        // bg="white"
-                        
-                        >
-                        <VStack w={"100%"}>
-                            <Text fontWeight={"bold"} size="md" mb={2} color="gray.700">
-                            {roomAnalytics.room_name} - {roomAnalytics.building_name} - {roomAnalytics.organization_name}
-                            </Text>
-                            <Text mb={2} fontSize="sm" color="gray.600">
-                            {/* Updated: {new Date(roomAnalytics.created_at).toLocaleDateString()} */}
-                            Created: {formatDate(roomAnalytics.created_at)}
-                            </Text>
-                        </VStack>
-                        <Box h="300px">
-                            <Bar 
-                                data={getChartData(roomAnalytics )} 
-                                options={{
-                                ...chartOptions,
-                                maintainAspectRatio: false,
-                                responsive: true
-                                }} 
-                            />
-                        </Box>
-                    </Box>
-                ):("")
-            }
-            
-          </Wrap>
+        {chartData.length > 0 && (
+          <VStack h="500px" maxW="100%" border={"1px solid"} rounded={"7px"} shadow="3px 3px 15px 5px rgb(75, 75, 79)">
+            <Chart.Root height="100%">
+              <BarChart
+                data={chartData}
+                margin={{
+                  top: 10,
+                  right: 10,
+                  left: 10,
+                  bottom: 10,
+                }}
+                >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="name"
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                  interval={0}
+                />
+                <YAxis
+                  label={{ value: 'Average Rating of Building', angle: -90}}
+                  domain={[0, 'dataMax + 1']}
+                  // yAxisId="left" orientation="left"
+                  wrapperStyle={{ padding: '10px', marginRight:'20px' }}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend
+                  verticalAlign="top"
+                  wrapperStyle={{ padding: '10px', marginBottom:'20px' }}
+                  iconType="circle"
+                />
+      
+                {/* Stacked bars for each metric with labels */}
+                <Bar
+                  dataKey="Temperature"
+                  stackId="a"
+                  fill="#a04000"
+                  name="Temperature"
+                >
+                  <LabelList
+                    dataKey="Temperature"
+                    position="center"
+                    fill="white"
+                    fontSize={10}
+                    fontWeight="bold"
+                    formatter={(value) => value > 0 ? value.toFixed(1) : ''}
+                  />
+                </Bar>
+                <Bar
+                  dataKey="Air_Quality"
+                  stackId="a"
+                  fill="#d68910"
+                  name="Air Quality"
+                >
+                  <LabelList
+                    dataKey="Air_Quality"
+                    position="center"
+                    fill="white"
+                    fontSize={10}
+                    fontWeight="bold"
+                    formatter={(value) => value > 0 ? value.toFixed(1) : ''}
+                  />
+                </Bar>
+                <Bar
+                  dataKey="Light"
+                  stackId="a"
+                  fill="#229954"
+                  name="Light"
+                >
+                  <LabelList
+                    dataKey="Light"
+                    position="center"
+                    fill="white"
+                    fontSize={10}
+                    fontWeight="bold"
+                    formatter={(value) => value > 0 ? value.toFixed(1) : ''}
+                  />
+                </Bar>
+                <Bar
+                  dataKey="Draft"
+                  stackId="a"
+                  fill="#f1c40f"
+                  name="Draft"
+                >
+                  <LabelList
+                    dataKey="Draft"
+                    position="center"
+                    fill="black"
+                    fontSize={10}
+                    fontWeight="bold"
+                    formatter={(value) => value > 0 ? value.toFixed(1) : ''}
+                  />
+                </Bar>
+                <Bar
+                  dataKey="Odor"
+                  stackId="a"
+                  fill="#000080"
+                  name="Odor"
+                >
+                  <LabelList
+                    dataKey="Odor"
+                    position="center"
+                    fill="white"
+                    fontSize={10}
+                    fontWeight="bold"
+                    formatter={(value) => value > 0 ? value.toFixed(1) : ''}
+                  />
+                </Bar>
+                <Bar
+                  dataKey="Cleanliness"
+                  stackId="a"
+                  fill="#2980b9"
+                  name="Cleanliness"
+                >
+                  <LabelList
+                    dataKey="Cleanliness"
+                    position="center"
+                    fill="white"
+                    fontSize={10}
+                    fontWeight="bold"
+                    formatter={(value) => value > 0 ? value.toFixed(1) : ''}
+                  />
+                </Bar>
+                <Bar
+                  dataKey="Structural_Change"
+                  stackId="a"
+                  fill="#8e44ad"
+                  name="Structural Change"
+                >
+                  <LabelList
+                    dataKey="Structural_Change"
+                    position="center"
+                    fill="white"
+                    fontSize={10}
+                    fontWeight="bold"
+                    formatter={(value) => value > 0 ? value.toFixed(1) : ''}
+                  />
+                </Bar>
+              </BarChart>
+            </Chart.Root>
+            <Text fontStyle={"italic"}>Organization {organizationName} </Text>
+          </VStack>
         )}
       </VStack>
     </Box>
-  );
-};
+  )
+}
 
 export default ReportBarChartHook;

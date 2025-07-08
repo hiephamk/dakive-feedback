@@ -116,8 +116,8 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
     refetchTrigger, // Added to trigger refresh
   ]);
 
-  const handleClickViewRoom = (buildingId, externalId) => {
-    navigate(`/home/management/room-list/${buildingId}/${externalId}`);
+  const handleClickViewRoom = (buildingId, externalId, orgId) => {
+    navigate(`/home/management/room-list/${buildingId}/${externalId}/${orgId}`);
   };
 
   const handleClickViewReport = (buildingId) => {
@@ -437,7 +437,7 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
                                       <Menu.Item value='view-room'>
                                         <Button
                                           variant="outline" size="xs"
-                                          onClick={() => handleClickViewRoom(item.id, item.external_id)}
+                                          onClick={() => handleClickViewRoom(item.id, item.external_id, item.organization)}
                                         >
                                           View rooms
                                         </Button>

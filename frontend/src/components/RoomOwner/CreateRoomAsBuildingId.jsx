@@ -15,7 +15,7 @@ const CreateRoomAsBuildingId = () => {
     // Fetch organizations
     const {buildings} = useBuilding(userInfo?.id);
     // const [buildingId, setBuildingId] = useState('');
-    const { buildingId, externalId } = useParams();
+    const { buildingId, externalId, orgId } = useParams();
     
 
     // return Math.random().toString(36).substring(2, 2 + length)
@@ -67,7 +67,7 @@ const CreateRoomAsBuildingId = () => {
                 building: buildingId,
             });
             
-            navigate(`/home/management/room-list/${buildingId}/${externalId}`)
+            navigate(`/home/management/room-list/${buildingId}/${externalId}/${orgId}`)
         } catch (error) {
             console.error("Error creating room:", error.response?.data || error.message);
         }

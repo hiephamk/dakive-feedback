@@ -70,7 +70,6 @@ const Report = () => {
         },
       });
       let filteredReports = res.data;
-      
       if (orgId) {
         filteredReports = filteredReports.filter((item) => item.organization === Number(orgId));
       }
@@ -81,6 +80,7 @@ const Report = () => {
       if (roomId) {
         filteredReports = filteredReports.filter((item) => item.room === Number(roomId));
       }
+      // filteredReports = filteredReports.sort((a, b) => new Date(b.created_at).toISOString() - new Date(a.created_at).toISOString())
       
       setReports(filteredReports);
     } catch (error) {

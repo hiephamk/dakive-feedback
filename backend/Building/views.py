@@ -2,7 +2,10 @@ from rest_framework import generics, permissions
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db.models import Q, Value
-
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.response import Response
 from .serializers import RoomSerializer, BuildingSerializer, OrganizationSerializer
 from .models import Room, Building, Organization
 
@@ -190,3 +193,9 @@ class OrganizationSearchView(generics.ListAPIView):
             )
 
         return Organization.objects.filter(query).order_by('-name')
+    
+@api_view(['GET'])
+def organization_detail_with_buildings(request, organization_id):
+    org = Organization.objects.get(pk=organization_id)
+    serializer = OrganizationSerializer(org)
+    return Response(serializer.data)

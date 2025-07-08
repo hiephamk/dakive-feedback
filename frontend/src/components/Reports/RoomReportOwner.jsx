@@ -111,17 +111,53 @@ const CreateRoomReport = () => {
         : 'mUDfq8mo33';
       setShowSensorData(token);
     }, [isChecked]);
+
     const link = `http://localhost:5173/room/feedback/${roomId}/${token1}${showSensorData}${token2}/`
 
-    const handleCopy = async () => {
-      try {
-        await navigator.clipboard.writeText(link);
-        // Optional: show a toast or message
-        console.log('Link copied!');
-      } catch (err) {
-        console.error('Failed to copy: ', err);
+   const handleCopy = async () => {
+    // const link = `http://localhost:5173/room/feedback/${roomId}/${token1}${showSensorData}${token2}/`
+
+  // Fallback function to copy text to clipboard
+  const fallbackCopyTextToClipboard = (text) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    // Ensure the textarea is not visible
+    textArea.style.position = "fixed";
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      const successful = document.execCommand("copy");
+      if (successful) {
+        alert("Link copied!");
+      } else {
+        alert("Failed to copy link.");
       }
-    };
+    } catch (err) {
+      console.error("Fallback copy failed: ", err);
+      alert("Failed to copy link.");
+    }
+
+    document.body.removeChild(textArea);
+  };
+
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(link);
+      alert("Link copied!");
+    } else {
+      // Use fallback method
+      fallbackCopyTextToClipboard(link);
+    }
+  } catch (err) {
+    console.error("Copy failed: ", err);
+    fallbackCopyTextToClipboard(link);
+  }
+};
     return (
       <Box mt={5} p={4} rounded={8}>
           <HStack gap={4} justifyContent="center">       
@@ -138,7 +174,6 @@ const CreateRoomReport = () => {
                     <Switch.Thumb />
                   </Switch.Control>
                   <Switch.Label fontWeight={"bold"}fontSize={"16px"}>Show Sensor Data</Switch.Label>
-
               </Switch.Root>
             </Box>
             <Box>

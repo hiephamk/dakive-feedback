@@ -10,7 +10,7 @@ import useOrganization_Membership from '../Organization/Organization_Membership_
 const UpdateRoom = () => {
     const { user, userInfo } = useSelector((state) => state.auth);
     const accessToken = useAccessToken(user);
-    const { roomId } = useParams();
+    const { roomId, orgId } = useParams();
     const navigate = useNavigate();
 
     const { members } = useOrganization_Membership()
@@ -103,7 +103,7 @@ const UpdateRoom = () => {
             });
 
             alert("Room updated successfully");
-            navigate(`/home/management/room-list/${formData.building}/${formData.external_id}`);
+            navigate(`/home/management/room-list/${formData.building}/${formData.external_id}/${orgId}`);
         } catch (error) {
             console.error("Error updating room:", error);
             alert("Failed to update room: " + (error.response?.data?.message || error.message));
@@ -130,9 +130,9 @@ const UpdateRoom = () => {
                                         >
                                             <option value="">Choose a Building</option>
                                             {members
-                                                .filter(member => member.user === userInfo?.id && member.role === "editor")
+                                                .filter(member => member.user === userInfo?.id && member.role === "editor" && member.organization === Number(orgId))
                                                 .map(org => buildings
-                                                    .filter(building => building.organization === org.organization)
+                                                    .filter(building => building.organization === Number(orgId))
                                                     .map(building => (
                                                         <option key={building.id} value={building.id}>
                                                             {building.name}

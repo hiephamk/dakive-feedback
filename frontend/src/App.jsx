@@ -65,6 +65,8 @@ function App() {
             <Route path="/home/admin/add_organization" element={<Organizations/>}/>
             <Route path="/home/admin/building/update/:buildingId" element={<UpdateBuildingOrg/>}/>
             <Route path="/home/admin/organization/update/:orgId" element={<UpdateOrg/>}/>
+            {/* <Route path="/home/admin/management/room-list/:buildingId/:externalId/:orgId" element={<RoomList/>}/> */}
+            {/* <Route path="/home/admin/management/room/update/:roomId/:orgId" element={<UpdateRoom/>}/> */}
           </Route>
           <Route path="/home/community" element={<Community_Dashboard/>}>
 
@@ -87,11 +89,11 @@ function App() {
           <Route path="/home/management/create-room" element={<CreateRoom/>}/>
           <Route path="/home/management/create-room/:buildingId/:externalId" element={<CreateRoomAsBuildingId/>}/>
           <Route path="/home/management/feedback/create-form/:buildingId/:roomId" element={<RoomReportOwner/>}/>
-          <Route path="/home/management/room-list/:buildingId/:externalId" element={<RoomList/>}/>
+          <Route path="/home/management/room-list/:buildingId/:externalId/:orgId" element={<RoomList/>}/>
           <Route path="/home/management/report/chart" element={<RoomReportAnalytics/>}/>
           <Route path="/home/management/report/table" element={<Report/>}/>
           <Route path="/home/management/building/update/:buildingId" element={<UpdateBuilding/>}/>
-          <Route path="/home/management/room/update/:roomId" element={<UpdateRoom/>}/>
+          <Route path="/home/management/room/update/:roomId/:orgId" element={<UpdateRoom/>}/>
           <Route path="/home/login" element={<Home_login/>}/>
         </Route>
           <Route path="/room/feedback/:roomId/:showSensorData/" element={<CreateRoomReport/>}/>

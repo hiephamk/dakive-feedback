@@ -13,6 +13,8 @@ urlpatterns = [
     path('organizations/list/', views.OrganizationListView.as_view(), name='organization-list'),
     path('organizations/update/<int:pk>/', views.OrganizationDetailView.as_view(), name='organization-update'),
     path('organizations/delete/<int:pk>/', views.OrganizationDetailView.as_view(), name='organization-delete'),
+    path('organizations/building-avg-rating/<int:organization_id>/', views.organization_detail_with_buildings, name='building-avg-rating'),
+
 
     path('rooms/lists-feedback/', views.RoomListViewFeedback.as_view(), name='room-list-feedback'),
     path('rooms/lists/', views.RoomListView.as_view(), name='room-list'),
