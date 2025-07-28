@@ -16,9 +16,9 @@ const AdminPage = () => {
   const accessToken = useAccessToken(user)
   const navigate = useNavigate()
   const location = useLocation()
-  const inputRef = useRef<HTMLInputElement | null>(null)
+  // const inputRef = useRef<HTMLInputElement | null>(null)
   const hasTriedToLoad = useRef(false);
-
+  const inputRef = useRef(null);
   // const { members: memberid } = useOrganization_Membership()
   
   const [members, setMembers ] = useState([])
@@ -34,24 +34,6 @@ const AdminPage = () => {
 
 
   const [keyword, setKeyword] = useState("")
-
-  //  useEffect(() => {
-  //   if (!members.length || !organizations.length || selectedOrgId) return;
-
-  //   const orgMember = members.find(item => item.user === userInfo?.id && item.is_admin);
-  //   const orgid = orgMember?.organization;
-
-  //   console.log("orgId:", orgid);
-
-  //   if (orgid) {
-  //     const firstOrg = organizations.find(item => item.id === orgid);
-
-  //     if (firstOrg) {
-  //       setSelectedOrgId(firstOrg.id);
-  //       navigate(`/home/admin/organization/details/${firstOrg.id}`, { replace: true });
-  //     }
-  //   }
-  // }, [members, organizations, selectedOrgId, navigate, userInfo?.id]);
 
   const fetchMembers = async () => {
     if (!accessToken || !userInfo?.id) return;
@@ -250,7 +232,7 @@ useEffect(() => {
     }
 
   const handleOrganizationSearch = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         const searchKeyword = keyword.trim()
         setLoading(true)
         // if (!searchKeyword) {
@@ -266,10 +248,11 @@ useEffect(() => {
         }
         try {
             const res = await api.get(url, config);
+            console.log("search res:", res.data)
             let searchfilter = Array.isArray(res.data) ? res.data : [];
             setOrganizations(searchfilter)
         } catch (error) {
-            console.error("Error searching building:", error);
+            console.error("Error searching organization:", error);
             alert("Cannot search this building name. Please try again.");
         } finally {
             setLoading(false);
@@ -333,7 +316,7 @@ useEffect(() => {
               <form onSubmit={handleOrganizationSearch}>
                 <InputGroup flex="1" startElement={<LuSearch />} endElement={endElement} rounded={"5px"}>
                   <Input 
-                    // ref={inputRef}
+                    ref={inputRef}
                     id='search-org'
                     type="search"
                     value={keyword}

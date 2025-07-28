@@ -25,6 +25,7 @@ import {
   Table,
   HoverCard
 } from '@chakra-ui/react';
+import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 import { LuSearch } from 'react-icons/lu';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { BsThreeDotsVertical } from 'react-icons/bs';
@@ -99,6 +100,11 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
       }
     }
   };
+
+  //console.log buildings:
+  useEffect(()=>{
+    console.log("buildings:", buildings)
+  },[buildings])
 
   useEffect(() => {
     if (accessToken && userInfo?.id) {
@@ -247,7 +253,7 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
       setLoading(false);
     }
   };
-
+//use enter key to submit
   const handleKeyDown = (event) => {
     if (event && event.key === 'Enter') {
       // event.preventDefault();
@@ -269,6 +275,7 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
     }
   }, [keyword]);
 
+//clear search box
   const endElement = keyword ? (
     <CloseButton
       size="xs"
@@ -398,6 +405,9 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
                     Image
                   </Table.ColumnHeader>
                   <Table.ColumnHeader fontWeight="bold" fontSize={'16px'} px={'10px'} textAlign={'center'}>
+                    Building Rating
+                  </Table.ColumnHeader>
+                  <Table.ColumnHeader fontWeight="bold" fontSize={'16px'} px={'10px'} textAlign={'center'}>
                     Action
                   </Table.ColumnHeader>
                 </Table.Row>
@@ -416,6 +426,21 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
                         <Table.Cell>{item.description}</Table.Cell>
                         <Table.Cell>
                           <Image rounded={'md'} maxW={'70px'} maxH={'100px'} src={item.building_img} />
+                        </Table.Cell>
+                        <Table.Cell>
+                          {/* {'⭐️'.repeat(Math.round(item.room_average_rating || 0))} */}
+                          <HStack>
+                            {Array.from({ length: 5 }, (_, index) => {
+                              const rating = item.room_average_rating || 0;
+                              const full = index + 1 <= Math.floor(rating);
+                              const half = rating - index > 0 && rating - index < 1;
+                              return (
+                                <Text color={'yellow.500'} key={index}>
+                                  {full ? <FaStar /> : half ? <FaStarHalfAlt /> : <FaRegStar />}
+                                </Text>
+                              );
+                            })}
+                          </HStack>
                         </Table.Cell>
                         <Table.Cell>
                           {members.some(
@@ -442,26 +467,6 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
                                           View rooms
                                         </Button>
                                       </Menu.Item>
-                                      {/* <Menu.Item>
-                                        <HoverCard.Root>
-                                          <HoverCard.Trigger asChild>
-                                            <Button variant="outline" size="xs">View Report</Button>
-                                          </HoverCard.Trigger>
-                                          <Portal>
-                                            <HoverCard.Positioner>
-                                              <HoverCard.Content gap={"10px"} background="#99a3a4" p={"5px"}>
-                                                <HoverCard.Arrow/>
-                                                <Box value='sensor-data'>
-                                                  <Button variant={"outline"} onClick={() => SensorDataView(item.id, item.external_id)}>Sensor Report</Button>
-                                                </Box>
-                                                <Box value='user-feedback'>
-                                                  <Button variant={"outline"} onClick={() => handleClickViewReport(item.id)}>User Feedback</Button>
-                                                </Box>
-                                              </HoverCard.Content>
-                                            </HoverCard.Positioner>
-                                          </Portal>
-                                        </HoverCard.Root>
-                                      </Menu.Item> */}
                                       <Menu.Item value='update'>
                                         <Button
                                           variant="outline"
@@ -535,28 +540,7 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
                                           View rooms
                                         </Button>
                                       </Menu.Item>
-                                    </Menu.Content>
-                                    {/* <Menu.Item>
-                                      <HoverCard.Root>
-                                        <HoverCard.Trigger asChild>
-                                          <Button variant="outline" size="xs">View Report</Button>
-                                        </HoverCard.Trigger>
-                                        <Portal>
-                                          <HoverCard.Positioner>
-                                            <HoverCard.Content gap={"10px"} background="#99a3a4" p={"5px"}>
-                                              <HoverCard.Arrow/>
-                                              <Box value='sensor-data'>
-                                                <Button variant={"outline"} onClick={() => SensorDataView(item.id, item.external_id)}>Sensor Report</Button>
-                                              </Box>
-                                              <Box value='user-feedback'>
-                                                <Button variant={"outline"} onClick={() => handleClickViewReport(item.id)}>User Feedback</Button>
-                                              </Box>
-                                            </HoverCard.Content>
-                                          </HoverCard.Positioner>
-                                        </Portal>
-                                      </HoverCard.Root>
-                                    </Menu.Item> */}
-                                    
+                                    </Menu.Content>                                 
                                   </Menu.Positioner>
                                 </Portal>
                               </Menu.Root>
@@ -731,6 +715,23 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
                               </Table.Cell>
                             </Table.Row>
                             <Table.Row>
+                              <Table.Cell>Rating</Table.Cell>
+                              <Table.Cell>
+                                <HStack>
+                                  {Array.from({ length: 5 }, (_, index) => {
+                                    const rating = building.room_average_rating || 0;
+                                    const full = index + 1 <= Math.floor(rating);
+                                    const half = rating - index > 0 && rating - index < 1;
+                                    return (
+                                      <Text color={'yellow.500'} key={index}>
+                                        {full ? <FaStar /> : half ? <FaStarHalfAlt /> : <FaRegStar />}
+                                      </Text>
+                                    );
+                                  })}
+                                </HStack>
+                              </Table.Cell>
+                            </Table.Row>
+                            <Table.Row>
                               <Table.Cell>Size</Table.Cell>
                               <Table.Cell whiteSpace={'normal'} maxW={'160px'}>
                                 {building.building_size ? `${building.building_size}` : 'N/A'}
@@ -770,30 +771,6 @@ const BuildingListOrg = ({ organization, buildings: refetchTrigger }) => {
                         </Table.Root>
                       </Box>
                     </VStack>
-                      {/* <Center>
-                        <Button my={"5px"}
-                          onClick={() => handleClickViewRoom(building.id, building.external_id)}
-                        >
-                          View rooms
-                        </Button>
-                        <Menu.Root>
-                          <Menu.Trigger asChild>
-                            <Button>View Report</Button>
-                          </Menu.Trigger>
-                          <Portal>
-                            <Menu.Positioner>
-                              <Menu.Content>
-                                <Menu.Item value='sensor-data'>
-                                  <Button onClick={() => SensorDataView(building.id, building.external_id)}>Sensor Report</Button>
-                                </Menu.Item>
-                                <Menu.Item value='user-feedback'>
-                                  <Button onClick={() => handleClickViewReport(building.id)}>User Feedback</Button>
-                                </Menu.Item>
-                              </Menu.Content>
-                            </Menu.Positioner>
-                          </Portal>
-                        </Menu.Root>
-                      </Center> */}
                   </Box>
                 ))}
             </HStack>

@@ -42,8 +42,8 @@ class RoomSerializer(serializers.ModelSerializer):
 class BuildingSerializer(serializers.ModelSerializer):
     organization_name = serializers.SerializerMethodField()
     owner_name = serializers.SerializerMethodField()
-    room_average_rating = serializers.SerializerMethodField()
-    building_summary = serializers.SerializerMethodField()
+    room_average_rating = serializers.SerializerMethodField() #the average rating of all rooms in a building
+    building_summary = serializers.SerializerMethodField() # this is an array
     class Meta:
         model = Building
         fields = "__all__"
