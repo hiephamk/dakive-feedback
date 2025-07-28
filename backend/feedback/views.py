@@ -10,19 +10,19 @@ from .serializers import RoomReportSerializer, SensorReportSerializer
 from .models import Room_Report, Sensor_Report
 
 
-class SensorReportUserView(generics.ListCreateAPIView):
+class SensorReportUserView(generics.ListCreateAPIView): # apply to show sensor data in feedback form
     serializer_class = SensorReportSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly] # set no login required
     authentication_classes = [JWTAuthentication]
     queryset = Sensor_Report.objects.all()
     
-class SensorReportCreateView(generics.ListCreateAPIView):
+class SensorReportCreateView(generics.ListCreateAPIView): # display sensor data
     serializer_class = SensorReportSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     queryset = Sensor_Report.objects.all().order_by('-created_at')
 
-class SensorReportDetailView(generics.RetrieveUpdateDestroyAPIView):
+class SensorReportDetailView(generics.RetrieveUpdateDestroyAPIView): # edit sensor data if needed
     serializer_class = SensorReportSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
@@ -32,23 +32,24 @@ class SensorReportDetailView(generics.RetrieveUpdateDestroyAPIView):
     #     # user = self.request.user
     #     return Sensor_Report.objects.all().order_by('-created_at')
     
-class RoomReportCreateView(generics.CreateAPIView):
+class RoomReportCreateView(generics.CreateAPIView): # feedback form for user
     serializer_class = RoomReportSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny] # no permision required
     # authentication_classes = [JWTAuthentication]
     queryset = Room_Report.objects.all()
 
-class RoomReportListView(generics.ListAPIView):
+class RoomReportListView(generics.ListAPIView): # Show feedback results, 
     # queryset = Room_Report.objects.all()
     serializer_class = RoomReportSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
-    def get_queryset(self):
-        user = self.request.user
+    def get_queryset(self): 
+        # user = self.request.user
+        # apply filters in the frontend
         return Room_Report.objects.all().order_by('-created_at')
 
-class RoomReportAnalyticsView(generics.RetrieveAPIView):
+class RoomReportAnalyticsView(generics.RetrieveAPIView): # display report results as bar charts
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
     serializer_class= RoomReportSerializer
@@ -116,7 +117,7 @@ class RoomReportAnalyticsView(generics.RetrieveAPIView):
 
         return Response(room_data)
     
-class SensorDataSearchView(generics.ListAPIView):
+class SensorDataSearchView(generics.ListAPIView): # Display data from IoT devices
     permission_classes = [IsAuthenticated]
     serializer_class = SensorReportSerializer 
     authentication_classes = [JWTAuthentication]

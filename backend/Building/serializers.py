@@ -5,8 +5,8 @@ from organization.models import Organization_membership
 from feedback.models import Room_Report
 
 class RoomSerializer(serializers.ModelSerializer):
-    building_name = serializers.SerializerMethodField(read_only=True)
-    organization = serializers.SerializerMethodField(read_only=True)
+    building_name = serializers.SerializerMethodField(read_only=True) #get building name
+    organization = serializers.SerializerMethodField(read_only=True) #get organization: id and name
     class Meta:
         model = Room
         fields = '__all__'
@@ -14,7 +14,6 @@ class RoomSerializer(serializers.ModelSerializer):
         return obj.building.name if obj.building else None
     
     def get_organization(self, obj):
-        # Fix: Return serializable data instead of model instance
         org = obj.get_organization
         if org:
             return {
@@ -43,7 +42,7 @@ class BuildingSerializer(serializers.ModelSerializer):
     organization_name = serializers.SerializerMethodField()
     owner_name = serializers.SerializerMethodField()
     room_average_rating = serializers.SerializerMethodField() #the average rating of all rooms in a building
-    building_summary = serializers.SerializerMethodField() # this is an array
+    building_summary = serializers.SerializerMethodField() # this is an array, summary of each parameter
     class Meta:
         model = Building
         fields = "__all__"
@@ -51,8 +50,8 @@ class BuildingSerializer(serializers.ModelSerializer):
         return obj.organization.name if obj.organization else None
     def get_owner_name(self, obj):
         return obj.owner.get_full_name if obj.owner else None
-    
-    def validate(self, data):
+
+    def validate(self, data): # set a unique building name within the same organization
         name = data.get('name')
         organization= data.get('organization')
         external_id = data.get('external_id')
@@ -107,6 +106,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = "__all__"
+# set a unique organization name for the same owner
     def validate(self, data):
         name = data.get('name')
         owner= data.get('owner')
@@ -121,15 +121,16 @@ class OrganizationSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("This name already exists")
         
         return data
-    def get_building_count(self, obj):
+
+    def get_building_count(self, obj): #count total builings in one organization
         return obj.buildings.count()
     
-    def get_report_count(self, obj):
+    def get_report_count(self, obj): # count total reports
         # return Room_Report.objects.filter(building__organization=obj).count()
         return obj.room_report.count()
     
-    def get_totalRoom_count(self, obj):
+    def get_totalRoom_count(self, obj): # count total rooms in one organization
         return Room.objects.filter(building__organization=obj).count()
     
-    def get_member_count(self, obj):
+    def get_member_count(self, obj): # count total members in one organization
         return obj.memberships.count()

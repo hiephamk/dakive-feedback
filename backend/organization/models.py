@@ -4,8 +4,8 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from Building.models import Organization
 
-
-class Organization_membership(models.Model):
+# for setting user roles and granding permissions to edit or view data
+class Organization_membership(models.Model): 
     ROLE_CHOICES = (
         ('editor', 'Editor'),
         ('viewer', 'Viewer'),

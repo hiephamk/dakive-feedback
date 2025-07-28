@@ -14,13 +14,13 @@ class RoomByExternalIDView(generics.ListAPIView):
     serializer_class = RoomSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
-    queryset = Room.objects.all()
+    queryset = Room.objects.all() # get all rooms and apply filters on the frontend
 
     # def get_queryset(self):
     #     external_id = self.request.query_params.get('external_id')
     #     return Room.objects.filter(external_id=external_id)
 
-class BuildingByExternalIDView(generics.ListAPIView):
+class BuildingByExternalIDView(generics.ListAPIView): # for buildings synced from the IoT
     serializer_class = BuildingSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
@@ -29,14 +29,15 @@ class BuildingByExternalIDView(generics.ListAPIView):
         external_id = self.request.query_params.get('external_id')
         return Building.objects.filter(external_id=external_id)
 
-class RoomListViewFeedback(generics.ListCreateAPIView):
+class RoomListViewFeedback(generics.ListCreateAPIView): # display room name for feedback form
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly] # no login required
     
+# apply to the building manager's side
 class RoomListView(generics.ListCreateAPIView):
-    queryset = Room.objects.all()
+    queryset = Room.objects.all() # apply filters in the frontend
     serializer_class = RoomSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -44,7 +45,7 @@ class RoomListView(generics.ListCreateAPIView):
     #     user = self.request.user
     #     return Room.objects.filter(building__owner=user)
     
-class RoomDetailView(generics.RetrieveUpdateDestroyAPIView):
+class RoomDetailView(generics.RetrieveUpdateDestroyAPIView): # for editing room details
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
     authentication_classes = [JWTAuthentication]
@@ -95,9 +96,9 @@ class OrganizationDetailView(generics.RetrieveUpdateDestroyAPIView):
         user = self.request.user
         return Organization.objects.filter(owner=user)
 
-class RoomSearchView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]  # Typo: should be "permission_classes"
-    serializer_class = RoomSerializer       # Typo: should be "serializer_class"
+class RoomSearchView(generics.ListAPIView): # for searching rooms with keywords
+    permission_classes = [IsAuthenticated]
+    serializer_class = RoomSerializer 
     authentication_classes = [JWTAuthentication]
 
     def get_queryset(self):
@@ -108,6 +109,7 @@ class RoomSearchView(generics.ListAPIView):
         keywords = keyword.split()
         query = Q()
         for word in keywords:
+            #using "&" to narrow down the result
             query &= (
                 Q(name__icontains=word) |
                 Q(room_size__icontains=word) |

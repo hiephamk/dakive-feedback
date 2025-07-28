@@ -1,13 +1,12 @@
 from rest_framework import serializers
 from .models import Room_Report, Sensor_Report
 
-
 class RoomReportSerializer(serializers.ModelSerializer):
     room_name = serializers.SerializerMethodField(read_only=True)
     building_name = serializers.SerializerMethodField(read_only=True)
     organization_name = serializers.SerializerMethodField(read_only=True)
     room_external_id = serializers.SerializerMethodField(read_only=True)
-    average_rating = serializers.SerializerMethodField(read_only=True)
+    average_rating = serializers.SerializerMethodField(read_only=True) #calculate the average_rating of report in the room
     
     class Meta:
         model = Room_Report
@@ -30,12 +29,11 @@ class SensorReportSerializer(serializers.ModelSerializer):
     room_name = serializers.SerializerMethodField(read_only=True)
     building_name = serializers.SerializerMethodField(read_only=True)
     
-
     class Meta:
         model =  Sensor_Report
         fields = '__all__'
     
-    def validate(self, data):
+    def validate(self, data): #validate rooms in the building
         room = data.get("room")
         building = data.get("building")
 

@@ -4,7 +4,7 @@ from Building.models import Building, Room, Organization
 class Room_Report(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     building = models.ForeignKey(Building, on_delete=models.CASCADE)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='room_report')
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='room_report') # use this related_name in organization serializers
     temperature_rating = models.IntegerField()
     temperature_notes = models.TextField(blank=True, null=True)
     air_quality_rating = models.IntegerField()
@@ -24,10 +24,11 @@ class Room_Report(models.Model):
     feedback_status = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    hasViewed = models.BooleanField(default=False)
+    hasViewed = models.BooleanField(default=False) # no longer needed
     def __str__(self):
         return f"room Report for {self.room.name} in {self.building} - (roomId: {self.room})"
-
+    
+# calculate average rating for room
     @property
     def average_rating(self):
         ratings = [
@@ -40,7 +41,7 @@ class Room_Report(models.Model):
             self.cleanliness_rating,
         ]
         return round(sum(ratings) / len(ratings),2)
-
+# create db to store synced data from IoT devices
 class Sensor_Report(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     building = models.ForeignKey(Building, on_delete=models.CASCADE)
@@ -49,7 +50,7 @@ class Sensor_Report(models.Model):
     co2 = models.FloatField(null=True, blank=True)
     light= models.IntegerField(null=True, blank=True, default=False)
     motion = models.BooleanField(default=False, null=True, blank=True) 
-    created_at = models.DateTimeField(unique=True)
+    created_at = models.DateTimeField(unique=True) # as time variable of IoT
     updated_at = models.DateTimeField(auto_now_add=True, unique=True)
 
     def __str__(self):

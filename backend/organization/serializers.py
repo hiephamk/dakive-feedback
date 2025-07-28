@@ -13,7 +13,7 @@ class MemberSerializer(serializers.ModelSerializer):
         fields = ['id', 'members_full_name', 'members_email']
 
     def get_members_full_name(self, obj):
-        return obj.get_full_name  # Ensure this is a method or property
+        return obj.get_full_name # get_full_name is a property, no parenthese needed
 
     def get_members_email(self, obj):
         return obj.email
@@ -41,7 +41,7 @@ class OrganizationManagerSerializer(serializers.ModelSerializer):
         if owner:
             return MemberSerializer(owner).data
         return None
-    
+    # ensure unique members within organizations
     def validate(self, data):
         organization = data.get('organization')
         user= data.get('user')
