@@ -622,7 +622,319 @@ useEffect(() => {
         </Box>
       </Flex>
       ):(
-      <HomeOrganization/>
+      <VStack width="100%" p="10px" boxSizing={"border-box"}>
+        <VStack p={"10px"} minW={"fit-content"} overflow={"auto"}>
+          <Button onClick={handleCreateNewOrg} shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={"10px"} my={"20px"}>
+            Create New Organizations
+          </Button>
+          <Box my={"20px"} shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={"10px"} rounded={"7px"} w={"100%"}>
+            <form onSubmit={handleOrganizationSearch}>
+              <InputGroup flex="1" startElement={<LuSearch />} endElement={endElement} rounded={"5px"}>
+                <Input 
+                  ref={inputRef}
+                  id='search-org'
+                  type="search"
+                  value={keyword}
+                  onChange={handleKeywordChange}
+                  // onChange={(e) => setKeyword(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Enter keyword to search"
+                />
+              </InputGroup>
+            </form>
+          </Box>
+          <Box>
+            <Collapsible.Root rounded={"7px"} w={"100%"}>
+              <Flex justifyContent={"space-between"} gap={"10px"}>
+                <Collapsible.Trigger  p={"7px"} w={'100%'} shadow="3px 3px 15px 5px rgb(75, 75, 79)" my={"20px"} rounded={"7px"}>
+                  Filter Organizations
+                </Collapsible.Trigger>
+                <Button onClick={handleClearFilters} px={"5px"} shadow="3px 3px 15px 5px rgb(75, 75, 79)" my={"20px"} rounded={"7px"}>Clear</Button>
+              </Flex>
+              <Collapsible.Content >
+                <VStack gap={"10px"} rounded={"7px"} p={"10px"} mb={"20px"}>
+                  <Box p={2} w={"100%"} fontSize="14px" border={"1px solid"} rounded={"7px"}>
+                    <label htmlFor="city"></label>
+                    <select
+                        value={org_city}
+                        onChange={handleCityChange}
+                        id='city'
+                    >
+                        <option value="">All Cities</option>
+                        {members.length > 0 && (() => {
+                          const userMemberships = members.filter(mem => mem.user === userInfo.id);
+
+                          const orgIds = userMemberships.map(mem => mem.organization);
+                          const cities = (Array.isArray(organizations) ? organizations : [])
+                            .filter(org => orgIds.includes(org.id))
+                            .map(org => org.city);
+                          const uniqueCities = [...new Set(cities)];
+
+                          return uniqueCities.map((city, idx) => (
+                            <option key={idx} value={city}>
+                              {city}
+                            </option>
+                          ));
+                        })()}
+                    </select>
+                  </Box>
+                  <Box p={2} w={"100%"} fontSize="14px" border={"1px solid"} rounded={"7px"}>
+                      <label htmlFor="postal_code"></label>
+                      <select
+                          value={org_postcode}
+                          onChange={handlePostcodeChange}
+                          id='postal_code'
+                      >
+                          <option value="">All Postcodes</option>
+                          {members.length > 0 && (() => {
+                          const userMemberships = members.filter(mem => mem.user === userInfo.id);
+
+                          const orgIds = userMemberships.map(mem => mem.organization);
+                          const postal_code = (Array.isArray(organizations) ? organizations : [])
+                            .filter(org => orgIds.includes(org.id))
+                            .map(org => org.postal_code);
+                          const uniqueCities = [...new Set(postal_code)];
+
+                          return uniqueCities.map((postal_code, idx) => (
+                            <option key={idx} value={postal_code}>
+                              {postal_code}
+                            </option>
+                          ));
+                        })()}
+                      </select>
+                  </Box>
+                  <Box p={2} w={"100%"} fontSize="14px" border={"1px solid"} rounded={"7px"}>
+                      <label htmlFor="org_street"></label>
+                      <select
+                          value={org_street}
+                          onChange={handleStreeChange}
+                          id='org_street'
+                      >
+                          <option value="">All Streets</option>
+                          {members.length > 0 && (() => {
+                          const userMemberships = members.filter(mem => mem.user === userInfo.id);
+
+                          const orgIds = userMemberships.map(mem => mem.organization);
+                          const street = (Array.isArray(organizations) ? organizations : [])
+                            .filter(org => orgIds.includes(org.id))
+                            .map(org => org.street);
+                          const uniqueCities = [...new Set(street)];
+
+                          return uniqueCities.map((street, idx) => (
+                            <option key={idx} value={street}>
+                              {street}
+                            </option>
+                          ));
+                        })()}
+                      </select>
+                  </Box>
+                  <Box w={"100%"} p={2} fontSize="14px" border={"1px solid"} rounded={"7px"}>
+                    <label htmlFor="name"></label>
+                    <select
+                        value={org_name}
+                        onChange={handleNameChange}
+                        id='name'
+                    >
+                        <option value="">All Names</option>
+                        {members.length > 0 && (() => {
+                          const userMemberships = members.filter(mem => mem.user === userInfo.id);
+
+                          const orgIds = userMemberships.map(mem => mem.organization);
+                          const name = (Array.isArray(organizations) ? organizations : [])
+                            .filter(org => orgIds.includes(org.id))
+                            .map(org => org.name);
+                          const uniqueCities = [...new Set(name)];
+
+                          return uniqueCities.map((name, idx) => (
+                            <option key={idx} value={name}>
+                              {name}
+                            </option>
+                          ));
+                        })()}
+                    </select>
+                </Box>
+                </VStack>
+              </Collapsible.Content>
+            </Collapsible.Root>
+          </Box>
+          <Box py={"5px"} px={"10px"} w={"100%"} rounded={'5px'} shadow="3px 3px 15px 5px rgb(75, 75, 79)">
+            <Box>
+              {members.length > 0 && members
+                .filter(member => member.user === userInfo.id && member.is_admin)
+                .map(member => organizations
+                  .filter(org => org.id === member.organization)
+                  .map(org =>(
+                  <HStack key={org.id} justifyContent={"space-between"} p={"10px"}>
+                    <Button
+                      variant={"surface"}
+                      m={"10px"}
+                      onClick={() => handleOrgSelect(org.id)}
+                      colorScheme={selectedOrgId === org.id ? "blue" : "gray"}
+                    >
+                      {org.name}
+                    </Button>
+                    {org.owner === userInfo?.id ? (
+                      <Dialog.Root size="xs">
+                          <Menu.Root>
+                            <Menu.Trigger asChild>
+                              <Button variant="surface" size="xs">
+                                <BsThreeDotsVertical />
+                              </Button>
+                            </Menu.Trigger>
+                            <Portal>
+                              <Menu.Positioner>
+                                <Menu.Content>
+                                  <Menu.Item>
+                                    <Button
+                                      variant="outline"
+                                      size="xs"
+                                      onClick={() => handleUpdateOrg(org.id)}
+                                    >
+                                      Update
+                                    </Button>
+                                  </Menu.Item>
+                                  <Menu.Item>
+                                    <Dialog.Trigger asChild>
+                                      <Button variant="outline" size="xs">
+                                        Delete
+                                      </Button>
+                                    </Dialog.Trigger>
+                                  </Menu.Item>
+                                  <Menu.Item>
+                                    <Button
+                                      variant="outline"
+                                      size="xs"
+                                      onClick={() => handleDuplicateOrganization(org)}
+                                    >
+                                      Duplicate
+                                    </Button>
+                                  </Menu.Item>
+                                </Menu.Content>
+                              </Menu.Positioner>
+                            </Portal>
+                          </Menu.Root>
+                          <Portal>
+                            <Dialog.Backdrop />
+                            <Dialog.Positioner>
+                              <Dialog.Content>
+                                <Dialog.Header>
+                                  <Dialog.Title>Delete Organization</Dialog.Title>
+                                </Dialog.Header>
+                                <Dialog.Body>
+                                  <Text>Do you really want to delete the organization?</Text>
+                                </Dialog.Body>
+                                <Dialog.Footer>
+                                  <Dialog.ActionTrigger asChild>
+                                    <Button variant="outline">Cancel</Button>
+                                  </Dialog.ActionTrigger>
+                                  <Button onClick={() => deleteOrganization(org.id)}>
+                                    Delete
+                                  </Button>
+                                </Dialog.Footer>
+                                <Dialog.CloseTrigger asChild>
+                                  <CloseButton size="sm" />
+                                </Dialog.CloseTrigger>
+                              </Dialog.Content>
+                            </Dialog.Positioner>
+                          </Portal>
+                        </Dialog.Root>
+                    ):("")}
+                  </HStack>
+                )))
+              }
+            </Box>
+            <Box py={"5px"} px={"10px"} rounded={'5px'}>
+              {members.length > 0 && members
+                .filter(member => member.user === userInfo.id && !member.is_admin && member.role === "editor")
+                .map(member => organizations
+                  .filter(org => org.id === member.organization)
+                  .map(org =>(
+                  <HStack key={org.id} justifyContent={"space-between"} p={"10px"}>
+                    <Button
+                      variant={"surface"}
+                      m={"10px"}
+                      onClick={() => handleOrgSelect(org.id)}
+                      colorScheme={selectedOrgId === org.id ? "blue" : "gray"}
+                    >
+                      {org.name}
+                    </Button>
+                    {org.owner === userInfo?.id ? (
+                      <Menu.Root>
+                      <Menu.Trigger asChild>
+                        <Button variant="outline" size="sm">
+                          <BsThreeDotsVertical />
+                        </Button>
+                      </Menu.Trigger>
+                      <Portal>
+                        <Menu.Positioner>
+                          <Menu.Content>
+                            <Menu.Item value="update">
+                              <Button onClick={() => handleUpdateOrg(org.id)}>update</Button>
+                            </Menu.Item>
+                            <Menu.Item value="delete">
+                              <Button w={"fit-content"} onClick={()=> deleteOrganization(org.id)}>Delete</Button>
+                            </Menu.Item>
+                            <Menu.Item value="duplicate">
+                              <Button w={"fit-content"} onClick={()=> handleDuplicateOrganization(org)}>Duplicate</Button>
+                            </Menu.Item>
+                          </Menu.Content>
+                        </Menu.Positioner>
+                      </Portal>
+                    </Menu.Root>
+                    ):("")}
+                  </HStack>
+                )))
+              }
+            </Box >
+            <Box>
+              {members.length > 0 && members
+                .filter(member => member.user === userInfo.id && !member.is_admin && member.role === "viewer")
+                .map(member => organizations
+                  .filter(org => org.id === member.organization)
+                  .map(org =>(
+                  <HStack key={org.id} justifyContent={"space-between"} p={"10px"}>
+                    <Button
+                      variant={"surface"}
+                      m={"10px"}
+                      onClick={() => handleOrgSelect(org.id)}
+                      colorScheme={selectedOrgId === org.id ? "blue" : "gray"}
+                    >
+                      {org.name}
+                    </Button>
+                    {org.owner === userInfo?.id ? (
+                      <Menu.Root>
+                      <Menu.Trigger asChild>
+                        <Button variant="outline" size="sm">
+                          <BsThreeDotsVertical />
+                        </Button>
+                      </Menu.Trigger>
+                      <Portal>
+                        <Menu.Positioner>
+                          <Menu.Content>
+                            <Menu.Item value="update">
+                              <Button onClick={() => handleUpdateOrg(org.id)}>update</Button>
+                            </Menu.Item>
+                            <Menu.Item value="delete">
+                              <Button w={"fit-content"} onClick={()=> deleteOrganization(org.id)}>Delete</Button>
+                            </Menu.Item>
+                            <Menu.Item value="duplicate">
+                              <Button w={"fit-content"} onClick={()=> handleDuplicateOrganization(org)}>Duplicate</Button>
+                            </Menu.Item>
+                          </Menu.Content>
+                        </Menu.Positioner>
+                      </Portal>
+                    </Menu.Root>
+                    ):("")}
+                  </HStack>
+                )))
+              }
+            </Box>
+          </Box>
+        </VStack>
+        <Box>
+          <Outlet />
+        </Box>
+      </VStack>
     )}
     </Box>
   )

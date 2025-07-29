@@ -43,6 +43,7 @@ import SensorReportsList from "./components/Sensor-Data/SensorReportsList";
 import Community_Dashboard from "./pages/Community_Dashboard";
 import HomeOrganization from "./components/Organization/HomeOrganization";
 import FeedbackDone from "./pages/FeedbackDone";
+import BuildingListOrg from "./components/BuildingManagement/BuildingListOrg";
 
 function App() {
   return (
@@ -65,20 +66,15 @@ function App() {
             <Route path="/home/admin/add_organization" element={<Organizations/>}/>
             <Route path="/home/admin/building/update/:buildingId" element={<UpdateBuildingOrg/>}/>
             <Route path="/home/admin/organization/update/:orgId" element={<UpdateOrg/>}/>
-            {/* <Route path="/home/admin/management/room-list/:buildingId/:externalId/:orgId" element={<RoomList/>}/> */}
-            {/* <Route path="/home/admin/management/room/update/:roomId/:orgId" element={<UpdateRoom/>}/> */}
+            <Route path="/home/admin/management-mobile" element={<Organization_Details/>}/>
           </Route>
           <Route path="/home/community" element={<Community_Dashboard/>}>
 
           </Route>
           <Route path="/home/management/sensor-data/room-list/:id" element={<SensorDataRooms/>}/>
           <Route path="/home/management/sensor-data/reports/" element={<SensorReportsList/>}/>
-          {/* <Route path="/home/management/sensor-data/reports/:buildingid/:externalid" element={<SensorReportsList/>}/> */}
-          {/* <Route path="/home/management/sensor-data/reports/:buildingid/:externalid" element={<BuildingReports/>}/> */}
           <Route path="/home/management/sensor-data/building-list" element={<SensorDataBuildings/>}/>
           <Route path="/home/management/building-reports/:buildingId" element={<UserFeedbackData_Building/>}/>
-          {/* <Route path="/home/management/sensor-data" element={<UserFeedbackData_Building/>}/> */}
-          {/* <Route path="/home/management/building-reports/:buildingId" element={<BuildingReports/>}/> */}
           <Route path="/home/about" element={<About/>}/>
           <Route path="/home/community" element={<Community/>}/>
           <Route path="/home/profile" element={<Account/>}/>

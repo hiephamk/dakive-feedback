@@ -7,6 +7,7 @@ from feedback.models import Room_Report
 class RoomSerializer(serializers.ModelSerializer):
     building_name = serializers.SerializerMethodField(read_only=True) #get building name
     organization = serializers.SerializerMethodField(read_only=True) #get organization: id and name
+    average_rating = serializers.SerializerMethodField() # Calculate room average rating
     class Meta:
         model = Room
         fields = '__all__'
@@ -21,6 +22,14 @@ class RoomSerializer(serializers.ModelSerializer):
                 'name': org.name,
             }
         return None
+    
+    def get_average_rating(self, obj):
+        reports = obj.room_report.all()
+        if not reports.exists():
+            return None  # or 0.0
+        total = sum([report.average_rating for report in reports])
+        return round(total / reports.count(), 2)
+
     
     def validate(self, data):
         name = data.get('name')

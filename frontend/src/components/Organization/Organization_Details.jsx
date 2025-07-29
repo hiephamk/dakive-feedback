@@ -148,8 +148,19 @@ const Organization_Details = () => {
     }
   }, [error]);
 
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 450px)");
+    setIsDesktop(mediaQuery.matches);
+    const handleResize = (e) => setIsDesktop(e.matches);
+    mediaQuery.addEventListener("change", handleResize);
+    return () => mediaQuery.removeEventListener("change", handleResize);
+  }, []);
+
   return (
-    <Box shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={"10px"} h="fit-content" minH={"85vh"} rounded={'8px'} overflow={"auto"} maxHeight="100vh" maxW={"90%"}>
+    <Box>
+      {isDesktop ? (
+        <Box shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={"10px"} h="fit-content" minH={"85vh"} rounded={'8px'} overflow={"auto"} maxHeight="100vh" maxW={"90%"}>
       <Tabs.Root defaultValue={'buildings'}>
         <Tabs.List>
           <Tabs.Trigger fontSize={"20px"} fontWeight={"bold"} value="buildings">Buildings</Tabs.Trigger>
@@ -363,7 +374,6 @@ const Organization_Details = () => {
                 />
               </Tabs.Content>
               <Tabs.Content value="new-building">
-
                 {members.length > 0 &&
                   members.some(
                     (mem) =>
@@ -383,7 +393,7 @@ const Organization_Details = () => {
                           <Switch.Control bg={"blue"}/>
                           <Switch.Label>Create new Buildings</Switch.Label>
                         </Switch.Root>
-                      </Box>       
+                      </Box>
                       {isChecked ? (
                         <Box border={"1px solid"} mt={"20px"} rounded={"7px"}>
                           <CreateBuildingOrg />
@@ -395,7 +405,7 @@ const Organization_Details = () => {
                           />
                       </Box>
                       )}
-                      
+    
                     </VStack>
                 )}
               </Tabs.Content>
@@ -404,6 +414,14 @@ const Organization_Details = () => {
         </Tabs.Content>
       </Tabs.Root>
       <Toaster />
+    </Box>
+      ):(
+        <BuildingListOrg
+          organization={Number(orgId)}
+          buildings={fetchBuildings}
+          refetchTrigger={refetchBuildings}
+        />
+      )}
     </Box>
   );
 };

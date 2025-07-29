@@ -2,7 +2,7 @@ from django.db import models
 from Building.models import Building, Room, Organization
 
 class Room_Report(models.Model):
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name="room_report")
     building = models.ForeignKey(Building, on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='room_report') # use this related_name in organization serializers
     temperature_rating = models.IntegerField()
