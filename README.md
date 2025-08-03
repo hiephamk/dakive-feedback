@@ -15,7 +15,7 @@
     - Python 3.x
     - Node.js and npm
     - PostgreSQL or preferred database (optional)
-    - Vite ()
+    - Vite (https://vite.dev/guide/)
     - Chakra UI
 ### Installation
 1. Clone the repository:
