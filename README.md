@@ -1,18 +1,15 @@
 ## Indoor Air Quality Feedback System
 ### Overview
 #### This project is designed to assist public building managers in collecting and managing user feedback regarding the conditions of rooms within their buildings. By gathering real-time input from users, the system helps facility managers identify issues, optimize energy usage, and improve indoor air quality to create healthier and more comfortable environments.
-
 ### Key Features
 - User-friendly interface for submitting feedback on room conditions
 - Centralized dashboard for building managers to monitor reports from users
 - Data-driven insights to support energy-saving initiatives
 - Tools to track and enhance air quality in public buildings
-
 ### Technical Stack
 - Backend: Django — Provides a robust API and handles data management
 - Frontend: React.js, Vite — Delivers an interactive user interface and smooth user experience
 - Database: PostgreSQL
-
 ### Getting Started
 #### Prerequisites
     - Python 3.x
@@ -20,7 +17,6 @@
     - PostgreSQL or preferred database (optional)
     - Vite ()
     - Chakra UI
-
 ### Installation
 1. Clone the repository:
     - git clone https://github.com/yourusername/yourproject.git
@@ -44,11 +40,9 @@
         HOST_DB=your_host_db
         PORT_DB=5432
 #### Important:
-
     - Replace the placeholder values with your actual database credentials
     - Never commit the .env file to version control for security reasons
     - Add .env to your .gitignore file
-
 #### Run migrations:
     - python manage.py makemigrations
     - python manage.py migrate
@@ -68,7 +62,6 @@
         + Synchoronize data from IoT devices
         + review submitted reports to identify problem areas and take corrective action.
         + View building and room ratings based on user feedback and IoT data
-
 ### Project Structure:
     Project root
     ├── backend
