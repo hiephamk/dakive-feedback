@@ -1,9 +1,0 @@
-
-dist/
-build/
-
-# .env files (VERY IMPORTANT)
-.env
-.env.*
-
-
