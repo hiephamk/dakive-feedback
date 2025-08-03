@@ -1,4 +1,4 @@
-## Public Building Room Feedback System
+## Indoor Air Quality Feedback System
 ### Overview
 #### This project is designed to assist public building managers in collecting and managing user feedback regarding the conditions of rooms within their buildings. By gathering real-time input from users, the system helps facility managers identify issues, optimize energy usage, and improve indoor air quality to create healthier and more comfortable environments.
 
