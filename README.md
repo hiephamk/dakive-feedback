@@ -67,12 +67,10 @@
     ├── backend
     │   ├── account
     │   ├── Building
-    │   ├── community
     │   ├── dist
     │   ├── feedback
     │   ├── main
     │   ├── media
-    │   ├── my-venv
     │   ├── organization
     │   ├── static
     │   ├── staticfiles
@@ -86,4 +84,4 @@
 ### License
     - This project is licensed under the MIT License.
 ### Copyright:
-    Copyright 2025 HAMK Häme University of Applied Sciences
+    Copyright 2025 HAMK - Häme University of Applied Sciences
