@@ -27,18 +27,18 @@
     - pip install -r requirements.txt
     - Configure the database settings in settings.py
     - Create a .env file in the root directory of your project and add the following environment variables:
-        EMAIL_HOST=your_email_host
-        EMAIL_HOST_USER=your_host_user
-        EMAIL_HOST_PASSWORD=your_host_password
-        EMAIL_PORT=your_email_port
-        DOMAIN=localhost:5173 - or your own domain
+        + EMAIL_HOST=your_email_host
+        + EMAIL_HOST_USER=your_host_user
+        + EMAIL_HOST_PASSWORD=your_host_password
+        + EMAIL_PORT=your_email_port
+        + DOMAIN=localhost:5173 - or your own domain
 
-        ENGINE_DB=django.db.backends.postgresql
-        NAME_DB=your_db_name
-        USER_DB=your_db_user_name
-        PASSWORD_DB=your_db_password
-        HOST_DB=your_host_db
-        PORT_DB=5432
+        + ENGINE_DB=django.db.backends.postgresql
+        + NAME_DB=your_db_name
+        + USER_DB=your_db_user_name
+        + PASSWORD_DB=your_db_password
+        + HOST_DB=your_host_db
+        + PORT_DB=5432
 #### Important:
     - Replace the placeholder values with your actual database credentials
     - Never commit the .env file to version control for security reasons
