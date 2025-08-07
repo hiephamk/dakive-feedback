@@ -117,12 +117,24 @@ return (
                   <Table.Root size={"100%"}>
                       <Table.Header>
                           <Table.Row>
-                              <Table.ColumnHeader p={"3px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>Organization</Table.ColumnHeader>
-                              <Table.ColumnHeader p={"3px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>Members</Table.ColumnHeader>
-                              <Table.ColumnHeader p={"3px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>Buildings</Table.ColumnHeader>
-                              <Table.ColumnHeader p={"3px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>Rooms</Table.ColumnHeader>
-                              <Table.ColumnHeader p={"3px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>Feedback</Table.ColumnHeader>
-                              <Table.ColumnHeader p={"3px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>Role</Table.ColumnHeader>
+                              <Table.ColumnHeader p={"3px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
+                                Organization
+                              </Table.ColumnHeader>
+                              <Table.ColumnHeader p={"3px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
+                                Members
+                              </Table.ColumnHeader>
+                              <Table.ColumnHeader p={"3px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
+                                Buildings
+                              </Table.ColumnHeader>
+                              <Table.ColumnHeader p={"3px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
+                                Rooms
+                              </Table.ColumnHeader>
+                              <Table.ColumnHeader p={"3px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
+                                Feedback
+                              </Table.ColumnHeader>
+                              <Table.ColumnHeader p={"3px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
+                                Role
+                              </Table.ColumnHeader>
                           </Table.Row>
                       </Table.Header>
                       <Table.Body>
@@ -175,10 +187,18 @@ return (
                 <Table.Root maxW={"sm"}>
                     <Table.Header>
                         <Table.Row>
-                            <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>Organization</Table.ColumnHeader>
-                            <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>No. Feedback</Table.ColumnHeader>
-                            <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>The best building</Table.ColumnHeader>
-                            <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>The worst building</Table.ColumnHeader>
+                            <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
+                              Organization
+                            </Table.ColumnHeader>
+                            <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
+                              No. Feedback
+                            </Table.ColumnHeader>
+                            <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
+                              The best building
+                            </Table.ColumnHeader>
+                            <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
+                              The worst building
+                            </Table.ColumnHeader>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -187,10 +207,10 @@ return (
                                 .filter(o => o.id === m.organization)
                                 .map(item => {
                                     const bestBuilding = buildings
-                                        .filter(b => b.organization === item.id)
+                                        .filter(b => b.organization === item.id && b.room_average_rating > 0)
                                         .sort((a, b) => b.room_average_rating - a.room_average_rating)[0];
                                     const worstBuilding = buildings
-                                        .filter(b => b.organization === item.id)
+                                        .filter(b => b.organization === item.id && b.room_average_rating > 0)
                                         .sort((a, b) => a.room_average_rating - b.room_average_rating)[0];
                                     return (
                                         <Table.Row key={item.id}>
@@ -208,7 +228,7 @@ return (
                                                 {bestBuilding.room_average_rating > 0 ? `${bestBuilding.name} - avg. ${bestBuilding.room_average_rating}` : "no feedback"}
                                             </Table.Cell>
                                             }
-                                            {bestBuilding &&
+                                            {worstBuilding &&
                                             <Table.Cell textAlign={"center"} border={"1px solid"}>
                                               {worstBuilding.room_average_rating > 0 ? `${worstBuilding.name} - avg. ${worstBuilding.room_average_rating}` : "no feedback"}
                                             </Table.Cell>
@@ -231,10 +251,18 @@ return (
                 <Table.Root maxW={"sm"}>
                     <Table.Header>
                         <Table.Row>
-                            <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>Organization</Table.ColumnHeader>
-                            <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>No. Feedback</Table.ColumnHeader>
-                            <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>The best room</Table.ColumnHeader>
-                            <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>The worst room</Table.ColumnHeader>
+                            <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
+                              Organization
+                            </Table.ColumnHeader>
+                            <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
+                              No. Feedback
+                            </Table.ColumnHeader>
+                            <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
+                              The best room
+                            </Table.ColumnHeader>
+                            <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
+                              The worst room
+                            </Table.ColumnHeader>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
