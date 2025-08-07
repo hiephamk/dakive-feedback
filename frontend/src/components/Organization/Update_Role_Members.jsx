@@ -74,15 +74,16 @@ const Update_Role_Members = () => {
       alert('Failed to update role member');
     } 
   };
-
+  useEffect(() => {
+    if (isadmin && role !== "editor") {
+      setRole("editor");
+    }
+  }, [isadmin]);
   return (
     <Container justifyContent="center" maxW="500px" mt={10}>
       <HStack>
         <VStack shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={4} rounded={7} minW="100%">
           <Heading my={4}>Update Member Role</Heading>
-
-          
-
           <VStack gap={4} justifyContent="space-between" w="100%">
             <HStack w="100%" gap={4}>
               <label htmlFor="organization">Organization:</label>
@@ -144,23 +145,41 @@ const Update_Role_Members = () => {
                 <Checkbox.Label>Is Admin</Checkbox.Label>
               </Checkbox.Root>
             </HStack>
-            <HStack w="100%" gap={4}>
-            <label htmlFor="role">Role:</label>
-            <Box border="1px solid" p={1} rounded={5} w="100%">
-              <select
-                name="role"
-                id="role"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                style={{ width: '100%' }}
-                
-              >
-                <option value="">Choose a role</option>
-                <option value="editor">Editor</option>
-                <option value="viewer">Viewer</option>
-              </select>
-            </Box>
-          </HStack>
+            {isadmin ? (
+              <HStack w="100%" gap={4}>
+                <label htmlFor="role">Role:</label>
+                <Box border="1px solid" p={1} rounded={5} w="100%">
+                  <select
+                    name="role"
+                    id="role"
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                    style={{ width: '100%' }}
+                    
+                  >
+                    <option value="editor">Editor</option>
+                  </select>
+                </Box>
+              </HStack>
+            ):(
+              <HStack w="100%" gap={4}>
+                <label htmlFor="role">Role:</label>
+                <Box border="1px solid" p={1} rounded={5} w="100%">
+                  <select
+                    name="role"
+                    id="role"
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                    style={{ width: '100%' }}
+                    
+                  >
+                    <option value="">Choose a role</option>
+                    <option value="editor">Editor</option>
+                    <option value="viewer">Viewer</option>
+                  </select>
+                </Box>
+              </HStack>
+            )}
           </VStack>
 
           <Button onClick={() => handleSubmit(id)}>

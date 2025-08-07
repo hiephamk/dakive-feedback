@@ -118,6 +118,7 @@ const Organization_Details = () => {
     setError(null);
 
     const url = `${import.meta.env.VITE_ORGANIZATION_MEMBERSHIP_DELETE_URL}${id}/`;
+    console.log("url delete member:", url)
     try {
       await api.delete(url, {
         headers: {

@@ -152,7 +152,11 @@ const Add_Member = ({onSuccess}) => {
         }
     }
   };
-
+  useEffect(() => {
+    if (isadmin && role !== "editor") {
+      setRole("editor");
+    }
+  }, [isadmin]);
   return (
     <Box>
       <Box mt={"10px"} h={"500px"} maxW="600px" w={"300px"} shadow="3px 3px 15px 5px rgb(75, 75, 79)" border="1px solid" rounded={8}>
@@ -249,18 +253,30 @@ const Add_Member = ({onSuccess}) => {
             </HStack>
           </Box>
           {/* Role Dropdown */}
-          <Box>
-            <Text mb={1}>Select Role</Text>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              style={{ width: '100%', padding: '8px', borderRadius: '5px', border: '1px solid #ccc' }}
-            >
-              <option value="">-- Choose a role --</option>
-              <option value="editor">Editor</option>
-              <option value="viewer">Viewer</option>
-            </select>
+          {isadmin ? (
+            <Box>
+              <Text mb={1}>Select Role</Text>
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                style={{ width: '100%', padding: '8px', borderRadius: '5px', border: '1px solid #ccc' }}
+              >
+                <option value="editor">Editor</option>
+              </select>
+            </Box>):(
+            <Box>
+              <Text mb={1}>Select Role</Text>
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                style={{ width: '100%', padding: '8px', borderRadius: '5px', border: '1px solid #ccc' }}
+              >
+                <option value="">-- Choose a role --</option>
+                <option value="editor">Editor</option>
+                <option value="viewer">Viewer</option>
+              </select>
           </Box>
+          )}
           <Button colorScheme="blue" onClick={handleSubmit}>
             Add Member
           </Button>

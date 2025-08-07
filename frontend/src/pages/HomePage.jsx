@@ -271,10 +271,10 @@ return (
                                 .filter(o => o.id === m.organization)
                                 .map(item => {
                                     const bestRoom = reportChart
-                                        .filter(r => r.organization_id === item.id && b.room_average_rating > 0)
+                                        .filter(b => b.organization_id === item.id && b.room_average_rating > 0)
                                         .sort((a, b) => b.overall_avg_rating - a.overall_avg_rating)[0];
                                     const worstRoom = reportChart
-                                        .filter(r => r.organization_id === item.id && b.room_average_rating > 0)
+                                        .filter(b => b.organization_id === item.id && b.room_average_rating > 0)
                                         .sort((a, b) => a.overall_avg_rating - b.overall_avg_rating)[0];
                                     return (
                                         <Table.Row key={item.id}>
