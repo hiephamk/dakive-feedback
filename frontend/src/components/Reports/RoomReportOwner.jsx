@@ -35,64 +35,141 @@ const CreateRoomReport = () => {
       }
     }
     
-    const printQRCode = () => {
-      const canvas = qrCodeRef.current?.querySelector('canvas');
-      if (!canvas) {
-        console.error('Canvas element not found');
-        return;
-      }
+    // const printQRCode = () => {
+    //   const canvas = qrCodeRef.current?.querySelector('canvas');
+    //   if (!canvas) {
+    //     console.error('Canvas element not found');
+    //     return;
+    //   }
     
-      const image = canvas.toDataURL('image/png');
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) {
-        console.error('Failed to open print window');
-        return;
-      }
+    //   const image = canvas.toDataURL('image/png');
+    //   const printWindow = window.open('', '_blank');
+    //   if (!printWindow) {
+    //     console.error('Failed to open print window');
+    //     return;
+    //   }
     
-      const doc = printWindow.document;
-      doc.open();
-      doc.write('<html><head><title>DakiVe-Feedback</title></head><body></body></html>');
-      doc.close();
+    //   const doc = printWindow.document;
+    //   doc.open();
+    //   doc.write('<html><head><title>DakiVe-Feedback</title></head><body></body></html>');
+    //   doc.close();
     
-      const style = doc.createElement('style');
-      style.textContent = `
-        body {
-          text-align: center;
-          font-family: Arial, sans-serif;
-          margin: 40px;
-        }
-        .feedback-text {
-          font-size: 24px;
-          margin-top: 200px;
-          margin-bottom: 100px;
-        }
-        .qr-img {
-          width: 300px;
-          height: 300px;
-        }
-      `;
-      doc.head.appendChild(style);
+    //   const style = doc.createElement('style');
+    //   style.textContent = `
+    //     body {
+    //       text-align: center;
+    //       font-family: Arial, sans-serif;
+    //       margin: 40px;
+    //     }
+    //     .feedback-text {
+    //       font-size: 24px;
+    //       margin-top: 200px;
+    //       margin-bottom: 100px;
+    //     }
+    //     .qr-img {
+    //       width: 300px;
+    //       height: 300px;
+    //     }
+    //   `;
+    //   doc.head.appendChild(style);
     
-      doc.body.innerHTML = `
+    //   doc.body.innerHTML = `
+    //     <div class="feedback-text">
+    //       <h2>Anna meille palautetta sisäilmasta!</h2>
+    //       <h2>Give us feedback about the air quality!</h2>
+    //     </div>
+    //     <img class="qr-img" src="${image}" alt="QR code for air quality feedback">
+    //   `;
+    
+    //   const img = doc.querySelector('.qr-img');
+    //   img.onload = () => {
+    //     printWindow.print();
+    //     printWindow.onafterprint = () => printWindow.close();
+    //     setTimeout(() => printWindow.close(), 1000);
+    //   };
+    
+    //   img.onerror = () => {
+    //     console.error('Failed to load QR code image');
+    //     printWindow.close();
+    //   };
+    // };
+  
+const printQRCode = () => {
+  // Open popup immediately to prevent browser popup blocker
+  const printWindow = window.open('', '_blank');
+  if (!printWindow) {
+    alert('Popup blocked. Please allow pop-ups for this site.');
+    return;
+  }
+
+  const canvas = qrCodeRef.current?.querySelector('canvas');
+  if (!canvas) {
+    printWindow.document.write('<p>QR code not ready yet. Please try again later.</p>');
+    printWindow.document.close();
+    printWindow.focus();
+    return;
+  }
+
+  let image;
+  try {
+    image = canvas.toDataURL('image/png');
+  } catch (err) {
+    console.error('Canvas toDataURL failed:', err);
+    printWindow.document.write('<p>Failed to render QR code. Please try again.</p>');
+    printWindow.document.close();
+    return;
+  }
+
+  // Inject the content AFTER the popup is already open
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>DakiVe-Feedback</title>
+        <style>
+          body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            margin: 40px;
+          }
+          .feedback-text {
+            font-size: 24px;
+            margin-top: 200px;
+            margin-bottom: 100px;
+          }
+          .qr-img {
+            width: 300px;
+            height: 300px;
+          }
+        </style>
+      </head>
+      <body>
         <div class="feedback-text">
           <h2>Anna meille palautetta sisäilmasta!</h2>
           <h2>Give us feedback about the air quality!</h2>
         </div>
-        <img class="qr-img" src="${image}" alt="QR code for air quality feedback">
-      `;
-    
-      const img = doc.querySelector('.qr-img');
-      img.onload = () => {
-        printWindow.print();
-        printWindow.onafterprint = () => printWindow.close();
-        setTimeout(() => printWindow.close(), 1000);
-      };
-    
-      img.onerror = () => {
-        console.error('Failed to load QR code image');
-        printWindow.close();
-      };
+        <img class="qr-img" src="${image}" alt="QR code for air quality feedback" />
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
+
+  const img = printWindow.document.querySelector('.qr-img');
+  if (img) {
+    img.onload = () => {
+      printWindow.focus();
+      printWindow.print();
+      printWindow.onafterprint = () => printWindow.close();
+      setTimeout(() => printWindow.close(), 1000);
     };
+    img.onerror = () => {
+      alert('QR code failed to load in popup.');
+      printWindow.close();
+    };
+  } else {
+    alert('Failed to insert QR code image.');
+    printWindow.close();
+  }
+};
 
     const generateRandom = (length = 10) => {
       let result = '';
