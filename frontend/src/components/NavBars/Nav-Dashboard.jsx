@@ -60,9 +60,6 @@ const NavDashboard = () => {
               <Menu.Positioner>
                 <Menu.Content>            
                   <Menu.Item value="new-win-a">
-                    <Link to="/home/management/sensor-data/reports/">Sensor Data</Link> 
-                  </Menu.Item>
-                  <Menu.Item value="new-win-a">
                     <Link to="/home/management/report/table">Table</Link>
                   </Menu.Item>
                   <Menu.Item value="new-win-a">
