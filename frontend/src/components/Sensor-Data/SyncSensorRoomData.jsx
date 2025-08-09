@@ -77,25 +77,7 @@ const SyncSensorRoomData = ({ onSyncSuccess, buildingid, roomid, created_at }) =
           const timeDiff = Math.abs(sensorTime - reportTime) / (1000 * 60);
           return timeDiff <= 15;
         })
-        console.log("Filter Readings ", readings)
-
-        // if (readings.length === 0) {
-        //   console.warn(`No data for room ${externalRoomId}`);
-        //   continue;
-        // }
-
-        // for (const [time, temperature, humidity, co2, light, motion] of readings) {
-
-          // const payload = {
-          //   room: roomid,
-          //   building: buildingid,
-          //   temperature,
-          //   humidity,
-          //   co2,
-          //   light,
-          //   motion: Boolean(motion),
-          //   created_at: time
-          // };
+        // console.log("Filter Readings ", readings)
           const payload = {
             room: roomid,
             building: buildingid,

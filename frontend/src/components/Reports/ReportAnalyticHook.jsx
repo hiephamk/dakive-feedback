@@ -26,7 +26,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 const ReportAnalyticHook = ({selectedId}) => {
   const { user, userInfo } = useSelector((state) => state.auth);
   const accessToken = useAccessToken(user);
-  const [roomAnalytics, setRoomAnalytics] = useState([]);
+  const [roomAnalytics, setRoomAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -184,22 +184,17 @@ const ReportAnalyticHook = ({selectedId}) => {
                     shadow="3px 3px 15px 5px rgb(75, 75, 79)"
                 >
                     <Heading size="md" mb={2} color="gray.700">
-                        {roomAnalytics.room_name} - {roomAnalytics.building_name} - {roomAnalytics.organization_name}
+                        {roomAnalytics ? roomAnalytics.room_name : null} - {roomAnalytics ? roomAnalytics.building_name : null} - {roomAnalytics ? roomAnalytics.organization_name : null}
                     </Heading>
                     <Text mb={2} fontSize="sm" color="gray.600">
                         {/* Updated: {new Date(roomAnalytics.created_at).toLocaleDateString()} */}
-                        Updated: {formatDate(roomAnalytics.created_at)}
+                        Updated: {formatDate(roomAnalytics ? roomAnalytics.created_at : null)}
                     </Text>
                     
                     <Box h="300px">
-                        <Bar 
-                        data={getChartData(roomAnalytics)} 
-                        options={{
-                            ...chartOptions,
-                            maintainAspectRatio: false,
-                            responsive: true
-                        }} 
-                        />
+                        {roomAnalytics && (
+                          <Bar data={getChartData(roomAnalytics)} options={chartOptions} />
+                        )}
                     </Box>
                 </Box>
             </Wrap>

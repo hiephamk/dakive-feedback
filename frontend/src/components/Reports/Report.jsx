@@ -13,7 +13,6 @@ import SyncSensorRoomData from '../Sensor-Data/SyncSensorRoomData';
 import useOrganization from '../Organization/OrganizationHook';
 import SensorReportsList from '../Sensor-Data/SensorReportsList';
 
-
 const Report = () => {
   const { user, userInfo } = useSelector((state) => state.auth);
   const accessToken = useAccessToken(user);
@@ -22,17 +21,18 @@ const Report = () => {
   const [roomId, setRoomId] = useState('');
   const [orgId, setOrgId] = useState('');
   const [buildingId, setBuildingId] = useState('');
+  const [time, setTime] = useState('');
 
   const [iShow, setIShow] = useState(false);
   const { buildings } = useBuilding();
   const { rooms } = useRoom(buildingId);
-  const { organizations } = useOrganization()
+  const { organizations } = useOrganization();
 
   const [sensorData, setSensorData] = useState([]);
-  const [members, setMembers] = useState([])
+  const [members, setMembers] = useState([]);
   const frozenSensorData = useRef([]);
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const fetchMembers = async () => {
     if (!accessToken || !userInfo?.id) return;
@@ -46,18 +46,18 @@ const Report = () => {
     };
     try {
       const response = await api.get(url, config);
-      const sortedItem = response.data
+      const sortedItem = response.data;
       setMembers(Array.isArray(sortedItem) ? sortedItem : sortedItem.items || []);
     } catch (err) {
       console.error('Error fetching members:', err);
-
     } 
   };
-  useEffect(()=> {
-    if(accessToken && userInfo?.id) {
-      fetchMembers()
+
+  useEffect(() => {
+    if (accessToken && userInfo?.id) {
+      fetchMembers();
     }
-  },[])
+  }, [accessToken, userInfo?.id]);
 
   const fetchRoomReport = async () => {
     if (!accessToken) return;
@@ -70,18 +70,26 @@ const Report = () => {
         },
       });
       let filteredReports = res.data;
+      
       if (orgId) {
         filteredReports = filteredReports.filter((item) => item.organization === Number(orgId));
       }
       if (buildingId) {
         filteredReports = filteredReports.filter((item) => item.building === Number(buildingId));
       }
-      
       if (roomId) {
         filteredReports = filteredReports.filter((item) => item.room === Number(roomId));
       }
-      // filteredReports = filteredReports.sort((a, b) => new Date(b.created_at).toISOString() - new Date(a.created_at).toISOString())
+      if (time) {
+        filteredReports = filteredReports.filter(t => t.created_at === time);
+      }
       
+      // Sort by created_at in descending order (newest first)
+      filteredReports = filteredReports.sort((a, b) => 
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+      
+      console.log("filter report:", filteredReports);
       setReports(filteredReports);
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -97,12 +105,13 @@ const Report = () => {
       fetchRoomReport();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken, userInfo?.id, buildingId, roomId, orgId]);
+  }, [accessToken, userInfo?.id, buildingId, roomId, orgId, time]);
 
   const fetchSensorReport = async () => {
-    if (!accessToken) return;
-    setLoading(true)
+    if (!accessToken || reports.length === 0) return;
+    setLoading(true);
     const url = import.meta.env.VITE_ROOM_REPORT_SENSOR_LIST_URL;
+    
     try {
       const resp = await api.get(url, {
         headers: {
@@ -110,15 +119,32 @@ const Report = () => {
           "Content-Type": "application/json",
         },
       });
-      const filterData = resp.data
-      // let filterData = resp.data.filter(item => Math.abs(new Date(item.created_at).getTime() - new Date(reports.created_at).getTime()) < 30*60*1000)
-      setSensorData(filterData)
+      
+      // Filter sensor data based on time proximity to any report
+      const filteredSensorData = resp.data.filter(sensorItem => {
+        const sensorTime = new Date(sensorItem.created_at).getTime() + 180 * 60 * 1000; // Add 3 hours
+        
+        // Check if this sensor data is within 15 minutes of any report
+        return reports.some(report => {
+          const reportTime = new Date(report.created_at).getTime();
+          const timeDiff = Math.abs(sensorTime - reportTime) / (1000 * 60); // Difference in minutes
+          return timeDiff <= 15;
+        });
+      });
+      
+      setSensorData(filteredSensorData);
     } catch (error) {
       console.error("fetch sensor data error", error.response?.data || error.message);
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (iShow === true && reports.length > 0) {
+      fetchSensorReport();
+    }
+  }, [iShow, reports]);
 
   const feedbackIcons = {
     1: { icon: <FaFrown color="red" />, desc: "Very poor/Significant issues" },
@@ -139,6 +165,16 @@ const Report = () => {
     ) : (
       rating
     );
+  };
+
+  // Helper function to find matching sensor data for a report
+  const findMatchingSensorData = (report) => {
+    return sensorData.find(sensor => {
+      const sensorTime = new Date(sensor.created_at).getTime() + 180 * 60 * 1000;
+      const reportTime = new Date(report.created_at).getTime();
+      const timeDiff = Math.abs(sensorTime - reportTime) / (1000 * 60);
+      return sensor.room === report.room && timeDiff <= 15;
+    });
   };
 
   const exportToCSV = (reports) => {
@@ -240,9 +276,10 @@ const Report = () => {
     setBuildingId(selectedBuildingId);
     setRoomId('');
   };
+
   const handleOrgChange = (e) => {
     const selectedOrgId = e.target.value;
-    setOrgId(selectedOrgId)
+    setOrgId(selectedOrgId);
     setBuildingId('');
   };
 
@@ -250,15 +287,22 @@ const Report = () => {
     setRoomId(e.target.value);
   };
 
+  const handleTimeChange = (e) => {
+    const selectedTime = e.target.value;
+    console.log('Selected time:', formatDate(selectedTime));
+    setTime(selectedTime);
+  };
+
   const handleClearItem = () => {
     setBuildingId("");
     setRoomId("");
     setOrgId("");
+    setTime("");
   };
 
-    useEffect(()=>{
-      console.log("fetch sensorData:",sensorData)
-    },[sensorData])
+  useEffect(() => {
+    console.log("fetch sensorData:", sensorData);
+  }, [sensorData]);
 
   return (
     <Box w={"100%"} maxW={"100vw"}>
@@ -310,7 +354,7 @@ const Report = () => {
             <select
               value={buildingId}
               onChange={handleBuildingChange}
-              id="organization"
+              id="building"
               disabled={!orgId}
             >
               <option value="">All Buildings</option>
@@ -344,7 +388,7 @@ const Report = () => {
             </select>
           </Box>
           <Box border="1px solid" p={4} rounded={7} fontSize="18px">
-            <label id="room"></label>
+            <label htmlFor="room"></label>
             <select
               value={roomId}
               onChange={handleRoomChange}
@@ -353,16 +397,31 @@ const Report = () => {
             >
               <option value="">All Rooms</option>
               {rooms.length && rooms
-              .flatMap(room => reports.length > 0 ? 
-                [...new Set(reports
-                  .filter(item => item.room === room.id)
-                  .map(item => ({
-                    id: item.room,
-                    name: item.room_name
-                  })))]:[])
-                  .filter((room, index, self) => index === self.findIndex(r => r.id === room.id))
-                .map((room)=>(
-                  <option key={room.id} value={room.id}>{room.name}</option>
+                .flatMap(room => reports.length > 0 ? 
+                  [...new Set(reports
+                    .filter(item => item.room === room.id)
+                    .map(item => ({
+                      id: item.room,
+                      name: item.room_name
+                    })))]:[])
+                    .filter((room, index, self) => index === self.findIndex(r => r.id === room.id))
+                  .map((room)=>(
+                    <option key={room.id} value={room.id}>{room.name}</option>
+                  ))}
+            </select>
+          </Box>
+          <Box border="1px solid" p={4} rounded={7} fontSize="18px">
+            <label htmlFor="time"></label>
+            <select
+              value={time}
+              onChange={handleTimeChange}
+              disabled={!roomId}
+              id="time"
+            >
+              <option value="">All Time</option>
+                {[...new Set(reports.map(r => r.created_at))]
+                .map(dateStr => (
+                  <option key={dateStr} value={dateStr}>{formatDate(dateStr)}</option>
                 ))}
             </select>
           </Box>
@@ -374,7 +433,6 @@ const Report = () => {
               checked={iShow}
               onCheckedChange={e => setIShow(e.checked)}
               colorPalette={"blue"}
-              
             >
               <Switch.HiddenInput/>
               <Switch.Control/>
@@ -424,10 +482,7 @@ const Report = () => {
               <Table.ColumnHeader fontWeight="bold" fontSize="14px" border="1px solid" textAlign="center">
                 Report Date
               </Table.ColumnHeader>
-              {/* <Table.ColumnHeader fontWeight="bold" fontSize="14px" border="1px solid" textAlign="center">
-                Update Status
-              </Table.ColumnHeader> */}
-              {iShow ? (
+              {iShow && (
                 <>
                   <Table.ColumnHeader fontWeight="bold" fontSize="14px" border="1px solid" textAlign="center">
                     Temperature
@@ -447,127 +502,111 @@ const Report = () => {
                   <Table.ColumnHeader fontWeight="bold" fontSize="14px" border="1px solid" textAlign="center">
                     Created Time
                   </Table.ColumnHeader>
-                  {/* <Table.ColumnHeader fontWeight="bold" fontSize="14px" border="1px solid" textAlign="center">
-                    Sync Data Time
-                  </Table.ColumnHeader> */}
-
+                  <Table.ColumnHeader fontWeight="bold" fontSize="14px" border="1px solid" textAlign="center">
+                    Actions
+                  </Table.ColumnHeader>
                 </>
-              ) : ("")}
+              )}
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {
-              members
-                .filter(mem => mem.user === userInfo.id)
-                .flatMap(mem =>
-                  buildings
-                    .filter(building => building.organization === mem.organization)
-                    .flatMap(building =>
-                      reports
-                        .filter(report => report.building === building.id && report.organization === building.organization)
-                        .map(report => {
-                          const sensor = sensorData.find(s => {
-                            if (String(s.room) !== String(report.room)) {
-                              return false;
-                            }
-                            const sensorTime = new Date(s.created_at).getTime() + 180*60*1000;
-                            const reportTime = new Date(report.created_at).getTime();
-                            const timeDiff = Math.abs(sensorTime - reportTime) / (1000 * 60);
-                            return timeDiff <= 15;
-                          });
-                          console.log("sensor:", sensor)
-
-                          return (
-                            <Table.Row key={report.id}>
-                              <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                {report.building_name || '-'}
-                              </Table.Cell>
-                              <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                {report.room_name || '-'}
-                              </Table.Cell>
-                              <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                {renderRating(report.temperature_rating)}
-                                <Box>Rating: {report.temperature_rating}</Box>
-                                <Box>Note: {report.temperature_notes}</Box>
-                              </Table.Cell>
-                              <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                {renderRating(report.air_quality_rating)}
-                                <Box>Rating: {report.air_quality_rating}</Box>
-                                <Box>Note: {report.air_quality_notes}</Box>
-                              </Table.Cell>
-                              <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                {renderRating(report.draft_rating)}
-                                <Box>Rating: {report.draft_rating}</Box>
-                                <Box>Note: {report.draft_notes}</Box>
-                              </Table.Cell>
-                              <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                {renderRating(report.odor_rating)}
-                                <Box>Rating: {report.odor_rating}</Box>
-                                <Box>Note: {report.odor_notes}</Box>
-                              </Table.Cell>
-                              <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                {renderRating(report.lighting_rating)}
-                                <Box>Rating: {report.lighting_rating}</Box>
-                                <Box>Note: {report.lighting_notes}</Box>
-                              </Table.Cell>
-                              <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                {renderRating(report.structural_change_rating)}
-                                <Box>Rating: {report.structural_change_rating}</Box>
-                                <Box>Note: {report.structural_change_notes}</Box>
-                              </Table.Cell>
-                              <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                {renderRating(report.cleanliness_rating)}
-                                <Box>Rating: {report.cleanliness_rating}</Box>
-                                <Box>Note: {report.cleanliness_notes}</Box>
-                              </Table.Cell>
-                              <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                {report.maintenance_notes}
-                              </Table.Cell>
-                              <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                {report.general_notes}
-                              </Table.Cell>
-                              <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                {formatDate(report.created_at)}
-                              </Table.Cell>
-                              {iShow && (
-                                <>
-                                  <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                    {loading ? <Spinner size={"sm"}/> : (sensor ? sensor.temperature : '-')}
-                                  </Table.Cell>
-                                  <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                    {sensor ? sensor.humidity : '-'}
-                                  </Table.Cell>
-                                  <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                    {sensor ? sensor.co2 : '-'}
-                                  </Table.Cell>
-                                  <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                    {sensor ? sensor.light : '-'}
-                                  </Table.Cell>
-                                  <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                    {sensor ? sensor.motion : '-'}
-                                  </Table.Cell>
-                                  <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                    {sensor ? formatDate(new Date(sensor.created_at).getTime()+180*60*1000) : '-'}
-                                  </Table.Cell>
-                                  {/* <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
-                                    {sensor ? formatDate(sensor.updated_at) : '-'}
-                                  </Table.Cell> */}
-                                  <Table.Cell>
-                                    {<SyncSensorRoomData
-                                      onSyncSuccess={fetchSensorReport}
-                                      roomid={report.room}
-                                      buildingid={report.building}
-                                      created_at={report.created_at}
-                                      // externalid={building.external_id}
-                                    />}
-                                  </Table.Cell>
-                                </>
-                              )}
-                            </Table.Row>
-                          );
-                        })
-                    )
-                )
+            {members
+              .filter(mem => mem.user === userInfo.id)
+              .flatMap(mem =>
+                buildings
+                  .filter(building => building.organization === mem.organization)
+                  .flatMap(building =>
+                    reports
+                      .filter(report => report.building === building.id && report.organization === building.organization)
+                      .map(report => {
+                        const matchingSensor = findMatchingSensorData(report);
+                        return (
+                          <Table.Row key={report.id}>
+                            <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                              {report.building_name || '-'}
+                            </Table.Cell>
+                            <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                              {report.room_name || '-'}
+                            </Table.Cell>
+                            <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                              {renderRating(report.temperature_rating)}
+                              <Box>Rating: {report.temperature_rating}</Box>
+                              <Box>Note: {report.temperature_notes}</Box>
+                            </Table.Cell>
+                            <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                              {renderRating(report.air_quality_rating)}
+                              <Box>Rating: {report.air_quality_rating}</Box>
+                              <Box>Note: {report.air_quality_notes}</Box>
+                            </Table.Cell>
+                            <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                              {renderRating(report.draft_rating)}
+                              <Box>Rating: {report.draft_rating}</Box>
+                              <Box>Note: {report.draft_notes}</Box>
+                            </Table.Cell>
+                            <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                              {renderRating(report.odor_rating)}
+                              <Box>Rating: {report.odor_rating}</Box>
+                              <Box>Note: {report.odor_notes}</Box>
+                            </Table.Cell>
+                            <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                              {renderRating(report.lighting_rating)}
+                              <Box>Rating: {report.lighting_rating}</Box>
+                              <Box>Note: {report.lighting_notes}</Box>
+                            </Table.Cell>
+                            <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                              {renderRating(report.structural_change_rating)}
+                              <Box>Rating: {report.structural_change_rating}</Box>
+                              <Box>Note: {report.structural_change_notes}</Box>
+                            </Table.Cell>
+                            <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                              {renderRating(report.cleanliness_rating)}
+                              <Box>Rating: {report.cleanliness_rating}</Box>
+                              <Box>Note: {report.cleanliness_notes}</Box>
+                            </Table.Cell>
+                            <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                              {report.maintenance_notes}
+                            </Table.Cell>
+                            <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                              {report.general_notes}
+                            </Table.Cell>
+                            <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                              {formatDate(report.created_at)}
+                            </Table.Cell>
+                            {iShow && (
+                              <>
+                                <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                                  {loading ? <Spinner size={"sm"}/> : (matchingSensor ? matchingSensor.temperature : '-')}
+                                </Table.Cell>
+                                <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                                  {matchingSensor ? matchingSensor.humidity : '-'}
+                                </Table.Cell>
+                                <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                                  {matchingSensor ? matchingSensor.co2 : '-'}
+                                </Table.Cell>
+                                <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                                  {matchingSensor ? matchingSensor.light : '-'}
+                                </Table.Cell>
+                                <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                                  {matchingSensor ? matchingSensor.motion : '-'}
+                                </Table.Cell>
+                                <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                                  {matchingSensor ? formatDate(new Date(matchingSensor.created_at).getTime()+180*60*1000) : '-'}
+                                </Table.Cell>
+                                <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                                  <SyncSensorRoomData
+                                    onSyncSuccess={fetchSensorReport}
+                                    roomid={report.room}
+                                    buildingid={report.building}
+                                    created_at={report.created_at}
+                                  />
+                                </Table.Cell>
+                              </>
+                            )}
+                          </Table.Row>
+                        );
+                      })
+                  )
+              )
             }
           </Table.Body>
         </Table.Root>

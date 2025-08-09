@@ -145,24 +145,34 @@ useEffect(()=>{
   // Submit form to backend
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const requiredFields = {
-      temperature_rating: 'Temperature rating',
-      air_quality_rating: 'Air quality rating',
-      draft_rating: 'Draft rating',
-      odor_rating: 'Odor rating',
-      lighting_rating: 'Lighting rating',
-      structural_change_rating: 'Structural change rating',
-      cleanliness_rating: 'Cleanliness rating',
+    const payload = {
+      ...formData,
+      temperature_rating: parseInt(formData.temperature_rating || 0, 10),
+      air_quality_rating: parseInt(formData.air_quality_rating || 0, 10),
+      draft_rating: parseInt(formData.draft_rating || 0, 10),
+      odor_rating: parseInt(formData.odor_rating || 0, 10),
+      lighting_rating: parseInt(formData.lighting_rating || 0, 10),
+      structural_change_rating: parseInt(formData.structural_change_rating || 0, 10),
+      cleanliness_rating: parseInt(formData.cleanliness_rating || 0, 10),
     };
-    for (const field in requiredFields){
-        if (!formData[field]){
-            alert(`Please fill in the required field: ${requiredFields[field]}`)
-            return
-        }
-    }
+    // const requiredFields = {
+    //   temperature_rating: 'Temperature rating',
+    //   air_quality_rating: 'Air quality rating',
+    //   draft_rating: 'Draft rating',
+    //   odor_rating: 'Odor rating',
+    //   lighting_rating: 'Lighting rating',
+    //   structural_change_rating: 'Structural change rating',
+    //   cleanliness_rating: 'Cleanliness rating',
+    // };
+    // for (const field in requiredFields){
+    //     if (!formData[field]){
+    //         alert(`Please fill in the required field: ${requiredFields[field]}`)
+    //         return
+    //     }
+    // }
     const url = `${import.meta.env.VITE_ROOM_REPORT_CREATE_URL}${roomId}/`;
     try {
-      await api.post(url, formData);
+      await api.post(url, payload);
       // alert('The room report was sent.');
       
       navigate('/room/feedback/finished/')
@@ -190,7 +200,7 @@ useEffect(()=>{
         feedback_status: '',
       });
     } catch (error) {
-      console.error('Error creating room report:', error.message);
+      console.error('Error creating room report:', error.response.data || error.message);
       alert('Error sending room report');
     }
   };

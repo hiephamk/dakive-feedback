@@ -8,6 +8,7 @@ import useOrganization_Membership from '../Organization/Organization_Membership_
 import useBuilding from '../BuildingManagement/BuildingHook';
 import useOrganization from '../Organization/OrganizationHook';
 import useRoom from '../RoomOwner/RoomHook';
+import formatDate from '../formatDate';
 
 import {
   Chart as ChartJS,
@@ -35,6 +36,7 @@ const RoomReportAnalytics = () => {
   const [buildingId, setBuildingId] = useState('')
   const [roomId, setRoomId] = useState('')
   const [orgId, setOrgId] = useState('')
+  const [time, setTime] = useState('')
   
   const { buildings } = useBuilding();
   const { rooms } = useRoom(buildingId)
@@ -62,6 +64,9 @@ const RoomReportAnalytics = () => {
       if(roomId){
         reportChart = reportChart.filter(r => r.room_id === Number(roomId))
       }
+      // if(time){
+      //   reportChart = reportChart.filter(t => t.created_at === time)
+      // }
       setRoomAnalytics(reportChart);
     } catch (error) {
       if(error.response && error.response.status === 401) {
@@ -172,11 +177,15 @@ const RoomReportAnalytics = () => {
   const handleRoomChange = (e) => {
     setRoomId(e.target.value);
   };
+  const handleTimeChange = (e) => {
+    setTime(e.target.value);
+  };
 
   const handleClearItem = () => {
     setBuildingId("");
     setRoomId("");
     setOrgId("");
+    setTime("")
   };
 
   const [isDesktop, setIsDesktop] = useState(false);
@@ -293,6 +302,22 @@ const RoomReportAnalytics = () => {
                   ))}
               </select>
             </Box>
+            {/* <Box border="1px solid" p={4} rounded={7} fontSize="18px">
+              <label id="time"></label>
+              <select
+                value={time}
+                onChange={handleTimeChange}
+                disabled={!roomId}
+                id="time"
+              >
+                <option value="">All Time</option>
+                  {[...new Set(roomAnalytics.map(r => r.created_at))]
+                  .map(dateStr => (
+                    <option key={dateStr} value={dateStr}>{formatDate(dateStr)}</option>
+                  ))}
+
+              </select>
+            </Box> */}
             <Box>
               <Button onClick={handleClearItem}>Clear</Button>
             </Box>
