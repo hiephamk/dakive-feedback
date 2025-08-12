@@ -1,5 +1,6 @@
 
 import { useEffect, useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import useAccessToken from '../../services/token';
 import { MdDelete } from "react-icons/md";
@@ -12,22 +13,22 @@ import {
   VStack,
   Button,
   Heading,
-  Text,
+  Text as ChakraText,
   Checkbox,
   Flex,
 } from '@chakra-ui/react';
-import { Toaster, toaster } from "../ui/toaster"
+import { Toaster, toaster } from "../ui/toaster";
 import useOrganization from './OrganizationHook';
 import { useNavigate, useParams } from 'react-router';
 import api from '../../services/api';
 import useOrganization_Membership from './Organization_Membership_Hook';
 
-
-const Add_Member = ({onSuccess}) => {
+const Add_Member = ({ onSuccess }) => {
+  const { t } = useTranslation();
   const { user, userInfo } = useSelector((state) => state.auth);
   const accessToken = useAccessToken(user);
-  const { members } = useOrganization_Membership()
-  const { orgId } = useParams()
+  const { members } = useOrganization_Membership();
+  const { orgId } = useParams();
   const navigate = useNavigate();
 
   const { organizations } = useOrganization();
@@ -87,8 +88,8 @@ const Add_Member = ({onSuccess}) => {
 
     if (!selectedUser || !organization || !role) {
       toaster.create({
-        title: 'Incomplete Form',
-        description: 'Please complete all fields.',
+        title: t('add_member.incomplete_form'),
+        description: t('add_member.incomplete_form_description'),
         status: 'warning',
         duration: 3000,
         isClosable: true,
@@ -119,8 +120,8 @@ const Add_Member = ({onSuccess}) => {
       }
       
       toaster.create({
-        title: 'Member Added',
-        description: 'New member added successfully.',
+        title: t('add_member.member_added'),
+        description: t('add_member.member_added_description'),
         status: 'success',
         duration: 1000,
         isClosable: true,
@@ -134,29 +135,29 @@ const Add_Member = ({onSuccess}) => {
     } catch (error) {
       console.error('Error adding member:', error.response?.data || error.message);
       toaster.create({
-        title: 'Error',
-        description: 'Failed to add new member.',
+        title: t('add_member.failed_add_member'),
+        description: t('add_member.failed_add_member_description'),
         status: 'error',
         duration: 3000,
         isClosable: true,
       });
       if (error.response && error.response.status === 400) {
         // Extract error message from the response
-        const errorMessage = error.response.data.non_field_errors || error.response.data.name || 'This name already exists';
-        // setErrors(errorMessage);
-        alert(errorMessage)
+        const errorMessage = error.response.data.non_field_errors || error.response.data.name || t('add_member.name_exists');
+        alert(errorMessage);
       } else {
-          console.error("Unexpected error:", error);
-          // setErrors('An unexpected error occurred');
-          alert("An unexpected error occurred");
-        }
+        console.error("Unexpected error:", error);
+        alert(t('add_member.unexpected_error'));
+      }
     }
   };
+
   useEffect(() => {
     if (isadmin && role !== "editor") {
       setRole("editor");
     }
   }, [isadmin]);
+
   return (
     <Box>
       <Box mt={"10px"} h={"500px"} maxW="600px" w={"300px"} shadow="3px 3px 15px 5px rgb(75, 75, 79)" border="1px solid" rounded={8}>
@@ -168,11 +169,11 @@ const Add_Member = ({onSuccess}) => {
           borderWidth={1}
           align="stretch"
         >
-          <Heading fontSize="xl">Exist Users</Heading>
+          <Heading fontSize="xl">{t('add_member.exist_users')}</Heading>
           {/* Search Box */}
           <Box position="relative">
             <Input
-              placeholder="Search for a user"
+              placeholder={t('add_member.search_user')}
               value={searchKeyword}
               onChange={handleSearch}
               size="md"
@@ -193,7 +194,7 @@ const Add_Member = ({onSuccess}) => {
               >
                 {filteredItems.length === 0 ? (
                   <Box px={4} py={2} color="gray.500">
-                    No users found
+                    {t('add_member.no_users_found')}
                   </Box>
                 ) : (
                   filteredItems.map((item) => (
@@ -214,23 +215,23 @@ const Add_Member = ({onSuccess}) => {
           {/* Selected User */}
           {selectedUser && (
             <Flex p={2} bg="gray.400" rounded="md" justifyContent="space-between">
-              <Text>{selectedUser.full_name} - {selectedUser.email}</Text>
+              <ChakraText>{selectedUser.full_name} - {selectedUser.email}</ChakraText>
               <Button size="xs" colorScheme="red" onClick={handleRemoveUser}>
-                <MdDelete/>
+                <MdDelete />
               </Button>
             </Flex>
           )}
           {/* Organization Dropdown */}
           <Box>
-            <Text mb={1}>Select Organization</Text>
+            <ChakraText mb={1}>{t('add_member.select_organization')}</ChakraText>
             <select
               value={organization}
               onChange={(e) => setOrganization(e.target.value)}
               style={{ width: '100%', padding: '8px', borderRadius: '5px', border: '1px solid #ccc' }}
             >
-              <option value="">-- Choose an organization --</option>
+              <option value="">{t('add_member.choose_organization')}</option>
               {members
-                .filter(member => member.user === userInfo?.id && member.organization ===Number(orgId))
+                .filter(member => member.user === userInfo?.id && member.organization === Number(orgId))
                 .map(member => organizations
                     .filter(org => org.id === member.organization)
                     .map(org => (
@@ -248,37 +249,38 @@ const Add_Member = ({onSuccess}) => {
               >
                 <Checkbox.HiddenInput />
                 <Checkbox.Control />
-                <Checkbox.Label>Admin</Checkbox.Label>
+                <Checkbox.Label>{t('add_member.admin')}</Checkbox.Label>
               </Checkbox.Root>
             </HStack>
           </Box>
           {/* Role Dropdown */}
           {isadmin ? (
             <Box>
-              <Text mb={1}>Select Role</Text>
+              <ChakraText mb={1}>{t('add_member.select_role')}</ChakraText>
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 style={{ width: '100%', padding: '8px', borderRadius: '5px', border: '1px solid #ccc' }}
               >
-                <option value="editor">Editor</option>
+                <option value="editor">{t('add_member.editor')}</option>
               </select>
-            </Box>):(
+            </Box>
+          ) : (
             <Box>
-              <Text mb={1}>Select Role</Text>
+              <ChakraText mb={1}>{t('add_member.select_role')}</ChakraText>
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 style={{ width: '100%', padding: '8px', borderRadius: '5px', border: '1px solid #ccc' }}
               >
-                <option value="">-- Choose a role --</option>
-                <option value="editor">Editor</option>
-                <option value="viewer">Viewer</option>
+                <option value="">{t('add_member.choose_role')}</option>
+                <option value="editor">{t('add_member.editor')}</option>
+                <option value="viewer">{t('add_member.viewer')}</option>
               </select>
-          </Box>
+            </Box>
           )}
           <Button colorScheme="blue" onClick={handleSubmit}>
-            Add Member
+            {t('add_member.add_member')}
           </Button>
         </VStack>
       </Box>

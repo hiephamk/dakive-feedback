@@ -1,12 +1,8 @@
 import {BrowserRouter as Router, Routes, Route } from "react-router"
 import Dashboard from "./pages/Dashboard";
-// import Community from "./pages/Community";
 import Login from "./pages/Login"
 import Register from "./pages/Register"
-// import HomeRoomOwner from "./components/RoomOwner/HomeRoomOwner"
-// import HomeBuidingManagement from "./components/BuildingManagement/HomeBuidingManagement"
 import About from "./pages/About"
-import Community from "./pages/Community"
 import PrivateRoute from "./services/PrivateRoute"
 import Activate from "./pages/Activate";
 import ResetPassword from "./pages/ResetPassword";
@@ -25,10 +21,8 @@ import CreateRoomReport from "./components/Reports/CreateRoomReport";
 import RoomReportOwner from "./components/Reports/RoomReportOwner"
 import RoomReportAnalytics from "./components/Reports/RoomReportAnalytics"
 import ReportByRoom from "./components/Reports/ReportByRoom";
-import BuildingReports from "./components/Reports/BuildingReports"
 import UpdateBuilding from "./components/BuildingManagement/UpadateBuilding";
 import UpdateRoom from "./components/RoomOwner/UpdateRoom";
-import Home_login from "./pages/Home_login";
 import Organization_Details from "./components/Organization/Organization_Details";
 import Add_Member from "./components/Organization/Add_Member";
 import Update_Role_Members from "./components/Organization/Update_Role_Members";
@@ -40,10 +34,8 @@ import SensorDataBuildings from "./components/Sensor-Data/SensorDataBuildings";
 import SensorDataRooms from "./components/Sensor-Data/SensorDataRooms";
 import UserFeedbackData_Building from "./components/UserFeedback/UserFeedbackData_Building";
 import SensorReportsList from "./components/Sensor-Data/SensorReportsList";
-import Community_Dashboard from "./pages/Community_Dashboard";
 import HomeOrganization from "./components/Organization/HomeOrganization";
 import FeedbackDone from "./pages/FeedbackDone";
-import BuildingListOrg from "./components/BuildingManagement/BuildingListOrg";
 
 function App() {
   return (
@@ -68,15 +60,11 @@ function App() {
             <Route path="/home/admin/organization/update/:orgId" element={<UpdateOrg/>}/>
             <Route path="/home/admin/management-mobile" element={<Organization_Details/>}/>
           </Route>
-          <Route path="/home/community" element={<Community_Dashboard/>}>
-
-          </Route>
           <Route path="/home/management/sensor-data/room-list/:id" element={<SensorDataRooms/>}/>
           <Route path="/home/management/sensor-data/reports/" element={<SensorReportsList/>}/>
           <Route path="/home/management/sensor-data/building-list" element={<SensorDataBuildings/>}/>
           <Route path="/home/management/building-reports/:buildingId" element={<UserFeedbackData_Building/>}/>
           <Route path="/home/about" element={<About/>}/>
-          <Route path="/home/community" element={<Community/>}/>
           <Route path="/home/profile" element={<Account/>}/>
           <Route path="/home/update-profile" element={<UpdateProfile/>}/>
           <Route path="/home/management/add_building" element={<Building/>}/>
@@ -90,7 +78,6 @@ function App() {
           <Route path="/home/management/report/table" element={<Report/>}/>
           <Route path="/home/management/building/update/:buildingId" element={<UpdateBuilding/>}/>
           <Route path="/home/management/room/update/:roomId/:orgId" element={<UpdateRoom/>}/>
-          <Route path="/home/login" element={<Home_login/>}/>
         </Route>
           <Route path="/room/feedback/:roomId/:showSensorData/" element={<CreateRoomReport/>}/>
           <Route path="/room/feedback/finished/" element={<FeedbackDone/>}/>

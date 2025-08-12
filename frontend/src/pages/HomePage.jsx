@@ -7,6 +7,8 @@ import useOrganization_Membership from '../components/Organization/Organization_
 import ReportBarChartHook from '../components/Reports/ReportBarChartHook'
 import UserFeedbackHook from '../components/Reports/UserFeedbackHook'
 import useBuilding from '../components/BuildingManagement/BuildingHook'
+import { useTranslation } from 'react-i18next';
+
 
 const HomePage= () => {
   const {userInfo} = useSelector(state => state.auth)
@@ -17,16 +19,19 @@ const HomePage= () => {
   const [selectedOrgId, setSelectedOrgId] = useState([]);
   const [orgIdForSelect, setOrgIdForSelect] = useState('')
   const [checked, setChecked] = useState(true)
+  const { t } = useTranslation();
   
   const Org = organizations
-    .filter(item => item.owner === userInfo.id && item.buildings.length > 0 )
+    // .filter(item => item.owner === userInfo.id && item.buildings.length > 0 )
+    .filter(item => item.buildings.length > 0 )
     .map(item =>item.id)
 
   const org_members = members
     .filter(item => item.user === userInfo.id && Org.includes(Number(item.organization)));
 
   const Org1 = organizations
-    .filter(item => item.owner === userInfo.id && item.buildings.length > 0 && item.report_count > 0 )
+    // .filter(item => item.owner === userInfo.id && item.buildings.length > 0 && item.report_count > 0 )
+    .filter(item => item.buildings.length > 0 && item.report_count > 0 )
     .map(item =>item.id)
   
   const org_members1 = members
@@ -73,7 +78,7 @@ return (
                     id='all'
                   >
                   </input>
-                  <label htmlFor="all">All Organization</label>
+                  <label htmlFor="all">{t("home.All_Organizations")}</label>
                 </HStack>
                 {org_members1.map((org) => (
                   <HStack key={org.id}>
@@ -111,76 +116,69 @@ return (
         <Box border={"1px solid"} mt={"20px"} rounded={"7px"}>
           <VStack rounded={"7px"} w={"100%"} p={"5px"} h={"fit-content"} justify={"center"} gap={"10px"}>
             <VStack shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={"10px"} rounded={"7px"} w={"100%"}>
-              <Heading>Your organizations</Heading>
+              <Heading>{t("home.your_organizations")}</Heading>
               <Box>
                 {org_members.length > 0 ? (
                   <Table.Root size={"100%"}>
                       <Table.Header>
                           <Table.Row>
                               <Table.ColumnHeader p={"3px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
-                                Organization
+                                {t("home.organization")}
                               </Table.ColumnHeader>
                               <Table.ColumnHeader p={"3px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
-                                Members
+                                {t("home.members")}
                               </Table.ColumnHeader>
                               <Table.ColumnHeader p={"3px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
-                                Buildings
+                                {t("home.buildings")}
                               </Table.ColumnHeader>
                               <Table.ColumnHeader p={"3px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
-                                Rooms
+                                {t("home.rooms")}
                               </Table.ColumnHeader>
                               <Table.ColumnHeader p={"3px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
-                                Feedback
+                                {t("home.feedback")}
                               </Table.ColumnHeader>
                               <Table.ColumnHeader p={"3px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
-                                Role
+                                {t("home.role")}
                               </Table.ColumnHeader>
                           </Table.Row>
                       </Table.Header>
                       <Table.Body>
-                          {org_members
-                              .map(m => organizations
-                                  .filter(o => o.id === m.organization)
-                                  .map(item => {
-                                      const bestRoom = reportChart
-                                          .filter(r => r.organization_id === item.id)
-                                          .sort((a, b) => b.overall_avg_rating - a.overall_avg_rating)[0];
-                                      const worstRoom = reportChart
-                                          .filter(r => r.organization_id === item.id)
-                                          .sort((a, b) => a.overall_avg_rating - b.overall_avg_rating)[0];
-                                      return (
-                                          <Table.Row key={item.id}>
-                                              <Table.Cell textAlign={"center"} p={"2px"} border={"1px solid"}>
-                                                  {m.organization_name}
-                                              </Table.Cell>
-                                              <Table.Cell textAlign={"center"} p={"2px"} border={"1px solid"}>
-                                                  {item.member_count}
-                                              </Table.Cell>
-                                              <Table.Cell textAlign={"center"} p={"2px"} border={"1px solid"}>
-                                                  {item.building_count}
-                                              </Table.Cell>
-                                              <Table.Cell textAlign={"center"} p={"2px"} border={"1px solid"}>
-                                                  {item.totalRoom_count}
-                                              </Table.Cell>
-                                              <Table.Cell textAlign={"center"} p={"2px"} border={"1px solid"}>
-                                                  {item.report_count}
-                                              </Table.Cell>
-                                              <Table.Cell textAlign={"center"} p={"2px"} border={"1px solid"}>
-                                                  {item.owner === userInfo?.id ? "owner/editor" : m.role}
-                                              </Table.Cell>
-                                          </Table.Row>
-                                      );
-                                  })
+                        {org_members
+                          .map(m => organizations
+                            .filter(o => o.id === m.organization)
+                            .map(item => (
+                                <Table.Row key={item.id}>
+                                    <Table.Cell textAlign={"center"} border={"1px solid"}>
+                                        {m.organization_name}
+                                    </Table.Cell>
+                                    <Table.Cell textAlign={"center"} border={"1px solid"}>
+                                        {item.member_count}
+                                    </Table.Cell>
+                                    <Table.Cell textAlign={"center"} border={"1px solid"}>
+                                        {item.building_count}
+                                    </Table.Cell>
+                                    <Table.Cell textAlign={"center"} border={"1px solid"}>
+                                        {item.totalRoom_count}
+                                    </Table.Cell>
+                                    <Table.Cell textAlign={"center"} border={"1px solid"}>
+                                        {item.report_count}
+                                    </Table.Cell>
+                                    <Table.Cell textAlign={"center"} border={"1px solid"}>
+                                        {item.owner === userInfo?.id ? t("home.owner_editor") : m.role}
+                                    </Table.Cell>
+                                </Table.Row>
                               )
-                          }
+                            )
+                          )
+                        }
                       </Table.Body>
                   </Table.Root>
-                ) : ("You have no organization")}
+                ) : t("home.you_have_no_organization")}
               </Box>
             </VStack>
             <Box w={"100%"} shadow="3px 3px 15px 5px rgb(75, 75, 79)" rounded={"7px"} p={"10px"}>
               <Center my={"7px"}>
-                  <Heading>Building Reports</Heading>
+                  <Heading>{t("home.building_reports")}</Heading>
               </Center>
               <Center>
                 {org_members1.length > 0 ? (
@@ -188,16 +186,16 @@ return (
                     <Table.Header>
                         <Table.Row>
                             <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
-                              Organization
+                              {t("home.organization")}
                             </Table.ColumnHeader>
                             <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
-                              No. Feedback
+                              {t("home.no_feedback")}
                             </Table.ColumnHeader>
                             <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
-                              The best building
+                              {t("home.best_building")}
                             </Table.ColumnHeader>
                             <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
-                              The worst building
+                              {t("home.worst_building")}
                             </Table.ColumnHeader>
                         </Table.Row>
                     </Table.Header>
@@ -240,64 +238,57 @@ return (
                         }
                     </Table.Body>
                 </Table.Root>
-                ) : ("You have no organization")
+                ) : t("home.you_have_no_organization")
                 }
               </Center>
             </Box>
             <Box w={"100%"} shadow="3px 3px 15px 5px rgb(75, 75, 79)" rounded={"7px"} p={"10px"}>
-              <Center my={"7px"}><Heading>Room Reports</Heading></Center>
+              <Center my={"7px"}><Heading>{t("home.room_reports")}</Heading></Center>
               <Center>
-                {org_members.length > 0 ? (
+                {org_members1.length > 0 ? (
                 <Table.Root maxW={"sm"}>
                     <Table.Header>
                         <Table.Row>
                             <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
-                              Organization
+                              {t("home.organization")}
                             </Table.ColumnHeader>
                             <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
-                              No. Feedback
+                              {t("home.no_feedback")}
                             </Table.ColumnHeader>
                             <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
-                              The best room
+                              {t("home.best_room")}
                             </Table.ColumnHeader>
                             <Table.ColumnHeader fontSize={"14px"} fontWeight={"bold"} textAlign={"center"} border={"1px solid"}>
-                              The worst room
+                              {t("home.worst_room")}
                             </Table.ColumnHeader>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
-                        {org_members
+                        {org_members1
                             .map(m => organizations
                                 .filter(o => o.id === m.organization)
                                 .map(item => {
                                     const bestRoom = reportChart
-                                        .filter(b => b.organization_id === item.id && b.room_average_rating > 0)
+                                        .filter(r => r.organization_id === item.id && r.overall_avg_rating > 0)
                                         .sort((a, b) => b.overall_avg_rating - a.overall_avg_rating)[0];
                                     const worstRoom = reportChart
-                                        .filter(b => b.organization_id === item.id && b.room_average_rating > 0)
+                                        .filter(r => r.organization_id === item.id && r.overall_avg_rating > 0)
                                         .sort((a, b) => a.overall_avg_rating - b.overall_avg_rating)[0];
                                     return (
                                         <Table.Row key={item.id}>
-                                            {worstRoom &&
                                             <Table.Cell textAlign={"center"} border={"1px solid"}>
-                                                {worstRoom.organization_name}
+                                                {item.name}
                                             </Table.Cell>
-                                            }
-                                            {bestRoom &&
+
                                             <Table.Cell textAlign={"center"} border={"1px solid"}>
                                                 {item.report_count}
                                             </Table.Cell>
-                                            }
-                                            {bestRoom &&
                                             <Table.Cell textAlign={"center"} border={"1px solid"}>
-                                                {bestRoom.room_name}-{bestRoom.building_name}  (avg. {bestRoom.overall_avg_rating})
+                                                {bestRoom ? bestRoom.room_name : null}-{bestRoom ? bestRoom.building_name : null}  (avg. {bestRoom ? bestRoom.overall_avg_rating : null})
                                             </Table.Cell>
-                                            }
-                                            {worstRoom &&
                                             <Table.Cell textAlign={"center"} border={"1px solid"}>
-                                                {worstRoom.room_name}-{worstRoom.building_name} (avg. {worstRoom.overall_avg_rating})
+                                                {worstRoom ? worstRoom.room_name : null}-{worstRoom ? worstRoom.building_name : null} (avg. {worstRoom ? worstRoom.overall_avg_rating : null})
                                             </Table.Cell>
-                                            }
                                         </Table.Row>
                                     );
                                 })
@@ -305,7 +296,7 @@ return (
                         }
                     </Table.Body>
                 </Table.Root>
-                ) : ("You have no organization")}
+                ) : t("home.you_have_no_organization")}
               </Center>
             </Box>
           </VStack>
@@ -321,7 +312,7 @@ return (
               onChange={e => setOrgIdForSelect(e.target.value)}
               style={{border:'1px solid', padding:"20px", borderRadius:"5px"}}
             >
-              <option value="">All organizations</option>
+              <option value="">{t("home.All_Organizations")}</option>
               {org_members.length > 0 && org_members
                 .map(item => (
                   <option key={item.id} value={item.organization}>{item.organization_name}</option>

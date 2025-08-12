@@ -1,7 +1,8 @@
 
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Text, Button, VStack, Tabs, Table, HStack, Center, Switch} from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
+import { Box, Text as ChakraText, Button, VStack, Tabs, Table, HStack, Center, Switch} from '@chakra-ui/react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import useAccessToken from '../../services/token';
 import useOrganization from './OrganizationHook';
@@ -17,13 +18,14 @@ import useUsers from '../../services/useUsers';
 import SyncBuildings from '../Sensor-Data/SyncBuildings';
 
 const Organization_Details = () => {
+  const { t } = useTranslation();
   const { user, userInfo } = useSelector((state) => state.auth);
   const accessToken = useAccessToken(user);
   const navigate = useNavigate();
   const { orgId } = useParams();
 
   const { organizations, ListOrganizations } = useOrganization();
-  const { buildings: hookBuildings } = useBuilding(); // Renamed to avoid confusion
+  const { buildings: hookBuildings } = useBuilding();
   const { users } = useUsers();
 
   const [members, setMembers] = useState([]);
@@ -31,10 +33,9 @@ const Organization_Details = () => {
   const [error, setError] = useState('');
   const [refetchMember, setRefetchMembers] = useState(0);
   const [fetchBuildings, setFetchBuildings] = useState([]);
-  const [refetchBuildings, setRefetchBuildings] = useState(0); // Trigger for BuildingListOrg
+  const [refetchBuildings, setRefetchBuildings] = useState(0);
   const [isChecked, setIChecked] = useState(true)
 
-  // Fetch members
   const fetchMembers = async () => {
     if (!accessToken || !userInfo?.id) return;
 
@@ -48,18 +49,16 @@ const Organization_Details = () => {
       },
     };
     try {
-
       const response = await api.get(url, config);
       setMembers(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
       console.error('Organization_Details: Error fetching members:', err);
-      setError(err.response?.data?.message || err.message);
+      setError(t('organization_details.error_fetching_members'));
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch buildings
   const ListBuildings = async () => {
     if (!accessToken || !orgId) return;
 
@@ -67,7 +66,6 @@ const Organization_Details = () => {
     setError(null);
     const url = import.meta.env.VITE_BUILDING_LIST_URL;
     try {
-
       const response = await api.get(url, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -81,11 +79,10 @@ const Organization_Details = () => {
         );
       }
       setFetchBuildings(fetchedBuildings);
-      setRefetchBuildings((prev) => prev + 1); // Trigger BuildingListOrg refetch
-
+      setRefetchBuildings((prev) => prev + 1);
     } catch (err) {
       console.error('Organization_Details: Error fetching buildings:', err);
-      setError(err.response?.data?.message || err.message);
+      setError(t('organization_details.error_fetching_buildings'));
     } finally {
       setLoading(false);
     }
@@ -97,11 +94,9 @@ const Organization_Details = () => {
 
   useEffect(() => {
     if (accessToken) {
-
       fetchMembers();
       ListBuildings();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken, refetchMember, orgId]);
 
   const handleUpdate = async (id) => {
@@ -109,7 +104,7 @@ const Organization_Details = () => {
   };
 
   const handleDeleteMember = async (id) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this member?');
+    const confirmDelete = window.confirm(t('organization_details.delete_member_confirm'));
     if (!confirmDelete) return;
 
     if (!accessToken || !userInfo?.id) return false;
@@ -130,7 +125,7 @@ const Organization_Details = () => {
       return true;
     } catch (err) {
       console.error('Error deleting member:', err);
-      setError(err.response?.data?.message || err.message);
+      setError(t('organization_details.error_deleting_member'));
       return false;
     } finally {
       setLoading(false);
@@ -140,7 +135,7 @@ const Organization_Details = () => {
   useEffect(() => {
     if (error) {
       toaster.create({
-        title: 'Error',
+        title: t('organization_details.error_title'),
         description: error,
         status: 'error',
         duration: 3000,
@@ -164,9 +159,9 @@ const Organization_Details = () => {
         <Box shadow="3px 3px 15px 5px rgb(75, 75, 79)" p={"10px"} h="fit-content" minH={"85vh"} rounded={'8px'} overflow={"auto"} maxHeight="100vh" maxW={"90%"}>
       <Tabs.Root defaultValue={'buildings'}>
         <Tabs.List>
-          <Tabs.Trigger fontSize={"20px"} fontWeight={"bold"} value="buildings">Buildings</Tabs.Trigger>
-          <Tabs.Trigger fontSize={"20px"} fontWeight={"bold"} value="members">Members</Tabs.Trigger>
-          <Tabs.Trigger fontSize={"20px"} fontWeight={"bold"} value="info">Info</Tabs.Trigger>
+          <Tabs.Trigger fontSize={"20px"} fontWeight={"bold"} value="buildings">{t('organization_details.buildings')}</Tabs.Trigger>
+          <Tabs.Trigger fontSize={"20px"} fontWeight={"bold"} value="members">{t('organization_details.members')}</Tabs.Trigger>
+          <Tabs.Trigger fontSize={"20px"} fontWeight={"bold"} value="info">{t('organization_details.info')}</Tabs.Trigger>
         </Tabs.List>
         <Tabs.Content value="info">
           <Center ml={"30px"}>
@@ -178,41 +173,41 @@ const Organization_Details = () => {
                     <Table.Root size="sm" showColumnBorder>
                       <Table.Header w={"30%"}>
                         <Table.Row>
-                          <Table.ColumnHeader fontWeight="bold" fontSize={"18px"} w={"20%"}>Information</Table.ColumnHeader>
-                          <Table.ColumnHeader fontWeight="bold" fontSize={"18px"} w={"80%"} px={"10px"}>Description</Table.ColumnHeader>
+                          <Table.ColumnHeader fontWeight="bold" fontSize={"18px"} w={"20%"}>{t('organization_details.information')}</Table.ColumnHeader>
+                          <Table.ColumnHeader fontWeight="bold" fontSize={"18px"} w={"80%"} px={"10px"}>{t('organization_details.description')}</Table.ColumnHeader>
                         </Table.Row>
                       </Table.Header>
                       <Table.Body>
                         <Table.Row>
-                          <Table.Cell fontWeight="bold">Name</Table.Cell>
+                          <Table.Cell fontWeight="bold">{t('organization_details.name')}</Table.Cell>
                           <Table.Cell>{item.name}</Table.Cell>
                         </Table.Row>
                         <Table.Row>
-                          <Table.Cell fontWeight="bold">Street</Table.Cell>
+                          <Table.Cell fontWeight="bold">{t('organization_details.street')}</Table.Cell>
                           <Table.Cell>{item.street}</Table.Cell>
                         </Table.Row>
                         <Table.Row>
-                          <Table.Cell fontWeight="bold">City</Table.Cell>
+                          <Table.Cell fontWeight="bold">{t('organization_details.city')}</Table.Cell>
                           <Table.Cell>{item.city}</Table.Cell>
                         </Table.Row>
                         <Table.Row>
-                          <Table.Cell fontWeight="bold">Post Code</Table.Cell>
+                          <Table.Cell fontWeight="bold">{t('organization_details.postal_code')}</Table.Cell>
                           <Table.Cell>{item.postal_code}</Table.Cell>
                         </Table.Row>
                         <Table.Row>
-                          <Table.Cell fontWeight="bold">State</Table.Cell>
+                          <Table.Cell fontWeight="bold">{t('organization_details.state')}</Table.Cell>
                           <Table.Cell>{item.state}</Table.Cell>
                         </Table.Row>
                         <Table.Row>
-                          <Table.Cell fontWeight="bold">Country</Table.Cell>
+                          <Table.Cell fontWeight="bold">{t('organization_details.country')}</Table.Cell>
                           <Table.Cell>{item.country}</Table.Cell>
                         </Table.Row>
                         <Table.Row>
-                          <Table.Cell fontWeight="bold">Email</Table.Cell>
+                          <Table.Cell fontWeight="bold">{t('organization_details.email')}</Table.Cell>
                           <Table.Cell>{item.email}</Table.Cell>
                         </Table.Row>
                         <Table.Row>
-                          <Table.Cell fontWeight="bold">Website</Table.Cell>
+                          <Table.Cell fontWeight="bold">{t('organization_details.website')}</Table.Cell>
                           <Table.Cell>{item.website}</Table.Cell>
                         </Table.Row>
                       </Table.Body>
@@ -222,7 +217,7 @@ const Organization_Details = () => {
             ) : (
               <Box p={2}>
                 <Link to="/home/management/add_organization">
-                  Create a new Organization
+                  {t('organization_details.create_new_organization')}
                 </Link>
               </Box>
             )}
@@ -232,7 +227,7 @@ const Organization_Details = () => {
           <Box>
             <Tabs.Root variant={"outline"} defaultValue={"details"}>
               <Tabs.List>
-                <Tabs.Trigger fontSize={"16px"} value="details">Details</Tabs.Trigger>
+                <Tabs.Trigger fontSize={"16px"} value="details">{t('organization_details.details')}</Tabs.Trigger>
                 {members.length > 0 &&
                   members.some(
                     (mem) =>
@@ -242,25 +237,25 @@ const Organization_Details = () => {
                   ) && (
                     <>
                       <Tabs.Trigger fontSize={"16px"} value="existed-members">
-                        Add Existed Members
+                        {t('organization_details.add_existed_members')}
                       </Tabs.Trigger>
                       <Tabs.Trigger fontSize={"16px"} value="new-member">
-                        Create A New Member
+                        {t('organization_details.create_new_member')}
                       </Tabs.Trigger>
                     </>
                   )}
               </Tabs.List>
               <Tabs.Content value="details">
                 <VStack spacing={4} p={4}>
-                  {loading && <Text>Loading members...</Text>}
+                  {loading && <ChakraText>{t('organization_details.loading_members')}</ChakraText>}
                   <Table.Root>
                     <Table.Header fontSize={"18px"}>
                       <Table.Row>
-                        <Table.ColumnHeader>Full Name</Table.ColumnHeader>
-                        <Table.ColumnHeader>Email</Table.ColumnHeader>
-                        <Table.ColumnHeader>Admin</Table.ColumnHeader>
-                        <Table.ColumnHeader>Role</Table.ColumnHeader>
-                        <Table.ColumnHeader>Action</Table.ColumnHeader>
+                        <Table.ColumnHeader>{t('organization_details.full_name')}</Table.ColumnHeader>
+                        <Table.ColumnHeader>{t('organization_details.email')}</Table.ColumnHeader>
+                        <Table.ColumnHeader>{t('organization_details.admin')}</Table.ColumnHeader>
+                        <Table.ColumnHeader>{t('organization_details.role')}</Table.ColumnHeader>
+                        <Table.ColumnHeader>{t('organization_details.action')}</Table.ColumnHeader>
                       </Table.Row>
                     </Table.Header>
                     <Table.Body fontSize={"16px"}>
@@ -279,9 +274,9 @@ const Organization_Details = () => {
                               <Table.Cell>
                                 {member.is_admin
                                   ? member.members_owner?.id === member.user
-                                    ? 'Yes - Owner'
-                                    : 'Yes'
-                                  : 'No'}
+                                    ? t('organization_details.yes_owner')
+                                    : t('organization_details.yes')
+                                  : t('organization_details.no')}
                               </Table.Cell>
                               <Table.Cell>
                                 {members.some(
@@ -309,7 +304,7 @@ const Organization_Details = () => {
                                     size="sm"
                                     onClick={() => handleDeleteMember(member.id)}
                                   >
-                                    Delete
+                                    {t('organization_details.delete')}
                                   </Button>
                                 ) : null}
                               </Table.Cell>
@@ -353,7 +348,7 @@ const Organization_Details = () => {
             <Tabs.Root variant={"outline"} defaultValue={"list-building"}>
               <Tabs.List>
                 <Tabs.Trigger fontWeight="bold" fontSize={"16px"} value="list-building">
-                  List of Buildings
+                  {t('organization_details.list_of_buildings')}
                 </Tabs.Trigger>
                 {members.length > 0 &&
                   members.some(
@@ -363,7 +358,7 @@ const Organization_Details = () => {
                       mem.organization === Number(orgId)
                   ) && (
                     <Tabs.Trigger fontWeight="bold" fontSize={"16px"} value="new-building">
-                      Create a New Building
+                      {t('organization_details.create_new_building')}
                     </Tabs.Trigger>
                   )}
               </Tabs.List>
@@ -390,9 +385,9 @@ const Organization_Details = () => {
                           invalid
                         >
                           <Switch.HiddenInput/>
-                          <Switch.Label>Sync Buildings from Sensor</Switch.Label>
+                          <Switch.Label>{t('organization_details.sync_buildings')}</Switch.Label>
                           <Switch.Control bg={"blue"}/>
-                          <Switch.Label>Create new Buildings</Switch.Label>
+                          <Switch.Label>{t('organization_details.create_new_buildings')}</Switch.Label>
                         </Switch.Root>
                       </Box>
                       {isChecked ? (
@@ -406,7 +401,6 @@ const Organization_Details = () => {
                           />
                       </Box>
                       )}
-    
                     </VStack>
                 )}
               </Tabs.Content>

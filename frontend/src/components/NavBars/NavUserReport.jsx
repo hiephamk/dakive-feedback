@@ -14,17 +14,18 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "../ui/menu"
-
+import LanguageSelector from '../Languague/LanguageSelector';
+import { useTranslation } from 'react-i18next';
 const NavUserReport = () => {
   const {colorMode, toggleColorMode} = useColorMode()
   return (
     <Box p={2}>
         <HStack py={2} justifyContent="space-between" fontSize={22} fontWeight="bold">
-          <Button bg="black">
+          {/* <Button bg="black">
             <Image width="100px" bg="black" src="https://www.hamk.fi/wp-content/uploads/2024/01/HAMK_Logo_text_small_ENG_NEGA-1.svg"/>
-          </Button>
-          <Heading fontSize={"28px"} fontWeight={"bold"}>DAKIVE FEEDBACK SYSTEM</Heading>
-
+          </Button> */}
+          <Heading fontSize={"18px"} fontWeight={"bold"}>DAKIVE FEEDBACK SYSTEM</Heading>
+          <LanguageSelector/>
           
           <IconButton onClick={toggleColorMode}>
             {
