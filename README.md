@@ -65,20 +65,103 @@
 ### Project Structure:
     Project root
     ├── backend
-    │   ├── account
+    │   │   ├── admin.py
+    │   │   ├── apps.py
+    │   │   ├── migrations
+    │   │   ├── models.py
+    │   │   ├── serializers.py
+    │   │   ├── signals.py
+    │   │   ├── tests.py
+    │   │   ├── urls.py
+    │   │   └── views.py
     │   ├── Building
+    │   │   ├── admin.py
+    │   │   ├── apps.py
+    │   │   ├── migrations
+    │   │   ├── models.py
+    │   │   ├── serializers.py
+    │   │   ├── tests.py
+    │   │   ├── urls.py
+    │   │   └── views.py
+    │   ├── community
+    │   │   ├── admin.py
+    │   │   ├── apps.py
+    │   │   ├── migrations
+    │   │   ├── models.py
+    │   │   ├── serializers.py
+    │   │   ├── tests.py
+    │   │   ├── urls.py
+    │   │   └── views.py
     │   ├── dist
     │   ├── feedback
+    │   │   ├── admin.py
+    │   │   ├── apps.py
+    │   │   ├── migrations
+    │   │   ├── models.py
+    │   │   ├── serializers.py
+    │   │   ├── tests.py
+    │   │   ├── urls.py
+    │   │   └── views.py
     │   ├── main
+    │   │   ├── asgi.py
+    │   │   ├── serializers.py
+    │   │   ├── settings.py
+    │   │   ├── urls.py
+    │   │   └── wsgi.py
+    │   ├── manage.py
     │   ├── media
+    │   │   ├── building
+    │   │   └── profiles
     │   ├── organization
+    │   │   ├── admin.py
+    │   │   ├── apps.py
+    │   │   ├── migrations
+    │   │   ├── models.py
+    │   │   ├── serializers.py
+    │   │   ├── signals.py
+    │   │   ├── tests.py
+    │   │   ├── urls.py
+    │   │   └── views.py
+    │   ├── requirements.txt
     │   ├── static
+    │   │   ├── admin
+    │   │   ├── assets
+    │   │   └── rest_framework
     │   ├── staticfiles
+    │   │   ├── admin
+    │   │   ├── assets
+    │   │   └── rest_framework
     │   └── users
-    └── frontend
-        ├── node_modules
-        ├── public
-        └── src
+    │       ├── admin.py
+    │       ├── apps.py
+    │       ├── management.py
+    │       ├── migrations
+    │       ├── models.py
+    │       ├── serializers.py
+    │       ├── tests.py
+    │       ├── urls.py
+    │       └── views.py
+    ├── frontend
+    │   ├── dependencies.txt
+    │   ├── eslint.config.js
+    │   ├── index.html
+    │   ├── node_modules
+    │   ├── package-lock.json
+    │   ├── package.json
+    │   ├── public
+    │   ├── README.md
+    │   ├── src
+    │   │   ├── App.css
+    │   │   ├── App.jsx
+    │   │   ├── assets
+    │   │   ├── components
+    │   │   ├── index.css
+    │   │   ├── main.jsx
+    │   │   ├── pages
+    │   │   └── services
+    │   └── vite.config.js
+    ├── README.md
+    └── requirements.txt
 ### Authors:
     2025 Hiep Huynh
 ### License
