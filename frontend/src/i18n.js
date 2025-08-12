@@ -438,6 +438,8 @@ i18next.use(initReactI18next).init({
             buildings: 'Buildings',
             rooms: 'Rooms',
             send: 'Send',
+            start_time: "Start Time",
+            end_time: "End Time",
         },
         // Profile
         profile: {
@@ -920,7 +922,9 @@ i18next.use(initReactI18next).init({
             buildings: 'Rakennukset',
             rooms: 'Huoneet',
             heading: 'Palautelomake',
-            send: 'Lähetä'
+            send: 'Lähetä',
+            start_time: 'aloitusaika',
+            end_time: 'päättymisaika',
         },
         // Profile
         profile: {

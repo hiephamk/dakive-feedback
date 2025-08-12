@@ -147,17 +147,6 @@ const SensorReportsList = () => {
 
   return (
     <Box>
-      {/* {members.length > 0 &&
-        members.some(
-          (mem) =>
-            mem.user === userInfo.id &&
-            (mem.is_admin || mem.role === "editor")) 
-            && (
-            <Center my={"30px"}>
-              <SyncSensorRoomData onSyncSuccess={fetchSensorReport} buildingid={buildingid} externalid={externalid}/>
-            </Center>
-      )} */}
-      
       {loading ? (<Center><Spinner size="sm" /></Center>):(
           <Box>
             <Center>
