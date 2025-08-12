@@ -12,7 +12,6 @@ import * as XLSX from "xlsx";
 import formatDate from '../formatDate';
 import SyncSensorRoomData from '../Sensor-Data/SyncSensorRoomData';
 import useOrganization from '../Organization/OrganizationHook';
-import SensorReportsList from '../Sensor-Data/SensorReportsList';
 
 const Report = () => {
   const { t } = useTranslation();

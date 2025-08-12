@@ -3,8 +3,6 @@ import { Center, Box, Table, Spinner, HStack, Button, InputGroup, Input, CloseBu
 import { useSelector } from "react-redux";
 import useAccessToken from "../../services/token";
 import { useParams } from 'react-router-dom';
-import SyncSensorReports from './SyncSensorReports';
-import SyncSensorRoomData from './SyncSensorRoomData';
 import formatDate from '../formatDate';
 import api from '../../services/api';
 import { LuSearch } from 'react-icons/lu';
