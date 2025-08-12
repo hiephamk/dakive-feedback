@@ -65,6 +65,7 @@
 ### Project Structure:
     Project root
     ├── backend
+        ├── account
     │   │   ├── admin.py
     │   │   ├── apps.py
     │   │   ├── migrations
@@ -83,16 +84,6 @@
     │   │   ├── tests.py
     │   │   ├── urls.py
     │   │   └── views.py
-    │   ├── community
-    │   │   ├── admin.py
-    │   │   ├── apps.py
-    │   │   ├── migrations
-    │   │   ├── models.py
-    │   │   ├── serializers.py
-    │   │   ├── tests.py
-    │   │   ├── urls.py
-    │   │   └── views.py
-    │   ├── dist
     │   ├── feedback
     │   │   ├── admin.py
     │   │   ├── apps.py
