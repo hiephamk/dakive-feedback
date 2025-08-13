@@ -3,6 +3,7 @@
 #### This project is designed to assist public building managers in collecting and managing user feedback regarding the conditions of rooms within their buildings. By gathering real-time input from users, the system helps facility managers identify issues, optimize energy usage, and improve indoor air quality to create healthier and more comfortable environments.
 ### Key Features
 - User-friendly interface for submitting feedback on room conditions
+- Can import data from sensor devies to compare it with user feedback data
 - Centralized dashboard for building managers to monitor reports from users
 - Data-driven insights to support energy-saving initiatives
 - Tools to track and enhance air quality in public buildings
@@ -23,8 +24,7 @@
     - cd yourproject
 2. Backend setup:
     - Create and activate a virtual environment
-    - Install dependencies:
-    - pip install -r requirements.txt
+    - Install dependencies: pip install -r requirements.txt
     - Configure the database settings in settings.py
     - Create a .env file in the root directory of your project and add the following environment variables:
         + EMAIL_HOST=your_email_host
@@ -49,12 +49,12 @@
     - python manage.py runserver
 3. Frontend setup:
     - Navigate to the frontend directory (if separate)
-    - npm create vite@latest (https://vite.dev/guide/)
+    - Install Vite: npm create vite@latest (https://vite.dev/guide/)
     - Install dependencies
     - npm install
     - npm run dev
 ### Running the Application:
-    - Users can submit feedback about room temperature, lighting, air quality, and other conditions through the frontend interface.
+    - Users can submit feedback on room temperature, lighting, air quality, and other conditions through a link or by scanning a QR-code.
     - Building managers can:
         + Login or Register
         + Create and manage their own organizations, buildings, and rooms
@@ -65,7 +65,7 @@
 ### Project Structure:
     Project root
     ├── backend
-        ├── account
+    │   ├── account
     │   │   ├── admin.py
     │   │   ├── apps.py
     │   │   ├── migrations
@@ -152,7 +152,6 @@
     │   │   └── services
     │   └── vite.config.js
     ├── README.md
-    └── requirements.txt
 ### Authors:
     2025 Hiep Huynh
 ### License
