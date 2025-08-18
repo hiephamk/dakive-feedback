@@ -300,6 +300,7 @@ const RoomReportAnalytics = () => {
               <Box>
                 <Button onClick={handleClearItem}>{t('room_analytics.clear')}</Button>
               </Box>
+              
             </HStack>
           ) : (
             <VStack my={10} maxW={"100%"} justifyContent={"space-evenly"}>
@@ -446,6 +447,7 @@ const RoomReportAnalytics = () => {
           <Text textAlign="center">{t('room_analytics.no_data')}</Text>
         )}
       </VStack>
+
     </Container>
   );
 };
