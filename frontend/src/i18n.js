@@ -131,6 +131,7 @@ i18next.use(initReactI18next).init({
         },
                 //Organization details
         organization_details: {
+          submit: 'Submit',
           buildings: 'Buildings',
           members: 'Members',
           info: 'Info',
@@ -360,6 +361,7 @@ i18next.use(initReactI18next).init({
             placeholder_description: 'Description',
             required_field: 'Please fill in the required field: {{field}}',
             room_updated: 'Room updated successfully',
+            room_created: 'Room created successfully',
             error_fetching_room: 'Failed to load room data',
             error_updating_room: 'Failed to update room: '
         },
@@ -616,6 +618,7 @@ i18next.use(initReactI18next).init({
         },
                 //Organization details
         organization_details: {
+          submit: 'Lähetä',
           buildings: 'Rakennukset',
           members: 'Jäsenet',
           info: 'Tiedot',
@@ -845,6 +848,7 @@ i18next.use(initReactI18next).init({
             placeholder_description: 'Kuvaus',
             required_field: 'Täytä pakollinen kenttä: {{field}}',
             room_updated: 'Huone päivitetty onnistuneesti',
+            room_created: 'Huone luotu onnistuneesti',
             error_fetching_room: 'Huoneen tietojen lataaminen epäonnistui',
             error_updating_room: 'Huoneen päivittäminen epäonnistui: '
         },

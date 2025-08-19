@@ -62,10 +62,10 @@ return (
   <Box>
     {isDesktop ? (
     <Stack>
-      <Center>
+      {/* <Center>
         <Heading fontSize={"30px"} my={"20px"} fontWeight={"bold"}>Dakive Feedback</Heading>
-      </Center>
-      <Flex w={"100%"} ml={"10px"}>
+      </Center> */}
+      <Flex w={"100%"} ml={"10px"} mt={"20px"}>
         <Box w={"70%"}>
           <VStack p={"10px"}>
             <Box shadow="3px 3px 15px 5px rgb(75, 75, 79)" rounded={"7px"} mb={"10px"}>
