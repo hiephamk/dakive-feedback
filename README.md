@@ -20,8 +20,8 @@
     - Chakra UI
 ### Installation
 1. Clone the repository:
-    - git clone https://github.com/yourusername/yourproject.git
-    - cd yourproject
+    - git clone https://github.com/hiephamk/dakive-feedback.git
+    - cd dakive-feedback
 2. Backend setup:
     - Create and activate a virtual environment
     - Install dependencies: pip install -r requirements.txt

@@ -1,4 +1,4 @@
-// src/i18n.js
+
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
@@ -488,6 +488,18 @@ i18next.use(initReactI18next).init({
             login: 'Login',
             activation_email_sent: 'An activation email has been sent to your email. Please check your email'
         },
+        //about page
+        aboutPage: {
+          heading_1: 'Indoor Air Quality Feedback System',
+          text_1: 'Empowering building managers to create healthier, more comfortable environments through real-time user feedback and data-driven insights',
+          heading_2: 'Our Mission',
+          text_2:'We believe that everyone deserves to work and live in healthy indoor environments. Our system bridges the gap between building occupants and facility managers, enabling proactive management of indoor air quality, temperature, lighting, and overall comfort.',
+          heading_3: 'Ready to Transform Your Building Management?',
+          text_3: 'Join forward-thinking organizations that prioritize occupant comfort and environmental sustainability.',
+          link_heading: 'Link in the end of page:',
+          link_1_text: 'Contact for demo:',
+          link_2_text: 'View on GitHub:',
+        }
       },
     },
     fi: {
@@ -975,6 +987,20 @@ i18next.use(initReactI18next).init({
             login: 'Kirjaudu sisään',
             activation_email_sent: 'Aktivointisähköposti on lähetetty sähköpostiisi. Tarkista sähköpostisi'
         },
+        //about page
+        aboutPage: {
+          heading_1: 'Sisäilman laadun palautejärjestelmä',
+          text_1: 'Mahdollistamme kiinteistönhoitajille terveellisempien ja mukavampien ympäristöjen luomisen reaaliaikaisen käyttäjäpalautteen ja data-analytiikan avulla.',
+          heading_2: 'Tehtävämme',
+          text_2:'Uskomme, että jokainen ansaitsee työskennellä ja elää terveellisissä sisätiloissa. Järjestelmämme yhdistää rakennusten käyttäjät ja kiinteistönhoitajat, mahdollistaen sisäilman laadun, lämpötilan, valaistuksen ja yleisen mukavuuden ennakoivan hallinnan.',
+          heading_3: 'Valmiina muuttamaan kiinteistönhallintaasi?',
+          text_3: 'Liity edelläkävijäorganisaatioihin, jotka asettavat käyttäjien mukavuuden ja ympäristön kestävyyden etusijalle.',
+          link_heading: 'Linkit sivun alalaidassa:',
+          link_1_text: 'Ota yhteyttä demon saamiseksi:',
+          link_1: 'atte.partanen@hamk.fi',
+          link_2_text: 'Katso GitHubissa:',
+          link_2: 'https://github.com/hiephamk/dakive-feedback/tree/main',
+        }
       },
     },
   },
