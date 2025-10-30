@@ -1,6 +1,5 @@
 from pathlib import Path
 import os
-import django
 import environ # type: ignore
 from datetime import timedelta
 
@@ -147,9 +146,9 @@ WSGI_APPLICATION = "main.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydb',
+        'NAME': 'dakive',
         'USER': 'kingzarckier',
-        'PASSWORD': 'kingzarckier',
+        'PASSWORD': 'kingzarckier2024@',
         'HOST': 'localhost',
         'PORT': '5432',
     }

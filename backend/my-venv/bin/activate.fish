@@ -33,10 +33,11 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/Users/hieph/MyApps/dakive-feedback/backend/my-venv"
+set -gx VIRTUAL_ENV /Users/hiephuynh/Documents/myapps/dakive-feedback/backend/my-venv
 
 set -gx _OLD_VIRTUAL_PATH $PATH
-set -gx PATH "$VIRTUAL_ENV/bin" $PATH
+set -gx PATH "$VIRTUAL_ENV/"bin $PATH
+set -gx VIRTUAL_ENV_PROMPT my-venv
 
 # Unset PYTHONHOME if set.
 if set -q PYTHONHOME
@@ -56,7 +57,7 @@ if test -z "$VIRTUAL_ENV_DISABLE_PROMPT"
         set -l old_status $status
 
         # Output the venv prompt; color taken from the blue of the Python logo.
-        printf "%s%s%s" (set_color 4B8BBE) "(my-venv) " (set_color normal)
+        printf "%s(%s)%s " (set_color 4B8BBE) my-venv (set_color normal)
 
         # Restore the return status of the previous command.
         echo "exit $old_status" | .
@@ -65,5 +66,4 @@ if test -z "$VIRTUAL_ENV_DISABLE_PROMPT"
     end
 
     set -gx _OLD_FISH_PROMPT_OVERRIDE "$VIRTUAL_ENV"
-    set -gx VIRTUAL_ENV_PROMPT "(my-venv) "
 end

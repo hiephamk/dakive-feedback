@@ -3,7 +3,7 @@ from Building.models import Building, Room, Organization
 
 class Room_Report(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name="room_report")
-    building = models.ForeignKey(Building, on_delete=models.CASCADE)
+    building = models.ForeignKey(Building, on_delete=models.CASCADE, related_name='room_report')
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='room_report') # use this related_name in organization serializers
     temperature_rating = models.IntegerField(default=0)
     temperature_notes = models.TextField(blank=True, null=True)
@@ -43,8 +43,8 @@ class Room_Report(models.Model):
         return round(sum(ratings) / len(ratings),2)
 # create db to store synced data from IoT devices
 class Sensor_Report(models.Model):
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    building = models.ForeignKey(Building, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='sensor_report')
+    building = models.ForeignKey(Building, on_delete=models.CASCADE, related_name='sensor_report')
     temperature = models.FloatField(null=True, blank=True)
     humidity = models.FloatField(null=True, blank=True)
     co2 = models.FloatField(null=True, blank=True)
@@ -56,3 +56,10 @@ class Sensor_Report(models.Model):
     def __str__(self):
         return f" {self.room.name} in {self.building.name}"
 
+class OptionalFeedback(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name="optional_feedback")
+    building = models.ForeignKey(Building, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="optional_feedback")
+    food_rating = models.IntegerField(blank=True, null=True)
+    cleaning_rating = models.IntegerField(blank=True, null=True)
+    support_rating = models.IntegerField(blank=True, null=True)
