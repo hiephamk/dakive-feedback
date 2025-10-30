@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import useRoom from '../RoomOwner/RoomHook';
 import { useParams } from 'react-router';
 import { QRCodeCanvas } from 'qrcode.react';
-import { Box, VStack, Button, Center, Container, Heading, HStack, Switch } from '@chakra-ui/react';
+import { Box, VStack, Button, Center, Container, Heading, HStack, Switch, Checkbox } from '@chakra-ui/react';
 // import { colorPalettes } from "compositions/lib/color-palettes"
 
 const RoomReportOwner = () => {
@@ -12,7 +12,10 @@ const RoomReportOwner = () => {
     const [roomName, setRoomName] = useState('');
     const [buildingName, setBuildingName] = useState('');
     const [showSensorData, setShowSensorData] = useState(null);
-    const [isChecked, setIsChecked] = useState(false);
+    const [additionalFeedback, setAdditionalFeedback] = useState(null)
+    const [isChecked1, setIsChecked1] = useState(false);
+    const [isChecked2, setIsChecked2] = useState(false);
+
 
     const { roomId, buildingId } = useParams();
     const { rooms } = useRoom(buildingId);
@@ -124,13 +127,17 @@ const RoomReportOwner = () => {
     const [token2] = useState(generateRandom());
 
     useEffect(() => {
-        const token = isChecked
+        const token1 = isChecked1
             ? 'x8Kbf6R4Ti'
             : 'mUDfq8mo33';
-        setShowSensorData(token);
-    }, [isChecked]);
+        setShowSensorData(token1);
+        const token2 = isChecked2
+            ? 'sT2Hy4dgsU'
+            : 'Wegfh654s8';
+        setAdditionalFeedback(token2);
+    }, [isChecked1,isChecked2]);
 
-    const link = `http://localhost:5173/room/feedback/${roomId}/${token1}${showSensorData}${token2}/`;
+    const link = `http://localhost:5173/room/feedback/${roomId}/${token1}${showSensorData}${additionalFeedback}${token2}/`;
 
     const handleCopy = async () => {
         const fallbackCopyTextToClipboard = (text) => {
@@ -178,17 +185,26 @@ const RoomReportOwner = () => {
                 <VStack shadow="3px 3px 15px 5px rgb(75, 75, 79)" rounded={8} p={4} w={"500px"}>
                     <Heading my={"20px"}>{t('create_room_report.qr_code_heading')}</Heading>
                     <Box>
-                        <Switch.Root
-                            checked={isChecked}
-                            onCheckedChange={(e) => setIsChecked(e.checked)}
+                        <Checkbox.Root
+                            checked={isChecked1}
+                            onCheckedChange={(e) => setIsChecked1(e.checked)}
                             colorPalette={"blue"}
                         >
-                            <Switch.HiddenInput />
-                            <Switch.Control>
-                                <Switch.Thumb />
-                            </Switch.Control>
-                            <Switch.Label fontWeight={"bold"} fontSize={"16px"}>{t('create_room_report.show_sensor_data')}</Switch.Label>
-                        </Switch.Root>
+                            <Checkbox.HiddenInput />
+                            <Checkbox.Control/>
+                            <Checkbox.Label fontWeight={"bold"} fontSize={"16px"}>{t('create_room_report.show_sensor_data')}</Checkbox.Label>
+                        </Checkbox.Root>
+                    </Box>
+                    <Box>
+                        <Checkbox.Root
+                            checked={isChecked2}
+                            onCheckedChange={(e) => setIsChecked2(e.checked)}
+                            colorPalette={"blue"}
+                        >
+                            <Checkbox.HiddenInput />
+                            <Checkbox.Control/>
+                            <Checkbox.Label fontWeight={"bold"} fontSize={"16px"}>{t('create_room_report.show_additional_feedback')}</Checkbox.Label>
+                        </Checkbox.Root>
                     </Box>
                     <Box>
                         <Center ref={qrCodeRef} my={4}>

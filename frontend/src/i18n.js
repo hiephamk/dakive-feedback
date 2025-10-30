@@ -369,6 +369,7 @@ i18next.use(initReactI18next).init({
         create_room_report: {
             qr_code_heading: 'QRCode for Room Feedback',
             show_sensor_data: 'Show Sensor Data',
+            show_additional_feedback: 'Show Additional Feedback',
             copy_link: 'Copy Link',
             download_qr_code: 'Download QR Code',
             print_qr_code: 'Print QR Code',
@@ -395,6 +396,7 @@ i18next.use(initReactI18next).init({
             export_excel: 'Export Data to Excel',
             clear: 'Clear',
             show_sensor_data: 'Show Sensor Data',
+            show_additional_feedback: 'Show Additional Feedback',
             building_name: 'Building Name',
             room_name: 'Room Name',
             temperature: 'Temperature',
@@ -442,6 +444,10 @@ i18next.use(initReactI18next).init({
             send: 'Send',
             start_time: "Start Time",
             end_time: "End Time",
+            support_rating: "Support Rating",
+            food_rating: "Food Rating",
+            food_rating_note: "Food Rating Note",
+            support_rating_note: 'Support Rating Note'
         },
         // Profile
         profile: {
@@ -868,6 +874,7 @@ i18next.use(initReactI18next).init({
         create_room_report: {
             qr_code_heading: 'QR-koodi huoneen palautteelle',
             show_sensor_data: 'Näytä anturin tiedot',
+            show_additional_feedback: 'Näytä lisäpalaute',
             copy_link: 'Kopioi linkki',
             download_qr_code: 'Lataa QR-koodi',
             print_qr_code: 'Tulosta QR-koodi',
@@ -894,6 +901,7 @@ i18next.use(initReactI18next).init({
             export_excel: 'Vie tiedot Excel-tiedostoon',
             clear: 'Tyhjennä',
             show_sensor_data: 'Näytä anturin tiedot',
+            show_additional_feedback: 'Näytä Lisäpalaute',
             building_name: 'Rakennuksen nimi',
             room_name: 'Huoneen nimi',
             temperature: 'Lämpötila',
@@ -941,6 +949,10 @@ i18next.use(initReactI18next).init({
             send: 'Lähetä',
             start_time: 'aloitusaika',
             end_time: 'päättymisaika',
+            food_rating: 'Ruokaluokitus',
+            support_rating: "Tukiarvostelu",
+            support_rating_note: 'Tukiarvostelun huomautus',
+            food_rating_note: 'Ruokaluokituksen huomautus'
         },
         // Profile
         profile: {

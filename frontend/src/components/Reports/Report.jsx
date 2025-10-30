@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import useAccessToken from '../../services/token';
 import api from '../../services/api';
-import { Box, Container, VStack, HStack, Table, Input, Flex, Button, Center, Switch, Spinner } from '@chakra-ui/react';
+import { Box, Container, VStack, HStack, Table, Input, Flex, Button, Center, Checkbox, Spinner } from '@chakra-ui/react';
 import { FaFrown, FaMeh, FaSmile, FaGrin, FaGrinStars } from 'react-icons/fa';
 import useRoom from '../RoomOwner/RoomHook';
 import useBuilding from '../BuildingManagement/BuildingHook';
@@ -28,6 +28,8 @@ const Report = () => {
   const [endTime, setEndTime]=useState('')
 
   const [iShow, setIShow] = useState(false);
+  const [iShow2, setIShow2] = useState(false);
+
   const { buildings } = useBuilding();
   const { rooms } = useRoom(buildingId);
   const { organizations } = useOrganization();
@@ -196,6 +198,10 @@ const Report = () => {
       t('report.structural_notes'),
       t('report.cleanliness_rating'),
       t('report.cleanliness_notes'),
+      t('report.food_rating'),
+      t('report.food_rating_note'),
+      t('report.support_rating'),
+      t('report.support_rating_note'),
       t('report.maintenance_note'),
       t('report.general_note'),
       t('report.report_date'),
@@ -219,6 +225,10 @@ const Report = () => {
       report.structural_change_notes || "",
       report.cleanliness_rating || "",
       report.cleanliness_notes || "",
+      report.food_rating || "",
+      report.food_rating_note || "",
+      report.support_rating || "",
+      report.support_rating_note || "",
       report.maintenance_notes || "",
       report.general_notes || "",
       new Date(report.created_at).toLocaleDateString(),
@@ -444,17 +454,26 @@ const Report = () => {
             <Button onClick={handleClearItem}>{t('report.clear')}</Button>
           </Box>
         </HStack>
-          <Button p={"10px"} rounded={"5px"} my={"10px"}>
-            <Switch.Root
+          <HStack p={"10px"} rounded={"5px"} my={"10px"} gap={"20px"}>
+            <Checkbox.Root
               checked={iShow}
               onCheckedChange={e => setIShow(e.checked)}
               colorPalette={"blue"}
             >
-              <Switch.HiddenInput/>
-              <Switch.Control/>
-              <Switch.Label>{t('report.show_sensor_data')}</Switch.Label>
-            </Switch.Root>
-          </Button>
+              <Checkbox.HiddenInput/>
+              <Checkbox.Control/>
+              <Checkbox.Label>{t('report.show_sensor_data')}</Checkbox.Label>
+            </Checkbox.Root>
+            <Checkbox.Root
+              checked={iShow2}
+              onCheckedChange={e => setIShow2(e.checked)}
+              colorPalette={"blue"}
+            >
+              <Checkbox.HiddenInput/>
+              <Checkbox.Control/>
+              <Checkbox.Label>{t('report.show_additional_feedback')}</Checkbox.Label>
+            </Checkbox.Root>
+          </HStack>
       </Box>
 
       <Box maxW={"100%"}>
@@ -488,6 +507,18 @@ const Report = () => {
               <Table.ColumnHeader fontWeight="bold" fontSize="14px" border="1px solid" textAlign="center">
                 {t('report.cleanliness')}
               </Table.ColumnHeader>
+                  {iShow2 && (
+                    <>
+                      <Table.ColumnHeader fontWeight="bold" fontSize="14px" border="1px solid" textAlign="center">
+                        {t('report.food_rating')}
+                      </Table.ColumnHeader>
+                      <Table.ColumnHeader fontWeight="bold" fontSize="14px" border="1px solid" textAlign="center">
+                        {t('report.support_rating')}
+                      </Table.ColumnHeader>
+                    </>
+                  )}
+              
+
               <Table.ColumnHeader fontWeight="bold" fontSize="14px" border="1px solid" textAlign="center">
                 {t('report.maintenance_notes')}
               </Table.ColumnHeader>
@@ -579,6 +610,24 @@ const Report = () => {
                               <Box>{t('report.rating')}: {report.cleanliness_rating}</Box>
                               <Box>{t('report.note')}: {report.cleanliness_notes}</Box>
                             </Table.Cell>
+                            {/* additional feedback */}
+                            {iShow2 && (
+                              <>
+                                <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                                  {renderRating(report.food_rating)}
+                                  <Box>{t('report.rating')}: {report.food_rating}</Box>
+                                  <Box>{t('report.note')}: {report.food_rating_notes}</Box>
+                                </Table.Cell>
+                                
+                                <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
+                                  {renderRating(report.support_rating)}
+                                  <Box>{t('report.rating')}: {report.support_rating}</Box>
+                                  <Box>{t('report.note')}: {report.support_rating_notes}</Box>
+                                </Table.Cell>
+                              </>
+                            )}
+
+
                             <Table.Cell textAlign="center" style={{ border: '1px solid' }}>
                               {report.maintenance_notes}
                             </Table.Cell>

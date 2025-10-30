@@ -48,4 +48,25 @@ class SensorReportSerializer(serializers.ModelSerializer):
     def get_building_name(self, obj):
         return obj.building.name
     
+# class OptionalFeedbackSerializer(serializers.Serializer):
+#     room_name = serializers.SerializerMethodField(read_only=True)
+#     building_name = serializers.SerializerMethodField(read_only=True)
     
+#     class Meta:
+#         model =  OptionalFeedback
+#         fields = '__all__'
+    
+#     def validate(self, data): #validate rooms in the building
+#         room = data.get("room")
+#         building = data.get("building")
+
+#         if room and building and room.building != building:
+#             raise serializers.ValidationError("The selected room does not belong to the specified building.")
+        
+#         return data
+
+#     def get_room_name(self, obj):
+#         return obj.room.name
+
+#     def get_building_name(self, obj):
+#         return obj.building.name

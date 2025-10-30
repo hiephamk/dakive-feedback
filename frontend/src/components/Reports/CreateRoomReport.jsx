@@ -12,7 +12,7 @@ import formatDate from '../formatDate';
 
 const CreateRoomReport = () => {
   const { t } = useTranslation();
-  const { roomId, showSensorData } = useParams();
+  const { roomId, showSensorData} = useParams();
   const { organizations } = useOrganization();
   const [syncTime, setSyncTime] = useState('');
   const [buildingId, setBuildingId] = useState('');
@@ -21,8 +21,10 @@ const CreateRoomReport = () => {
   const [rooms, setRooms] = useState([]);
   const [sensorData, setSensorData] = useState([]);
   const [isShow, setIsShow] = useState(false);
+  const [isShow2, setIsShow2] = useState(false);
   const navigate = useNavigate();
   const token = "x8Kbf6R4Ti";
+  const token2 = "sT2Hy4dgsU";
   const [selectedRoom, setSelectedRoom] = useState('');
 
   const fetchRoom = async () => {
@@ -100,6 +102,10 @@ const CreateRoomReport = () => {
     cleanliness_notes: '',
     maintenance_notes: '',
     general_notes: '',
+    food_rating:'',
+    food_rating_note: '',
+    support_rating:'',
+    support_rating_note:''
   });
 
   useEffect(() => {
@@ -148,6 +154,8 @@ const CreateRoomReport = () => {
       lighting_rating: parseInt(formData.lighting_rating || 0, 10),
       structural_change_rating: parseInt(formData.structural_change_rating || 0, 10),
       cleanliness_rating: parseInt(formData.cleanliness_rating || 0, 10),
+      food_rating: parseInt(formData.food_rating || 0, 10),
+      support_rating: parseInt(formData.support_rating || 0, 10),
     };
     const url = `${import.meta.env.VITE_ROOM_REPORT_CREATE_URL}${roomId}/`;
     try {
@@ -160,6 +168,7 @@ const CreateRoomReport = () => {
       alert(t('error.report_error'));
     }
   };
+
 
   const feedbackOptions = [
     { icon: <Box p={"10px"} rounded={"5px"} shadow="3px 3px 15px 5px rgb(75, 75, 79)">
@@ -355,6 +364,37 @@ const CreateRoomReport = () => {
                       my={4}
                     />
                   </Box>
+                  {/* additional feedback */}
+                  {showSensorData.includes(token2) ? (
+                    <Box>
+                      <Box m={4}>
+                        <Box my={4}><label>{t('report.food_rating')}:</label></Box>
+                        <Box my={4}>{renderRatingIcons('food_rating')}</Box>
+                        <Textarea
+                          name="food_rating"
+                          value={formData.food_rating_note}
+                          onChange={handleChange}
+                          placeholder={t('report.food_rating_note')}
+                          w="100%"
+                          my={4}
+                        />
+                    </Box>
+                    <Box m={4}>
+                      <Box my={4}><label>{t('report.support_rating')}:</label></Box>
+                      <Box my={4}>{renderRatingIcons('support_rating')}</Box>
+                      <Textarea
+                        name="support_rating"
+                        value={formData.support_rating_note}
+                        onChange={handleChange}
+                        placeholder={t('report.support_rating_note')}
+                        w="100%"
+                        my={4}
+                      />
+                    </Box>
+                  </Box>
+                  ):("")}
+                  
+
                   <Box w="100%">
                     <Box my={4}><label>{t('report.maintenance_notes')}:</label></Box>
                     <Textarea

@@ -140,3 +140,14 @@ class SensorDataSearchView(generics.ListAPIView): # Display data from IoT device
                 Q(updated_at__icontains=word)
             )
         return Sensor_Report.objects.filter(query).order_by('-created_at')
+
+# class OptionalFeedbackManagerView(generics.ListCreateAPIView):
+#     permission_classes = [IsAuthenticated]
+#     serializer_class = OptionalFeedbackSerializer
+#     authentication_classes = [JWTAuthentication]
+#     queryset = OptionalFeedback.objects.all()
+    
+# class OptionFeedbackUserView(generics.CreateAPIView): # feedback form for user
+#     serializer_class = RoomReportSerializer
+#     permission_classes = [AllowAny]
+#     queryset = OptionalFeedback.objects.all()

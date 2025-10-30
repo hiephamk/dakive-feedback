@@ -21,10 +21,13 @@ class Room_Report(models.Model):
     cleanliness_notes = models.TextField(blank=True, null=True)
     maintenance_notes = models.TextField(blank=True, null=True)
     general_notes = models.TextField(blank=True, null=True)
-    feedback_status = models.CharField(max_length=255, blank=True, null=True)
+    food_rating = models.IntegerField(blank=True, null=True)
+    food_rating_notes = models.TextField(blank=True, null=True)
+    support_rating = models.IntegerField(blank=True, null=True)
+    support_rating_notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    hasViewed = models.BooleanField(default=False) # no longer needed
+
     def __str__(self):
         return f"room Report for {self.room.name} in {self.building} - (roomId: {self.room})"
     
@@ -56,10 +59,10 @@ class Sensor_Report(models.Model):
     def __str__(self):
         return f" {self.room.name} in {self.building.name}"
 
-class OptionalFeedback(models.Model):
-    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name="optional_feedback")
-    building = models.ForeignKey(Building, on_delete=models.CASCADE)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="optional_feedback")
-    food_rating = models.IntegerField(blank=True, null=True)
-    cleaning_rating = models.IntegerField(blank=True, null=True)
-    support_rating = models.IntegerField(blank=True, null=True)
+# class OptionalFeedback(models.Model):
+#     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name="optional_feedback")
+#     building = models.ForeignKey(Building, on_delete=models.CASCADE)
+#     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="optional_feedback")
+#     food_rating = models.IntegerField(blank=True, null=True)
+#     cleaning_rating = models.IntegerField(blank=True, null=True)
+#     support_rating = models.IntegerField(blank=True, null=True)
